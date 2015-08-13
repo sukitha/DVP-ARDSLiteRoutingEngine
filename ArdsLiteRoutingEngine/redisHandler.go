@@ -47,7 +47,7 @@ func LoadDefaultConfig() {
 
 	if deferr != nil {
 		fmt.Println("error:", deferr)
-		redisIp = "127.0.0.1"
+		redisIp = "127.0.0.1:6379"
 		redisPort = "6379"
 		redisDb = 6
 		ardsUrl = "http://localhost:2221/continueArds/continue"
