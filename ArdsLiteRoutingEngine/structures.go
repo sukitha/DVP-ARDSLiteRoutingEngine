@@ -4,6 +4,7 @@ package main
 
 type Configuration struct {
 	RedisIp          string
+	RedisPort        string
 	RedisDb          int
 	ArdsContinueUrl  string
 	ResourceCSlotUrl string
@@ -11,6 +12,7 @@ type Configuration struct {
 
 type EnvConfiguration struct {
 	RedisIp          string
+	RedisPort        string
 	RedisDb          string
 	ArdsContinueUrl  string
 	ResourceCSlotUrl string
