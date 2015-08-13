@@ -1,0 +1,6 @@
+{
+    "RedisIp": "SYS_REDIS_HOST",
+	"RedisDb": "SYS_REDIS_DB",
+	"ResourceCSlotUrl":"SYS_SERVICE_RCS",
+	"ArdsContinueUrl":"SYS_SERVICE_AC"
+}
