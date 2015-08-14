@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/fzzy/radix/redis"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -34,10 +35,14 @@ func GetDirPath() string {
 
 func GetDefaultConfig() Configuration {
 	confPath := filepath.Join(dirPath, "conf.json")
-	fileDefault, _ := os.Open(confPath)
-	defdecoder := json.NewDecoder(fileDefault)
+	fmt.Println("GetDefaultConfig config path: ", confPath)
+	content, operr := ioutil.ReadFile(confPath)
+	if operr != nil {
+		fmt.Println(operr)
+	}
+
 	defconfiguration := Configuration{}
-	deferr := defdecoder.Decode(&defconfiguration)
+	deferr := json.Unmarshal(content, &defconfiguration)
 
 	if deferr != nil {
 		fmt.Println("error:", deferr)
@@ -54,10 +59,15 @@ func GetDefaultConfig() Configuration {
 
 func LoadDefaultConfig() {
 	confPath := filepath.Join(dirPath, "conf.json")
-	fileDefault, _ := os.Open(confPath)
-	defdecoder := json.NewDecoder(fileDefault)
+	fmt.Println("LoadDefaultConfig config path: ", confPath)
+
+	content, operr := ioutil.ReadFile(confPath)
+	if operr != nil {
+		fmt.Println(operr)
+	}
+
 	defconfiguration := Configuration{}
-	deferr := defdecoder.Decode(&defconfiguration)
+	deferr := json.Unmarshal(content, &defconfiguration)
 
 	if deferr != nil {
 		fmt.Println("error:", deferr)
@@ -81,14 +91,16 @@ func InitiateRedis() {
 	fmt.Println(dirPathtest)
 	dirPath := GetDirPath()
 	confPath := filepath.Join(dirPath, "custom-environment-variables.json")
-	fmt.Println(confPath)
-	fileEnv, operr := os.Open(confPath)
+	fmt.Println("InitiateRedis config path: ", confPath)
+
+	content, operr := ioutil.ReadFile(confPath)
 	if operr != nil {
 		fmt.Println(operr)
 	}
-	envdecoder := json.NewDecoder(fileEnv)
+
 	envconfiguration := EnvConfiguration{}
-	enverr := envdecoder.Decode(&envconfiguration)
+	enverr := json.Unmarshal(content, &envconfiguration)
+
 	if enverr != nil {
 		fmt.Println("error:", enverr)
 		LoadDefaultConfig()
