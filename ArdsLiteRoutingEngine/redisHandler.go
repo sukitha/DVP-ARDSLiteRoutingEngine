@@ -24,7 +24,7 @@ func errHndlr(err error) {
 	}
 }
 func GetDirPath() string {
-	envPath := os.Getenv("Go_CONFIG_DIR")
+	envPath := os.Getenv("GO_CONFIG_DIR")
 	if envPath == "" {
 		envPath = "./"
 	}
@@ -77,7 +77,8 @@ func LoadDefaultConfig() {
 }
 
 func InitiateRedis() {
-	//dirPath, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	dirPathtest, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	fmt.Printf(dirPathtest)
 	dirPath := GetDirPath()
 	confPath := filepath.Join(dirPath, "custom-environment-variables.json")
 	fmt.Println(confPath)
