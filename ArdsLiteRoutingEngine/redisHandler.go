@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/fzzy/radix/redis"
+	"github.com/kardianos/osext"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -69,7 +70,8 @@ func LoadDefaultConfig() {
 }
 
 func InitiateRedis() {
-	dirPath, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	//dirPath, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	dirPath, _ := osext.ExecutableFolder()
 	confPath := filepath.Join(dirPath, "custom-environment-variables.json")
 	fmt.Println(confPath)
 	fileEnv, _ := os.Open(confPath)
