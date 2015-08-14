@@ -3,5 +3,6 @@
 	"RedisPort": "SYS_REDIS_PORT",
 	"RedisDb": "SYS_REDIS_DB",
 	"ResourceCSlotUrl":"SYS_SERVICE_RCS",
-	"ArdsContinueUrl":"SYS_SERVICE_AC"
+	"ArdsContinueUrl":"SYS_SERVICE_AC",
+	"Port":"HOST_ARDSLITEROUTINGENG_PORT"
 }

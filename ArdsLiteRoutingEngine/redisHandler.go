@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"github.com/fzzy/radix/redis"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 )
 
+var dirPath string
 var redisIp string
 var redisDb int
 var ardsUrl string
 var resCsUrl string
 var redisPort string
+var port string
 
 func errHndlr(err error) {
 	if err != nil {
@@ -22,7 +25,8 @@ func errHndlr(err error) {
 }
 
 func GetDefaultConfig() Configuration {
-	fileDefault, _ := os.Open("conf.json")
+	confPath := filepath.Join(dirPath, "conf.json")
+	fileDefault, _ := os.Open(confPath)
 	defdecoder := json.NewDecoder(fileDefault)
 	defconfiguration := Configuration{}
 	deferr := defdecoder.Decode(&defconfiguration)
@@ -34,13 +38,15 @@ func GetDefaultConfig() Configuration {
 		defconfiguration.RedisDb = 6
 		defconfiguration.ArdsContinueUrl = "http://localhost:2221/continueArds/continue"
 		defconfiguration.ResourceCSlotUrl = "http://localhost:2225/DVP/API/1.0.0.0/ARDS/resource"
+		defconfiguration.Port = "2223"
 	}
 
 	return defconfiguration
 }
 
 func LoadDefaultConfig() {
-	fileDefault, _ := os.Open("conf.json")
+	confPath := filepath.Join(dirPath, "conf.json")
+	fileDefault, _ := os.Open(confPath)
 	defdecoder := json.NewDecoder(fileDefault)
 	defconfiguration := Configuration{}
 	deferr := defdecoder.Decode(&defconfiguration)
@@ -52,16 +58,21 @@ func LoadDefaultConfig() {
 		redisDb = 6
 		ardsUrl = "http://localhost:2221/continueArds/continue"
 		resCsUrl = "http://localhost:2225/DVP/API/1.0.0.0/ARDS/resource"
+		port = "2223"
 	} else {
 		redisIp = fmt.Sprintf("%s:%s", defconfiguration.RedisIp, defconfiguration.RedisPort)
 		redisDb = defconfiguration.RedisDb
 		ardsUrl = defconfiguration.ArdsContinueUrl
 		resCsUrl = defconfiguration.ResourceCSlotUrl
+		port = defconfiguration.Port
 	}
 }
 
 func InitiateRedis() {
-	fileEnv, _ := os.Open("custom-environment-variables.json")
+	dirPath, _ := filepath.Abs(filepath.Dir(os.Args[0]))
+	confPath := filepath.Join(dirPath, "custom-environment-variables.json")
+	fmt.Println(confPath)
+	fileEnv, _ := os.Open(confPath)
 	envdecoder := json.NewDecoder(fileEnv)
 	envconfiguration := EnvConfiguration{}
 	enverr := envdecoder.Decode(&envconfiguration)
@@ -76,6 +87,7 @@ func InitiateRedis() {
 		redisDb, converr = strconv.Atoi(os.Getenv(envconfiguration.RedisDb))
 		ardsUrl = os.Getenv(envconfiguration.ArdsContinueUrl)
 		resCsUrl = os.Getenv(envconfiguration.ResourceCSlotUrl)
+		port = os.Getenv(envconfiguration.Port)
 
 		if redisIp == "" {
 			redisIp = defConfig.RedisIp
@@ -91,6 +103,9 @@ func InitiateRedis() {
 		}
 		if resCsUrl == "" {
 			resCsUrl = defConfig.ResourceCSlotUrl
+		}
+		if port == "" {
+			port = defConfig.Port
 		}
 
 		redisIp = fmt.Sprintf("%s:%s", redisIp, redisPort)

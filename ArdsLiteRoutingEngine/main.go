@@ -25,7 +25,8 @@ func main() {
 }
 
 func InitiateService() {
+	listeningPort := fmt.Sprintf(":%s", port)
 	gorest.RegisterService(new(ArdsLiteRS))
 	http.Handle("/", gorest.Handle())
-	http.ListenAndServe(":2223", nil)
+	http.ListenAndServe(listeningPort, nil)
 }

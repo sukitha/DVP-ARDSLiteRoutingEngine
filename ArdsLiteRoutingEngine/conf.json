@@ -3,5 +3,6 @@
 	"RedisPort": "6379",
 	"RedisDb": 6,
 	"ResourceCSlotUrl":"http://localhost:2225/DVP/API/1.0.0.0/ARDS/resource",
-	"ArdsContinueUrl":"http://localhost:2225/DVP/API/1.0.0.0/ARDS/continueprocess"
+	"ArdsContinueUrl":"http://localhost:2225/DVP/API/1.0.0.0/ARDS/continueprocess",
+	"Port":"2223"
 }

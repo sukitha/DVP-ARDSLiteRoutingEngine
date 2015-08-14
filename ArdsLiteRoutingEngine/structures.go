@@ -8,6 +8,7 @@ type Configuration struct {
 	RedisDb          int
 	ArdsContinueUrl  string
 	ResourceCSlotUrl string
+	Port             string
 }
 
 type EnvConfiguration struct {
@@ -16,6 +17,7 @@ type EnvConfiguration struct {
 	RedisDb          string
 	ArdsContinueUrl  string
 	ResourceCSlotUrl string
+	Port             string
 }
 
 //Request
