@@ -78,11 +78,14 @@ func LoadDefaultConfig() {
 
 func InitiateRedis() {
 	dirPathtest, _ := filepath.Abs(filepath.Dir(os.Args[0]))
-	fmt.Printf(dirPathtest)
+	fmt.Println(dirPathtest)
 	dirPath := GetDirPath()
 	confPath := filepath.Join(dirPath, "custom-environment-variables.json")
 	fmt.Println(confPath)
-	fileEnv, _ := os.Open(confPath)
+	fileEnv, operr := os.Open(confPath)
+	if operr != nil {
+		fmt.Println(operr)
+	}
 	envdecoder := json.NewDecoder(fileEnv)
 	envconfiguration := EnvConfiguration{}
 	enverr := envdecoder.Decode(&envconfiguration)
