@@ -24,6 +24,7 @@ func errHndlr(err error) {
 		fmt.Println("error:", err)
 	}
 }
+
 func GetDirPath() string {
 	envPath := os.Getenv("GO_CONFIG_DIR")
 	if envPath == "" {
