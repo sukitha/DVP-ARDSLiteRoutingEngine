@@ -53,13 +53,11 @@ func ReserveSlot(slotInfo CSlotInfo) bool {
 	return false
 }
 
-func ClearSlotOnMaxRecerved(reqClass, reqType, reqCategory, sessionId string, resObj Resource, metaData ReqMetaData) {
+func ClearSlotOnMaxRecerved(reqClass, reqType, reqCategory, sessionId string, resObj Resource) {
 	var tagArray = make([]string, 8)
 
 	tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
 	tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
-	tagArray[2] = fmt.Sprintf("class_%s", reqClass)
-	tagArray[3] = fmt.Sprintf("type_%s", reqType)
 	tagArray[4] = fmt.Sprintf("category_%s", reqCategory)
 	tagArray[5] = fmt.Sprintf("state_%s", "Reserved")
 	tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
@@ -82,7 +80,7 @@ func ClearSlotOnMaxRecerved(reqClass, reqType, reqCategory, sessionId string, re
 		fmt.Println("Datetime Info" + slotObj.LastReservedTime)
 		t, _ := time.Parse(layout, slotObj.LastReservedTime)
 		t1 := int(time.Now().Sub(t).Seconds())
-		t2 := metaData.MaxReservedTime
+		t2 := slotObj.MaxReservedTime
 		fmt.Println(fmt.Sprintf("Time Info T1: %d", t1))
 		fmt.Println(fmt.Sprintf("Time Info T2: %d", t2))
 		if t1 > t2 {

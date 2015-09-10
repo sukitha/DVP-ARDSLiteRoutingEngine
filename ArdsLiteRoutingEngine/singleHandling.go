@@ -19,19 +19,17 @@ func SelectHandlingResource(ReqClass, ReqType, ReqCategory, sessionId string, re
 		var resObj Resource
 		json.Unmarshal([]byte(strResObj), &resObj)
 
-		conInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, ReqClass, ReqType, ReqCategory)
+		conInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, ReqCategory)
 		metaData := GetReqMetaData(resObj.Company, resObj.Tenant, ReqClass, ReqType, ReqCategory)
 		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 
 		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
-			ClearSlotOnMaxRecerved(ReqClass, ReqType, ReqCategory, sessionId, resObj, metaData)
+			ClearSlotOnMaxRecerved(ReqClass, ReqType, ReqCategory, sessionId, resObj)
 
 			var tagArray = make([]string, 8)
 
 			tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
 			tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
-			tagArray[2] = fmt.Sprintf("class_%s", ReqClass)
-			tagArray[3] = fmt.Sprintf("type_%s", ReqType)
 			tagArray[4] = fmt.Sprintf("category_%s", ReqCategory)
 			tagArray[5] = fmt.Sprintf("state_%s", "Available")
 			tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
@@ -54,6 +52,7 @@ func SelectHandlingResource(ReqClass, ReqType, ReqCategory, sessionId string, re
 				slotObj.State = "Reserved"
 				slotObj.SessionId = sessionId
 				slotObj.OtherInfo = "Inbound"
+				slotObj.MaxReservedTime = metaData.MaxReservedTime
 
 				if ReserveSlot(slotObj) == true {
 					fmt.Println("Return resource Data:", resObj.OtherInfo)

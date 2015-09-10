@@ -47,6 +47,7 @@ type Request struct {
 	SelectionAlgo    string
 	RequestServerUrl string
 	HandlingResource string
+	ResourceCount    int
 	OtherInfo        string
 }
 
@@ -89,8 +90,6 @@ type Resource struct {
 type CSlotInfo struct {
 	Company          int
 	Tenant           int
-	Class            string
-	Type             string
 	Category         string
 	State            string
 	HandlingRequest  string
@@ -99,6 +98,7 @@ type CSlotInfo struct {
 	ObjKey           string
 	SessionId        string
 	LastReservedTime string
+	MaxReservedTime  int
 	OtherInfo        string
 }
 

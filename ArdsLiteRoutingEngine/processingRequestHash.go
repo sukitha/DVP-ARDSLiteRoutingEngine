@@ -102,7 +102,7 @@ func GetRequestState(_company, _tenant int, _sessionId string) string {
 
 func ContinueProcessing(_request Request) bool {
 	fmt.Println("ReqOtherInfo:", _request.OtherInfo)
-	var result = SelectResources(_request.Company, _request.Tenant, _request.SessionId, _request.Class, _request.Type, _request.Category, _request.SelectionAlgo, _request.HandlingAlgo, _request.OtherInfo)
+	var result = SelectResources(_request.Company, _request.Tenant, _request.ResourceCount, _request.SessionId, _request.Class, _request.Type, _request.Category, _request.SelectionAlgo, _request.HandlingAlgo, _request.OtherInfo)
 	_request.HandlingResource = result
 
 	return ContinueArdsProcess(_request)

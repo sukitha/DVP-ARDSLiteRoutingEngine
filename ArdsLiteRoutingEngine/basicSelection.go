@@ -53,7 +53,7 @@ func BasicSelection(_company, _tenent int, _sessionId string) []string {
 			strResKey := RedisGet(match)
 			splitVals := strings.Split(strResKey, ":")
 			if len(splitVals) == 4 {
-				concInfo := GetConcurrencyInfo(reqObj.Company, reqObj.Tenant, splitVals[3], reqObj.Class, reqObj.Type, reqObj.Category)
+				concInfo := GetConcurrencyInfo(reqObj.Company, reqObj.Tenant, splitVals[3], reqObj.Category)
 				resourceConcInfo = append(resourceConcInfo, concInfo)
 				//matchingResources = AppendIfMissing(matchingResources, strResKey)
 				//fmt.Println(strResKey)

@@ -27,8 +27,8 @@ func WeightBaseSelectionAlgo(Company, Tenant int, SessionId string) []string {
 
 }
 
-func GetConcurrencyInfo(_company, _tenant int, _resId, _class, _type, _category string) ConcurrencyInfo {
-	key := fmt.Sprintf("ConcurrencyInfo:%d:%d:%s:%s:%s:%s", _company, _tenant, _resId, _class, _type, _category)
+func GetConcurrencyInfo(_company, _tenant int, _resId, _category string) ConcurrencyInfo {
+	key := fmt.Sprintf("ConcurrencyInfo:%d:%d:%s:%s", _company, _tenant, _resId, _category)
 	fmt.Println(key)
 	strCiObj := RedisGet(key)
 	fmt.Println(strCiObj)
