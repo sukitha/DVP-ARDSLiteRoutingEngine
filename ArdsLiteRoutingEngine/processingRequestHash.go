@@ -143,7 +143,11 @@ func ExecuteRequestHash(_processingHashKey string) {
 				}
 			}
 		} else {
-			ReleasetLock(_processingHashKey)
+			if ReleasetLock(_processingHashKey) == true {
+				fmt.Println("Release lock ", _processingHashKey, "success.")
+			} else {
+				fmt.Println("Release lock ", _processingHashKey, "failed.")
+			}
 			return
 		}
 	}
