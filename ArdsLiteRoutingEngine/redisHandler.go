@@ -182,6 +182,83 @@ func RedisSearchKeys(pattern string) []string {
 	return strObj
 }
 
+func RedisSetNx(key, value string) bool {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisSetNx", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+
+	strObj, _ := client.Cmd("setnx", key, value).Bool()
+	fmt.Println("setnx: ", strObj)
+	return strObj
+}
+
+func RedisSetEx(key, value string, timeSec int) bool {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisSetEx", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+
+	strObj, _ := client.Cmd("setex", key, timeSec, value).Bool()
+	fmt.Println("setex: ", strObj)
+	return strObj
+}
+
+func RedisRemove(key string) bool {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisRemove", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+
+	strObj, _ := client.Cmd("del", key).Bool()
+	fmt.Println(strObj)
+	return strObj
+}
+
+func RedisCheckKeyExist(key string) bool {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in CheckKeyExist", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+
+	result, sErr := client.Cmd("exists", key).Bool()
+	errHndlr(sErr)
+	fmt.Println(result)
+	return result
+}
+
 // Redis Hashes Methods
 
 func RedisHashGetAll(hkey string) map[string]string {

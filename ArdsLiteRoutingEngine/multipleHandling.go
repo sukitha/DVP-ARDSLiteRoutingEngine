@@ -56,8 +56,8 @@ func SelectMultipleHandlingResource(ReqClass, ReqType, ReqCategory, sessionId st
 				slotObj.MaxReservedTime = metaData.MaxReservedTime
 
 				if ReserveSlot(slotObj) == true {
-					fmt.Println("Return resource Data:", resObj.OtherInfo)
-					selectedResList = AppendIfMissingString(selectedResList, resObj.OtherInfo)
+					fmt.Println("Return resource Data:", conInfo.RefInfo)
+					selectedResList = AppendIfMissingString(selectedResList, conInfo.RefInfo)
 					if len(selectedResList) == nuOfResRequested {
 						selectedResListString, _ := json.Marshal(selectedResList)
 						return string(selectedResListString)

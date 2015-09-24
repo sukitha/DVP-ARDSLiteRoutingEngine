@@ -106,6 +106,7 @@ type ConcurrencyInfo struct {
 	RejectCount       int
 	ResourceId        string
 	LastConnectedTime string
+	RefInfo string
 }
 
 type WeightBaseResourceInfo struct {

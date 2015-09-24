@@ -104,22 +104,47 @@ func ContinueProcessing(_request Request) bool {
 	fmt.Println("ReqOtherInfo:", _request.OtherInfo)
 	var result = SelectResources(_request.Company, _request.Tenant, _request.ResourceCount, _request.SessionId, _request.Class, _request.Type, _request.Category, _request.SelectionAlgo, _request.HandlingAlgo, _request.OtherInfo)
 	_request.HandlingResource = result
-
 	return ContinueArdsProcess(_request)
 }
 
+func AcquireProcessingHashLock(hashId string) bool {
+	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
+	fmt.Println("lockKey: ", lockKey)
+	if RedisSetNx(lockKey, "LOCKED") == true {
+		//if RedisSetEx(lockKey, "LOCKED", 60) {
+		return true
+		//} else {
+		//	RedisRemove(lockKey)
+		//	return false
+		//}
+	} else {
+		return false
+	}
+}
+
+func ReleasetLock(hashId string) bool {
+	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
+	return RedisRemove(lockKey)
+}
+
 func ExecuteRequestHash(_processingHashKey string) {
-	processingItems := GetAllProcessingItems(_processingHashKey)
-	sort.Sort(timeSliceReq(processingItems))
-	for _, longestWItem := range processingItems {
-		if longestWItem != (Request{}) {
-			//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
-			if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
-				if ContinueProcessing(longestWItem) {
-					//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
-					fmt.Println("Continue ARDS Process Success")
+	for {
+		if RedisCheckKeyExist(_processingHashKey) {
+			processingItems := GetAllProcessingItems(_processingHashKey)
+			sort.Sort(timeSliceReq(processingItems))
+			for _, longestWItem := range processingItems {
+				if longestWItem != (Request{}) {
+					if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
+						if ContinueProcessing(longestWItem) {
+							//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
+							fmt.Println("Continue ARDS Process Success")
+						}
+					}
 				}
 			}
+		} else {
+			ReleasetLock(_processingHashKey)
+			return
 		}
 	}
 }

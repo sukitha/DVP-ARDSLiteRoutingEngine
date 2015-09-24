@@ -56,7 +56,7 @@ func SelectHandlingResource(ReqClass, ReqType, ReqCategory, sessionId string, re
 
 				if ReserveSlot(slotObj) == true {
 					fmt.Println("Return resource Data:", resObj.OtherInfo)
-					return resObj.OtherInfo
+					return conInfo.RefInfo
 				}
 			}
 		}

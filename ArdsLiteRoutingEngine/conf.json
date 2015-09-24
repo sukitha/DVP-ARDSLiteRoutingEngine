@@ -1,5 +1,5 @@
 {
-    "RedisIp": "192.168.3.200",
+    "RedisIp": "104.131.105.222",
 	"RedisPort": "6379",
 	"RedisDb": 6,
 	"ResourceCSlotUrl":"http://localhost:2225/DVP/API/1.0.0.0/ARDS/resource",
