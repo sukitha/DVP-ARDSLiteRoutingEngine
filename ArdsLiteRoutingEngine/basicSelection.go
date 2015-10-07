@@ -7,15 +7,30 @@ import (
 	"strings"
 )
 
+func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo []ResAttributeData) bool {
+	for _, reqAtt := range reqAttributeInfo {
+		if len(reqAtt.AttributeCode) > 0 {
+			attCode := reqAtt.AttributeCode[0]
+
+			for _, resAtt := range resAttributeInfo {
+				if attCode == resAtt.Attribute && resAtt.Type == reqAtt.AttributeType {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
 func BasicSelection(_company, _tenent int, _sessionId string) []string {
 	requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
 	fmt.Println(requestKey)
 
-	strResObj := RedisGet(requestKey)
-	fmt.Println(strResObj)
+	strReqObj := RedisGet(requestKey)
+	fmt.Println(strReqObj)
 
 	var reqObj RequestSelection
-	json.Unmarshal([]byte(strResObj), &reqObj)
+	json.Unmarshal([]byte(strReqObj), &reqObj)
 
 	var resourceConcInfo = make([]ConcurrencyInfo, 0)
 	var matchingResources = make([]string, 0)
@@ -51,9 +66,14 @@ func BasicSelection(_company, _tenent int, _sessionId string) []string {
 
 		for _, match := range val {
 			strResKey := RedisGet(match)
-			splitVals := strings.Split(strResKey, ":")
-			if len(splitVals) == 4 {
-				concInfo := GetConcurrencyInfo(reqObj.Company, reqObj.Tenant, splitVals[3], reqObj.Category)
+			strResObj := RedisGet(strResKey)
+			fmt.Println(strResObj)
+
+			var resObj Resource
+			json.Unmarshal([]byte(strResObj), &resObj)
+
+			if resObj.ResourceId != "" && IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo) {
+				concInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.Category)
 				resourceConcInfo = append(resourceConcInfo, concInfo)
 				//matchingResources = AppendIfMissing(matchingResources, strResKey)
 				//fmt.Println(strResKey)

@@ -16,7 +16,7 @@ func CalculateWeight(reqAttributeInfo []ReqAttributeData, resAttributeInfo []Res
 			attCode := reqAtt.AttributeCode[0]
 
 			for _, resAtt := range resAttributeInfo {
-				if attCode == resAtt.Attribute {
+				if attCode == resAtt.Attribute && resAtt.Type == reqAtt.AttributeType {
 
 					reqAttPrecentage, _ := strconv.ParseFloat(reqAtt.WeightPrecentage, 64)
 					fmt.Println("**********reqAttPrecentage:", reqAttPrecentage)

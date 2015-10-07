@@ -31,7 +31,7 @@ func (p timeSlice) Len() int {
 func (p timeSlice) Less(i, j int) bool {
 	t1, _ := time.Parse(layout, p[i].LastConnectedTime)
 	t2, _ := time.Parse(layout, p[j].LastConnectedTime)
-	return t1.After(t2)
+	return t1.Before(t2)
 }
 func (p timeSlice) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
