@@ -17,7 +17,7 @@ func SingleResourceAlgo(ReqClass, ReqType, ReqCategory, SessionId string, Resour
 }
 
 func ReserveSlot(slotInfo CSlotInfo) bool {
-	url := fmt.Sprintf("%s/%s/concurrencyslot", resCsUrl, slotInfo.ResourceId)
+	url := fmt.Sprintf("http://%s:%s/DVP/API/1.0.0.0/ARDS/resource/%s/concurrencyslot", ardsServiceHost, ardsServicePort, slotInfo.ResourceId)
 	fmt.Println("URL:>", url)
 
 	slotInfoJson, _ := json.Marshal(slotInfo)

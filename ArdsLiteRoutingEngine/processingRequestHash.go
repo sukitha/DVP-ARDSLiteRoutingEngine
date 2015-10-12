@@ -83,6 +83,7 @@ func GetLongestWaitingItem(_request []Request) Request {
 func ContinueArdsProcess(_request Request) bool {
 	req, _ := json.Marshal(_request)
 	authToken := fmt.Sprintf("%d#%d", _request.Tenant, _request.Company)
+	ardsUrl := fmt.Sprintf("http://%s:%s/DVP/API/1.0.0.0/ARDS/continueprocess", ardsServiceHost, ardsServicePort)
 	if Post(ardsUrl, string(req[:]), authToken) {
 		fmt.Println("Continue Ards Process Success")
 		return true
