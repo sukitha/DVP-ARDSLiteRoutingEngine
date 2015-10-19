@@ -24,8 +24,17 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 	var otherInfo string
 	json.Unmarshal(byt, &otherInfo)
 
-	var result = SelectResources(Company, Tenant, ResourceCount, SessionId, ReqClass, ReqType, ReqCategory, SelectionAlgo, HandlingAlgo, otherInfo)
+	requestKey := fmt.Sprintf("Request:%d:%d:%s", Company, Tenant, SessionId)
 
+	if RedisCheckKeyExist(requestKey) {
+		strReqObj := RedisGet(requestKey)
+		fmt.Println(strReqObj)
+
+		var reqObj Request
+		json.Unmarshal([]byte(strReqObj), &reqObj)
+
+		var result = SelectResources(Company, Tenant, ResourceCount, reqObj.LbIp, reqObj.LbPort, SessionId, ReqClass, ReqType, ReqCategory, SelectionAlgo, HandlingAlgo, otherInfo)
+	}
 	return result
 
 }
@@ -47,7 +56,7 @@ func GetRequestedResCount(ReqOtherInfo string) int {
 	return requestedResCount
 }
 
-func SelectResources(Company, Tenant, ResourceCount int, SessionId, ReqClass, ReqType, ReqCategory, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
+func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ReqClass, ReqType, ReqCategory, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
 	var selectionResult = make([]string, 0)
 	var handlingResult = ""
 	switch SelectionAlgo {
@@ -61,12 +70,12 @@ func SelectResources(Company, Tenant, ResourceCount int, SessionId, ReqClass, Re
 
 	switch HandlingAlgo {
 	case "SINGLE":
-		handlingResult = SingleResourceAlgo(ReqClass, ReqType, ReqCategory, SessionId, selectionResult)
+		handlingResult = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ReqClass, ReqType, ReqCategory, SessionId, selectionResult)
 	case "MULTIPLE":
 		fmt.Println("ReqOtherInfo:", OtherInfo)
 		resCount := ResourceCount
 		fmt.Println("GetRequestedResCount:", resCount)
-		handlingResult = MultipleHandling(ReqClass, ReqType, ReqCategory, SessionId, selectionResult, resCount)
+		handlingResult = MultipleHandling(ArdsLbIp, ArdsLbPort, ReqClass, ReqType, ReqCategory, SessionId, selectionResult, resCount)
 	default:
 		handlingResult = ""
 	}

@@ -10,14 +10,14 @@ import (
 	"time"
 )
 
-func SingleResourceAlgo(ReqClass, ReqType, ReqCategory, SessionId string, ResourceIds []string) string {
-	var result = SingleHandling(ReqClass, ReqType, ReqCategory, SessionId, ResourceIds)
+func SingleResourceAlgo(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, SessionId string, ResourceIds []string) string {
+	var result = SingleHandling(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, SessionId, ResourceIds)
 	return result
 
 }
 
-func ReserveSlot(slotInfo CSlotInfo) bool {
-	url := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/resource/%s/concurrencyslot", CreateHost(ardsServiceHost, ardsServicePort), slotInfo.ResourceId)
+func ReserveSlot(ardsLbIp, ardsLbPort string, slotInfo CSlotInfo) bool {
+	url := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/resource/%s/concurrencyslot", CreateHost(ardsLbIp, ardsLbPort), slotInfo.ResourceId)
 	fmt.Println("URL:>", url)
 
 	slotInfoJson, _ := json.Marshal(slotInfo)
@@ -53,7 +53,7 @@ func ReserveSlot(slotInfo CSlotInfo) bool {
 	return false
 }
 
-func ClearSlotOnMaxRecerved(reqClass, reqType, reqCategory, sessionId string, resObj Resource) {
+func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, reqClass, reqType, reqCategory, sessionId string, resObj Resource) {
 	var tagArray = make([]string, 8)
 
 	tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
@@ -87,7 +87,7 @@ func ClearSlotOnMaxRecerved(reqClass, reqType, reqCategory, sessionId string, re
 			slotObj.State = "Available"
 			slotObj.OtherInfo = "ClearReserved"
 
-			ReserveSlot(slotObj)
+			ReserveSlot(ardsLbIp, ardsLbPort, slotObj)
 		}
 	}
 }

@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-func SingleHandling(ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string) string {
-	return SelectHandlingResource(ReqClass, ReqType, ReqCategory, sessionId, resourceIds)
+func SingleHandling(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string) string {
+	return SelectHandlingResource(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId, resourceIds)
 }
 
-func SelectHandlingResource(ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string) string {
+func SelectHandlingResource(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string) string {
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)
@@ -24,7 +24,7 @@ func SelectHandlingResource(ReqClass, ReqType, ReqCategory, sessionId string, re
 		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 
 		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
-			ClearSlotOnMaxRecerved(ReqClass, ReqType, ReqCategory, sessionId, resObj)
+			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId, resObj)
 
 			var tagArray = make([]string, 8)
 
@@ -54,7 +54,7 @@ func SelectHandlingResource(ReqClass, ReqType, ReqCategory, sessionId string, re
 				slotObj.OtherInfo = "Inbound"
 				slotObj.MaxReservedTime = metaData.MaxReservedTime
 
-				if ReserveSlot(slotObj) == true {
+				if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
 					fmt.Println("Return resource Data:", resObj.OtherInfo)
 					return conInfo.RefInfo
 				}

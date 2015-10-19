@@ -16,8 +16,6 @@ var redisIp string
 var redisPort string
 var redisDb int
 var port string
-var ardsServiceHost string
-var ardsServicePort string
 
 func errHndlr(err error) {
 	if err != nil {
@@ -51,8 +49,6 @@ func GetDefaultConfig() Configuration {
 		defconfiguration.RedisPort = "6379"
 		defconfiguration.RedisDb = 5
 		defconfiguration.Port = "2226"
-		defconfiguration.ArdsServiceHost = "192.168.0.15"
-		defconfiguration.ArdsServicePort = "2225"
 	}
 
 	return defconfiguration
@@ -65,8 +61,6 @@ func LoadDefaultConfig() {
 	redisPort = defconfiguration.RedisPort
 	redisDb = defconfiguration.RedisDb
 	port = defconfiguration.Port
-	ardsServiceHost = defconfiguration.ArdsServiceHost
-	ardsServicePort = defconfiguration.ArdsServicePort
 }
 
 func InitiateRedis() {
@@ -94,8 +88,6 @@ func InitiateRedis() {
 		redisPort = os.Getenv(envconfiguration.RedisPort)
 		redisDb, converr = strconv.Atoi(os.Getenv(envconfiguration.RedisDb))
 		port = os.Getenv(envconfiguration.Port)
-		ardsServiceHost = os.Getenv(envconfiguration.ArdsServiceHost)
-		ardsServicePort = os.Getenv(envconfiguration.ArdsServicePort)
 
 		if redisIp == "" {
 			redisIp = defConfig.RedisIp
@@ -105,12 +97,6 @@ func InitiateRedis() {
 		}
 		if redisDb == 0 || converr != nil {
 			redisDb = defConfig.RedisDb
-		}
-		if ardsServiceHost == "" {
-			ardsServiceHost = defConfig.ArdsServiceHost
-		}
-		if ardsServicePort == "" {
-			ardsServicePort = defConfig.ArdsServicePort
 		}
 		if port == "" {
 			port = defConfig.Port

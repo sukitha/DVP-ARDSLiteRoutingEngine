@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-func MultipleHandling(ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string, nuOfResRequested int) string {
-	return SelectMultipleHandlingResource(ReqClass, ReqType, ReqCategory, sessionId, resourceIds, nuOfResRequested)
+func MultipleHandling(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string, nuOfResRequested int) string {
+	return SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId, resourceIds, nuOfResRequested)
 }
 
-func SelectMultipleHandlingResource(ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string, nuOfResRequested int) string {
+func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string, nuOfResRequested int) string {
 	selectedResList := make([]string, 0)
 	for _, key := range resourceIds {
 		fmt.Println(key)
@@ -25,7 +25,7 @@ func SelectMultipleHandlingResource(ReqClass, ReqType, ReqCategory, sessionId st
 		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 
 		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
-			ClearSlotOnMaxRecerved(ReqClass, ReqType, ReqCategory, sessionId, resObj)
+			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId, resObj)
 
 			var tagArray = make([]string, 8)
 
@@ -55,7 +55,7 @@ func SelectMultipleHandlingResource(ReqClass, ReqType, ReqCategory, sessionId st
 				slotObj.OtherInfo = "Inbound"
 				slotObj.MaxReservedTime = metaData.MaxReservedTime
 
-				if ReserveSlot(slotObj) == true {
+				if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
 					fmt.Println("Return resource Data:", conInfo.RefInfo)
 					selectedResList = AppendIfMissingString(selectedResList, conInfo.RefInfo)
 					if len(selectedResList) == nuOfResRequested {

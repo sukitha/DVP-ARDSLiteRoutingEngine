@@ -83,7 +83,7 @@ func GetLongestWaitingItem(_request []Request) Request {
 func ContinueArdsProcess(_request Request) bool {
 	req, _ := json.Marshal(_request)
 	authToken := fmt.Sprintf("%d#%d", _request.Tenant, _request.Company)
-	ardsUrl := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/continueprocess", CreateHost(ardsServiceHost, ardsServicePort))
+	ardsUrl := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/continueprocess", CreateHost(_request.LbIp, _request.LbPort))
 	if Post(ardsUrl, string(req[:]), authToken) {
 		fmt.Println("Continue Ards Process Success")
 		return true
@@ -103,7 +103,7 @@ func GetRequestState(_company, _tenant int, _sessionId string) string {
 
 func ContinueProcessing(_request Request) bool {
 	fmt.Println("ReqOtherInfo:", _request.OtherInfo)
-	var result = SelectResources(_request.Company, _request.Tenant, _request.ResourceCount, _request.SessionId, _request.Class, _request.Type, _request.Category, _request.SelectionAlgo, _request.HandlingAlgo, _request.OtherInfo)
+	var result = SelectResources(_request.Company, _request.Tenant, _request.ResourceCount, _request.LbIp, _request.LbPort, _request.SessionId, _request.Class, _request.Type, _request.Category, _request.SelectionAlgo, _request.HandlingAlgo, _request.OtherInfo)
 	_request.HandlingResource = result
 	return ContinueArdsProcess(_request)
 }

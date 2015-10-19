@@ -3,21 +3,17 @@ package main
 //Configurations
 
 type Configuration struct {
-	RedisIp         string
-	RedisPort       string
-	RedisDb         int
-	Port            string
-	ArdsServiceHost string
-	ArdsServicePort string
+	RedisIp   string
+	RedisPort string
+	RedisDb   int
+	Port      string
 }
 
 type EnvConfiguration struct {
-	RedisIp         string
-	RedisPort       string
-	RedisDb         string
-	Port            string
-	ArdsServiceHost string
-	ArdsServicePort string
+	RedisIp   string
+	RedisPort string
+	RedisDb   string
+	Port      string
 }
 
 //Request
@@ -49,6 +45,8 @@ type Request struct {
 	HandlingResource string
 	ResourceCount    int
 	OtherInfo        string
+	LbIp             string
+	LbPort           string
 }
 
 type RequestSelection struct {
