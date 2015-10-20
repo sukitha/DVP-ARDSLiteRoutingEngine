@@ -34,8 +34,9 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 		json.Unmarshal([]byte(strReqObj), &reqObj)
 
 		var result = SelectResources(Company, Tenant, ResourceCount, reqObj.LbIp, reqObj.LbPort, SessionId, ReqClass, ReqType, ReqCategory, SelectionAlgo, HandlingAlgo, otherInfo)
+		return result
 	}
-	return result
+	return "Session Invalied"
 
 }
 
