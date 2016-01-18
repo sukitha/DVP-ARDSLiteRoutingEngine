@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-func SingleResourceAlgo(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, SessionId string, ResourceIds []string) string {
-	var result = SingleHandling(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, SessionId, ResourceIds)
+func SingleResourceAlgo(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string) string {
+	var result = SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resourceIds)
 	return result
 
 }
@@ -53,12 +53,12 @@ func ReserveSlot(ardsLbIp, ardsLbPort string, slotInfo CSlotInfo) bool {
 	return false
 }
 
-func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, reqClass, reqType, reqCategory, sessionId string, resObj Resource) {
+func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resObj Resource) {
 	var tagArray = make([]string, 8)
 
 	tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
 	tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
-	tagArray[4] = fmt.Sprintf("category_%s", reqCategory)
+	tagArray[4] = fmt.Sprintf("handlingType_%s", requestType)
 	tagArray[5] = fmt.Sprintf("state_%s", "Reserved")
 	tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
 	tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
@@ -92,8 +92,8 @@ func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, reqClass, reqType, reqCategory
 	}
 }
 
-func GetReqMetaData(_company, _tenent int, _class, _type, _category string) ReqMetaData {
-	key := fmt.Sprintf("ReqMETA:%d:%d:%s:%s:%s", _company, _tenent, _class, _type, _category)
+func GetReqMetaData(_company, _tenent int, _serverType, _requestType string) ReqMetaData {
+	key := fmt.Sprintf("ReqMETA:%d:%d:%s:%s", _company, _tenent, _serverType, _requestType)
 	fmt.Println(key)
 	strMetaObj := RedisGet(key)
 	fmt.Println(strMetaObj)

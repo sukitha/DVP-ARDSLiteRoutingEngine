@@ -16,7 +16,7 @@ func CalculateWeight(reqAttributeInfo []ReqAttributeData, resAttributeInfo []Res
 			attCode := reqAtt.AttributeCode[0]
 
 			for _, resAtt := range resAttributeInfo {
-				if attCode == resAtt.Attribute && resAtt.Type == reqAtt.AttributeType {
+				if attCode == resAtt.Attribute && resAtt.HandlingType == reqAtt.HandlingType {
 
 					reqAttPrecentage, _ := strconv.ParseFloat(reqAtt.WeightPrecentage, 64)
 					fmt.Println("**********reqAttPrecentage:", reqAttPrecentage)
@@ -98,7 +98,8 @@ func WeightBaseSelection(_company, _tenent int, _sessionId string) []string {
 		for _, res := range resourceWeightInfo {
 			resKey := fmt.Sprintf("Resource:%d:%d:%s", reqObj.Company, reqObj.Tenant, res.ResourceId)
 			matchingResources = AppendIfMissingString(matchingResources, resKey)
-			fmt.Println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%", resKey, "---------", res.Weight)
+			logWeight := fmt.Sprintf("###################################### %s --------- %f", resKey, res.Weight)
+			fmt.Println(logWeight)
 		}
 
 	}

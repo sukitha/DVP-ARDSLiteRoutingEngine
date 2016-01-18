@@ -19,19 +19,17 @@ type EnvConfiguration struct {
 //Request
 
 type ReqAttributeData struct {
-	AttributeCode     []string
-	AttributeClass    string
-	AttributeType     string
-	AttributeCategory string
-	WeightPrecentage  string
+	AttributeCode      []string
+	AttributeGroupName string
+	HandlingType       string
+	WeightPrecentage   string
 }
 
 type Request struct {
 	Company          int
 	Tenant           int
-	Class            string
-	Type             string
-	Category         string
+	ServerType       string
+	RequestType      string
 	SessionId        string
 	ArriveTime       string
 	Priority         string
@@ -52,9 +50,8 @@ type Request struct {
 type RequestSelection struct {
 	Company       int
 	Tenant        int
-	Class         string
-	Type          string
-	Category      string
+	ServerType    string
+	RequestType   string
 	SessionId     string
 	AttributeInfo []ReqAttributeData
 }
@@ -67,11 +64,9 @@ type ReqMetaData struct {
 //Resource
 
 type ResAttributeData struct {
-	Attribute  string
-	Class      string
-	Type       string
-	Category   string
-	Percentage float64
+	Attribute    string
+	HandlingType string
+	Percentage   float64
 }
 
 type Resource struct {
@@ -88,7 +83,7 @@ type Resource struct {
 type CSlotInfo struct {
 	Company          int
 	Tenant           int
-	Category         string
+	HandlingType     string
 	State            string
 	HandlingRequest  string
 	ResourceId       string

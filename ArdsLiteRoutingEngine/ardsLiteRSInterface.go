@@ -8,10 +8,10 @@ import (
 
 type ArdsLiteRS struct {
 	gorest.RestService `root:"/resourceselection/" consumes:"application/json" produces:"application/json"`
-	getResource        gorest.EndPoint `method:"GET" path:"/getresource/{Company:int}/{Tenant:int}/{ResourceCount:int}/{SessionId:string}/{ReqClass:string}/{ReqType:string}/{ReqCategory:string}/{SelectionAlgo:string}/{HandlingAlgo:string}/{OtherInfo:string}" output:"string"`
+	getResource        gorest.EndPoint `method:"GET" path:"/getresource/{Company:int}/{Tenant:int}/{ResourceCount:int}/{SessionId:string}/{ServerType:string}/{RequestType:string}/{SelectionAlgo:string}/{HandlingAlgo:string}/{OtherInfo:string}" output:"string"`
 }
 
-func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, SessionId, ReqClass, ReqType, ReqCategory, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
+func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
 
 	const longForm = "Jan 2, 2006 at 3:04pm (MST)"
 
@@ -33,7 +33,7 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 		var reqObj Request
 		json.Unmarshal([]byte(strReqObj), &reqObj)
 
-		var result = SelectResources(Company, Tenant, ResourceCount, reqObj.LbIp, reqObj.LbPort, SessionId, ReqClass, ReqType, ReqCategory, SelectionAlgo, HandlingAlgo, otherInfo)
+		var result = SelectResources(Company, Tenant, ResourceCount, reqObj.LbIp, reqObj.LbPort, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, otherInfo)
 		return result
 	}
 	return "Session Invalied"
@@ -57,7 +57,7 @@ func GetRequestedResCount(ReqOtherInfo string) int {
 	return requestedResCount
 }
 
-func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ReqClass, ReqType, ReqCategory, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
+func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
 	var selectionResult = make([]string, 0)
 	var handlingResult = ""
 	switch SelectionAlgo {
@@ -71,12 +71,12 @@ func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, S
 
 	switch HandlingAlgo {
 	case "SINGLE":
-		handlingResult = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ReqClass, ReqType, ReqCategory, SessionId, selectionResult)
+		handlingResult = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectionResult)
 	case "MULTIPLE":
 		fmt.Println("ReqOtherInfo:", OtherInfo)
 		resCount := ResourceCount
 		fmt.Println("GetRequestedResCount:", resCount)
-		handlingResult = MultipleHandling(ArdsLbIp, ArdsLbPort, ReqClass, ReqType, ReqCategory, SessionId, selectionResult, resCount)
+		handlingResult = MultipleHandling(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectionResult, resCount)
 	default:
 		handlingResult = ""
 	}

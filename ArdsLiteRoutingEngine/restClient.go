@@ -11,7 +11,6 @@ import (
 func Post(serviceurl string, postData, authToken string) bool {
 	fmt.Println("URL:>", serviceurl)
 
-	postData = postData
 	fmt.Println("PostData:>", postData)
 
 	var jsonData = []byte(postData)

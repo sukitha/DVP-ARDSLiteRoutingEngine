@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-func SingleHandling(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string) string {
-	return SelectHandlingResource(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId, resourceIds)
+func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string) string {
+	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resourceIds)
 }
 
-func SelectHandlingResource(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId string, resourceIds []string) string {
+func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string) string {
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)
@@ -19,18 +19,18 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory
 		var resObj Resource
 		json.Unmarshal([]byte(strResObj), &resObj)
 
-		conInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, ReqCategory)
-		metaData := GetReqMetaData(resObj.Company, resObj.Tenant, ReqClass, ReqType, ReqCategory)
+		conInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, requestType)
+		metaData := GetReqMetaData(resObj.Company, resObj.Tenant, serverType, requestType)
 		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 
 		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
-			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, ReqClass, ReqType, ReqCategory, sessionId, resObj)
+			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resObj)
 
 			var tagArray = make([]string, 8)
 
 			tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
 			tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
-			tagArray[4] = fmt.Sprintf("category_%s", ReqCategory)
+			tagArray[4] = fmt.Sprintf("handlingType_%s", requestType)
 			tagArray[5] = fmt.Sprintf("state_%s", "Available")
 			tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
 			tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")

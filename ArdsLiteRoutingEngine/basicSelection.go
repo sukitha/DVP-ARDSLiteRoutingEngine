@@ -13,7 +13,7 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 			attCode := reqAtt.AttributeCode[0]
 
 			for _, resAtt := range resAttributeInfo {
-				if attCode == resAtt.Attribute && resAtt.Type == reqAtt.AttributeType {
+				if attCode == resAtt.Attribute && resAtt.HandlingType == reqAtt.HandlingType {
 					return true
 				}
 			}
@@ -73,7 +73,7 @@ func BasicSelection(_company, _tenent int, _sessionId string) []string {
 			json.Unmarshal([]byte(strResObj), &resObj)
 
 			if resObj.ResourceId != "" && IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo) {
-				concInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.Category)
+				concInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)
 				resourceConcInfo = append(resourceConcInfo, concInfo)
 				//matchingResources = AppendIfMissing(matchingResources, strResKey)
 				//fmt.Println(strResKey)
