@@ -40,7 +40,7 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 
 }
 
-func GetRequestedResCount(ReqOtherInfo string) int {
+/*func GetRequestedResCount(ReqOtherInfo string) int {
 	fmt.Println("ReqOtherInfo:", ReqOtherInfo)
 	var requestedResCount = 1
 
@@ -55,7 +55,7 @@ func GetRequestedResCount(ReqOtherInfo string) int {
 	}
 
 	return requestedResCount
-}
+}*/
 
 func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
 	var selectionResult = make([]string, 0)

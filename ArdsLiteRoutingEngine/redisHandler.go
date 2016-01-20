@@ -167,7 +167,7 @@ func RedisSetNx(key, value string) bool {
 	return strObj
 }
 
-func RedisSetEx(key, value string, timeSec int) bool {
+/*func RedisSetEx(key, value string, timeSec int) bool {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in RedisSetEx", r)
@@ -184,7 +184,7 @@ func RedisSetEx(key, value string, timeSec int) bool {
 	strObj, _ := client.Cmd("setex", key, timeSec, value).Bool()
 	fmt.Println("setex: ", strObj)
 	return strObj
-}
+}*/
 
 func RedisRemove(key string) bool {
 	defer func() {
@@ -302,7 +302,7 @@ func RedisListLpop(lname string) string {
 	return lpopItem
 }
 
-func RedisListLpush(lname, value string) bool {
+/*func RedisListLpush(lname, value string) bool {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in RedisListLpush", r)
@@ -318,4 +318,4 @@ func RedisListLpush(lname, value string) bool {
 
 	result, _ := client.Cmd("lpush", lname, value).Bool()
 	return result
-}
+}*/

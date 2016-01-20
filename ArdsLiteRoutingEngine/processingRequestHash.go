@@ -62,7 +62,7 @@ func SetNextProcessingItem(_processingHash, _queueId string) {
 	}
 }
 
-func GetLongestWaitingItem(_request []Request) Request {
+/*func GetLongestWaitingItem(_request []Request) Request {
 	longetWaitingItem := Request{}
 	reqCount := len(_request)
 	longetWaitingItemArriveTime := time.Now()
@@ -78,7 +78,7 @@ func GetLongestWaitingItem(_request []Request) Request {
 	}
 
 	return longetWaitingItem
-}
+}*/
 
 func ContinueArdsProcess(_request Request) bool {
 	req, _ := json.Marshal(_request)
