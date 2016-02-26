@@ -3,17 +3,19 @@ package main
 //Configurations
 
 type Configuration struct {
-	RedisIp   string
-	RedisPort string
-	RedisDb   int
-	Port      string
+	RedisIp     string
+	RedisPort   string
+	RedisDb     int
+	Port        string
+	AccessToken string
 }
 
 type EnvConfiguration struct {
-	RedisIp   string
-	RedisPort string
-	RedisDb   string
-	Port      string
+	RedisIp     string
+	RedisPort   string
+	RedisDb     string
+	Port        string
+	AccessToken string
 }
 
 //Request
@@ -40,6 +42,7 @@ type Request struct {
 	HandlingAlgo     string
 	SelectionAlgo    string
 	RequestServerUrl string
+	CallbackOption   string
 	HandlingResource string
 	ResourceCount    int
 	OtherInfo        string

@@ -81,7 +81,7 @@ func SetNextProcessingItem(_processingHash, _queueId string) {
 
 func ContinueArdsProcess(_request Request) bool {
 	req, _ := json.Marshal(_request)
-	authToken := fmt.Sprintf("%d#%d", _request.Tenant, _request.Company)
+	authToken := fmt.Sprintf("Bearer %s", accessToken)
 	ardsUrl := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/continueprocess", CreateHost(_request.LbIp, _request.LbPort))
 	if Post(ardsUrl, string(req[:]), authToken) {
 		fmt.Println("Continue Ards Process Success")

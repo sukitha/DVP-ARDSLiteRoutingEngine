@@ -12,7 +12,6 @@ type ArdsLiteRS struct {
 }
 
 func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
-
 	const longForm = "Jan 2, 2006 at 3:04pm (MST)"
 
 	fmt.Println("Company:", Company)

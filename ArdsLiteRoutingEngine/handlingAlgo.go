@@ -22,10 +22,10 @@ func ReserveSlot(ardsLbIp, ardsLbPort string, slotInfo CSlotInfo) bool {
 
 	slotInfoJson, _ := json.Marshal(slotInfo)
 	var jsonStr = []byte(slotInfoJson)
-	authToken := fmt.Sprintf("%d#%d", slotInfo.Tenant, slotInfo.Company)
+	authToken := fmt.Sprintf("Bearer %s", accessToken)
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", authToken)
+	req.Header.Set("authorization", authToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

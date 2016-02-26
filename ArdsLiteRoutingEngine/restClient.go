@@ -16,7 +16,7 @@ func Post(serviceurl string, postData, authToken string) bool {
 	var jsonData = []byte(postData)
 	req, err := http.NewRequest("POST", serviceurl, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", authToken)
+	req.Header.Set("authorization", authToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

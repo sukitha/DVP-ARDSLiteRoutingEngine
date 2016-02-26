@@ -16,6 +16,7 @@ var redisIp string
 var redisPort string
 var redisDb int
 var port string
+var accessToken string
 
 func errHndlr(err error) {
 	if err != nil {
@@ -49,6 +50,7 @@ func GetDefaultConfig() Configuration {
 		defconfiguration.RedisPort = "6379"
 		defconfiguration.RedisDb = 5
 		defconfiguration.Port = "2226"
+		defconfiguration.AccessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoZXNoYW5pbmRpa2EiLCJqdGkiOiIwZmIyNDJmZS02OGQwLTQ1MjEtOTM5NS0xYzE0M2M3MzNmNmEiLCJzdWIiOiI1NmE5ZTc1OWZiMDcxOTA3YTAwMDAwMDEyNWQ5ZTgwYjVjN2M0Zjk4NDY2ZjkyMTE3OTZlYmY0MyIsImV4cCI6MTQ1Njg5NDE5NSwidGVuYW50IjoxLCJjb21wYW55Ijo1LCJzY29wZSI6W3sicmVzb3VyY2UiOiJhbGwifSx7InJlc291cmNlIjoicmVxdWVzdHNlcnZlciIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJyZXF1ZXN0bWV0YSIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJhcmRzcmVzb3VyY2UiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfSx7InJlc291cmNlIjoiYXJkc3JlcXVlc3QiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfV0sImlhdCI6MTQ1NjI4OTM5NX0.AWZuYNtj4lHfxpTQCutswUfUsJXwTMVPUmqTjFdVXSk"
 	}
 
 	return defconfiguration
@@ -61,6 +63,7 @@ func LoadDefaultConfig() {
 	redisPort = defconfiguration.RedisPort
 	redisDb = defconfiguration.RedisDb
 	port = defconfiguration.Port
+	accessToken = defconfiguration.AccessToken
 }
 
 func InitiateRedis() {
@@ -88,6 +91,7 @@ func InitiateRedis() {
 		redisPort = os.Getenv(envconfiguration.RedisPort)
 		redisDb, converr = strconv.Atoi(os.Getenv(envconfiguration.RedisDb))
 		port = os.Getenv(envconfiguration.Port)
+		accessToken = os.Getenv(envconfiguration.AccessToken)
 
 		if redisIp == "" {
 			redisIp = defConfig.RedisIp
@@ -100,6 +104,9 @@ func InitiateRedis() {
 		}
 		if port == "" {
 			port = defConfig.Port
+		}
+		if accessToken == "" {
+			accessToken = defConfig.AccessToken
 		}
 
 		redisIp = fmt.Sprintf("%s:%s", redisIp, redisPort)
