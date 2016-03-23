@@ -84,9 +84,9 @@ func WeightBaseSelection(_company, _tenent int, _sessionId string) []string {
 
 			if resObj.ResourceId != "" {
 				calcWeight := CalculateWeight(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
-
+				resKey := fmt.Sprintf("Resource:%d:%d:%s", resObj.Company, resObj.Tenant, resObj.ResourceId)
 				var tempWeightInfo WeightBaseResourceInfo
-				tempWeightInfo.ResourceId = resObj.ResourceId
+				tempWeightInfo.ResourceId = resKey
 				tempWeightInfo.Weight = calcWeight
 
 				resourceWeightInfo = append(resourceWeightInfo, tempWeightInfo)
@@ -96,9 +96,8 @@ func WeightBaseSelection(_company, _tenent int, _sessionId string) []string {
 		sort.Sort(ByNumericValue(resourceWeightInfo))
 
 		for _, res := range resourceWeightInfo {
-			resKey := fmt.Sprintf("Resource:%d:%d:%s", reqObj.Company, reqObj.Tenant, res.ResourceId)
-			matchingResources = AppendIfMissingString(matchingResources, resKey)
-			logWeight := fmt.Sprintf("###################################### %s --------- %f", resKey, res.Weight)
+			matchingResources = AppendIfMissingString(matchingResources, res.ResourceId)
+			logWeight := fmt.Sprintf("###################################### %s --------- %f", res.ResourceId, res.Weight)
 			fmt.Println(logWeight)
 		}
 

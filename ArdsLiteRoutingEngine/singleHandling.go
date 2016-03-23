@@ -6,11 +6,12 @@ import (
 	"strings"
 )
 
-func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string) string {
-	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resourceIds)
+func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string, reqCompany, reqTenant int) string {
+	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resourceIds, reqCompany, reqTenant)
 }
 
-func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string) string {
+func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string, reqCompany, reqTenant int) string {
+
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)
@@ -19,9 +20,15 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 		var resObj Resource
 		json.Unmarshal([]byte(strResObj), &resObj)
 
+		fmt.Println("Start GetConcurrencyInfo")
 		conInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, requestType)
-		metaData := GetReqMetaData(resObj.Company, resObj.Tenant, serverType, requestType)
+		fmt.Println("End GetConcurrencyInfo")
+		fmt.Println("Start GetReqMetaData")
+		metaData := GetReqMetaData(reqCompany, reqTenant, serverType, requestType)
+		fmt.Println("End GetReqMetaData")
+		fmt.Println("Start GetResourceState")
 		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
+		fmt.Println("Start GetResourceState")
 
 		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
 			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resObj)

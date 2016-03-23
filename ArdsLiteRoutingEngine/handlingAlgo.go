@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-func SingleResourceAlgo(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string) string {
-	var result = SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resourceIds)
+func SingleResourceAlgo(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string, reqCompany, reqTenant int) string {
+	var result = SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resourceIds, reqCompany, reqTenant)
 	return result
 
 }
@@ -23,9 +23,11 @@ func ReserveSlot(ardsLbIp, ardsLbPort string, slotInfo CSlotInfo) bool {
 	slotInfoJson, _ := json.Marshal(slotInfo)
 	var jsonStr = []byte(slotInfoJson)
 	authToken := fmt.Sprintf("Bearer %s", accessToken)
+	internalAuthToken := fmt.Sprintf("%d:%d", slotInfo.Tenant, slotInfo.Company)
 	req, err := http.NewRequest("PUT", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("authorization", authToken)
+	req.Header.Set("companyinfo", internalAuthToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -110,5 +112,8 @@ func GetResourceState(_company, _tenant int, _resId string) string {
 	strResStateObj := RedisGet(key)
 	fmt.Println(strResStateObj)
 
-	return strResStateObj
+	var resStatus ResourceStatus
+	json.Unmarshal([]byte(strResStateObj), &resStatus)
+
+	return resStatus.State
 }

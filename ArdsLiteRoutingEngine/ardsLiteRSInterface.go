@@ -70,12 +70,12 @@ func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, S
 
 	switch HandlingAlgo {
 	case "SINGLE":
-		handlingResult = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectionResult)
+		handlingResult = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectionResult, Company, Tenant)
 	case "MULTIPLE":
 		fmt.Println("ReqOtherInfo:", OtherInfo)
 		resCount := ResourceCount
 		fmt.Println("GetRequestedResCount:", resCount)
-		handlingResult = MultipleHandling(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectionResult, resCount)
+		handlingResult = MultipleHandling(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectionResult, resCount, Company, Tenant)
 	default:
 		handlingResult = ""
 	}

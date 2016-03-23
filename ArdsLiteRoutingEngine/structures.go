@@ -83,6 +83,11 @@ type Resource struct {
 	OtherInfo             string
 }
 
+type ResourceStatus struct {
+	State  string
+	Reason string
+}
+
 type CSlotInfo struct {
 	Company          int
 	Tenant           int
@@ -99,6 +104,8 @@ type CSlotInfo struct {
 }
 
 type ConcurrencyInfo struct {
+	Company           int
+	Tenant            int
 	RejectCount       int
 	ResourceId        string
 	LastConnectedTime string

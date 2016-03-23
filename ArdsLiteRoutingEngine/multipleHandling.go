@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-func MultipleHandling(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, resourceIds []string, nuOfResRequested int) string {
-	return SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, resourceIds, nuOfResRequested)
+func MultipleHandling(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, resourceIds []string, nuOfResRequested, reqCompany, reqTenant int) string {
+	return SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, resourceIds, nuOfResRequested, reqCompany, reqTenant)
 }
 
-func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, resourceIds []string, nuOfResRequested int) string {
+func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, resourceIds []string, nuOfResRequested, reqCompany, reqTenant int) string {
 	selectedResList := make([]string, 0)
 	for _, key := range resourceIds {
 		fmt.Println(key)
@@ -21,7 +21,7 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 		json.Unmarshal([]byte(strResObj), &resObj)
 
 		conInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, RequestType)
-		metaData := GetReqMetaData(resObj.Company, resObj.Tenant, ServerType, RequestType)
+		metaData := GetReqMetaData(reqCompany, reqTenant, ServerType, RequestType)
 		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 
 		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {

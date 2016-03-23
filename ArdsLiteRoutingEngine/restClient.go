@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-func Post(serviceurl string, postData, authToken string) bool {
+func Post(serviceurl string, postData, authToken, internalAuthToken string) bool {
 	fmt.Println("URL:>", serviceurl)
 
 	fmt.Println("PostData:>", postData)
@@ -17,6 +17,7 @@ func Post(serviceurl string, postData, authToken string) bool {
 	req, err := http.NewRequest("POST", serviceurl, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("authorization", authToken)
+	req.Header.Set("companyinfo", internalAuthToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

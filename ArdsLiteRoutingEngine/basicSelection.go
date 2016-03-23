@@ -83,7 +83,7 @@ func BasicSelection(_company, _tenent int, _sessionId string) []string {
 		sort.Sort(timeSlice(resourceConcInfo))
 
 		for _, res := range resourceConcInfo {
-			resKey := fmt.Sprintf("Resource:%d:%d:%s", reqObj.Company, reqObj.Tenant, res.ResourceId)
+			resKey := fmt.Sprintf("Resource:%d:%d:%s", res.Company, res.Tenant, res.ResourceId)
 			matchingResources = AppendIfMissingString(matchingResources, resKey)
 			fmt.Println(resKey)
 		}
