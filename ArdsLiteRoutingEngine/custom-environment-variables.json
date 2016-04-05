@@ -3,5 +3,5 @@
 	"RedisPort": "SYS_REDIS_PORT",
 	"RedisDb": "SYS_REDIS_DB",
 	"Port":"HOST_ARDSLITEROUTINGENGINE_PORT",
-	"AccessToken":"SYS_SECURITY_ACCESSTOKEN"
+	"AccessToken":"HOST_TOKEN"
 }
