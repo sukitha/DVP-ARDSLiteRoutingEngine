@@ -15,6 +15,7 @@ var dirPath string
 var redisIp string
 var redisPort string
 var redisDb int
+var redisPassword string
 var port string
 var accessToken string
 
@@ -49,6 +50,7 @@ func GetDefaultConfig() Configuration {
 		defconfiguration.RedisIp = "192.168.3.200"
 		defconfiguration.RedisPort = "6379"
 		defconfiguration.RedisDb = 5
+		defconfiguration.RedisPassword = "DuoS123"
 		defconfiguration.Port = "2226"
 		defconfiguration.AccessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoZXNoYW5pbmRpa2EiLCJqdGkiOiIwZmIyNDJmZS02OGQwLTQ1MjEtOTM5NS0xYzE0M2M3MzNmNmEiLCJzdWIiOiI1NmE5ZTc1OWZiMDcxOTA3YTAwMDAwMDEyNWQ5ZTgwYjVjN2M0Zjk4NDY2ZjkyMTE3OTZlYmY0MyIsImV4cCI6MTQ1Njg5NDE5NSwidGVuYW50IjoxLCJjb21wYW55Ijo1LCJzY29wZSI6W3sicmVzb3VyY2UiOiJhbGwifSx7InJlc291cmNlIjoicmVxdWVzdHNlcnZlciIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJyZXF1ZXN0bWV0YSIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJhcmRzcmVzb3VyY2UiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfSx7InJlc291cmNlIjoiYXJkc3JlcXVlc3QiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfV0sImlhdCI6MTQ1NjI4OTM5NX0.AWZuYNtj4lHfxpTQCutswUfUsJXwTMVPUmqTjFdVXSk"
 	}
@@ -62,6 +64,7 @@ func LoadDefaultConfig() {
 	redisIp = fmt.Sprintf("%s:%s", defconfiguration.RedisIp, defconfiguration.RedisPort)
 	redisPort = defconfiguration.RedisPort
 	redisDb = defconfiguration.RedisDb
+	redisPassword = defconfiguration.RedisPassword
 	port = defconfiguration.Port
 	accessToken = defconfiguration.AccessToken
 }
@@ -90,6 +93,7 @@ func InitiateRedis() {
 		redisIp = os.Getenv(envconfiguration.RedisIp)
 		redisPort = os.Getenv(envconfiguration.RedisPort)
 		redisDb, converr = strconv.Atoi(os.Getenv(envconfiguration.RedisDb))
+		redisPassword = os.Getenv(envconfiguration.RedisPassword)
 		port = os.Getenv(envconfiguration.Port)
 		accessToken = os.Getenv(envconfiguration.AccessToken)
 
@@ -101,6 +105,9 @@ func InitiateRedis() {
 		}
 		if redisDb == 0 || converr != nil {
 			redisDb = defConfig.RedisDb
+		}
+		if redisPassword == "" {
+			redisPassword = defConfig.RedisPassword
 		}
 		if port == "" {
 			port = defConfig.Port
@@ -127,7 +134,9 @@ func RedisGet(key string) string {
 	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
 	errHndlr(err)
 	defer client.Close()
-
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -147,6 +156,9 @@ func RedisSearchKeys(pattern string) []string {
 	errHndlr(err)
 	defer client.Close()
 
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -165,6 +177,9 @@ func RedisSetNx(key, value string) bool {
 	errHndlr(err)
 	defer client.Close()
 
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -203,6 +218,9 @@ func RedisRemove(key string) bool {
 	errHndlr(err)
 	defer client.Close()
 
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -222,6 +240,9 @@ func RedisCheckKeyExist(key string) bool {
 	errHndlr(err)
 	defer client.Close()
 
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -244,6 +265,9 @@ func RedisHashGetAll(hkey string) map[string]string {
 	errHndlr(err)
 	defer client.Close()
 
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -262,6 +286,9 @@ func RedisHashSetField(hkey, field, value string) bool {
 	errHndlr(err)
 	defer client.Close()
 
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -280,6 +307,9 @@ func RedisRemoveHashField(hkey, field string) bool {
 	errHndlr(err)
 	defer client.Close()
 
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -300,6 +330,9 @@ func RedisListLpop(lname string) string {
 	errHndlr(err)
 	defer client.Close()
 
+	//authServer
+	authE := client.Cmd("auth", redisPassword)
+	errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)

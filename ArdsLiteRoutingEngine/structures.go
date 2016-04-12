@@ -3,19 +3,21 @@ package main
 //Configurations
 
 type Configuration struct {
-	RedisIp     string
-	RedisPort   string
-	RedisDb     int
-	Port        string
-	AccessToken string
+	RedisIp       string
+	RedisPort     string
+	RedisDb       int
+	RedisPassword string
+	Port          string
+	AccessToken   string
 }
 
 type EnvConfiguration struct {
-	RedisIp     string
-	RedisPort   string
-	RedisDb     string
-	Port        string
-	AccessToken string
+	RedisIp       string
+	RedisPort     string
+	RedisDb       string
+	RedisPassword string
+	Port          string
+	AccessToken   string
 }
 
 //Request
