@@ -24,7 +24,7 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 		metaData := GetReqMetaData(reqCompany, reqTenant, ServerType, RequestType)
 		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 
-		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount && conInfo.LastRejectedSession != sessionId {
+		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
 			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, resObj)
 
 			var tagArray = make([]string, 8)
