@@ -106,12 +106,13 @@ type CSlotInfo struct {
 }
 
 type ConcurrencyInfo struct {
-	Company           int
-	Tenant            int
-	RejectCount       int
-	ResourceId        string
-	LastConnectedTime string
-	RefInfo           string
+	Company             int
+	Tenant              int
+	RejectCount         int
+	ResourceId          string
+	LastConnectedTime   string
+	LastRejectedSession string
+	RefInfo             string
 }
 
 type WeightBaseResourceInfo struct {
