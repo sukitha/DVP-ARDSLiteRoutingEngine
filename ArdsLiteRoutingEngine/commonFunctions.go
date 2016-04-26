@@ -7,7 +7,7 @@ import (
 
 func AppendIfMissingReq(dataList []Request, i Request) []Request {
 	for _, ele := range dataList {
-		if ele == i {
+		if ele.SessionId == i.SessionId {
 			return dataList
 		}
 	}

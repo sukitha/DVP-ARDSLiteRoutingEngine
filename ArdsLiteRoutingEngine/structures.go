@@ -24,6 +24,7 @@ type EnvConfiguration struct {
 
 type ReqAttributeData struct {
 	AttributeCode      []string
+	AttributeNames     []string
 	AttributeGroupName string
 	HandlingType       string
 	WeightPrecentage   string
@@ -35,6 +36,7 @@ type Request struct {
 	ServerType       string
 	RequestType      string
 	SessionId        string
+	AttributeInfo    []ReqAttributeData
 	ArriveTime       string
 	Priority         string
 	QueueId          string
