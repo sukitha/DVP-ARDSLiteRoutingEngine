@@ -18,6 +18,10 @@ var redisDb int
 var redisPassword string
 var port string
 var accessToken string
+var rabbitMQIp string
+var rabbitMQPort string
+var rabbitMQUser string
+var rabbitMQPassword string
 
 func errHndlr(err error) {
 	if err != nil {
@@ -52,6 +56,10 @@ func GetDefaultConfig() Configuration {
 		defconfiguration.RedisDb = 5
 		defconfiguration.RedisPassword = "DuoS123"
 		defconfiguration.Port = "2226"
+		defconfiguration.RabbitMQIp = "45.55.142.207"
+		defconfiguration.RabbitMQPort = "5672"
+		defconfiguration.RabbitMQUser = "guest"
+		defconfiguration.RabbitMQPassword = "guest"
 		defconfiguration.AccessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoZXNoYW5pbmRpa2EiLCJqdGkiOiIwZmIyNDJmZS02OGQwLTQ1MjEtOTM5NS0xYzE0M2M3MzNmNmEiLCJzdWIiOiI1NmE5ZTc1OWZiMDcxOTA3YTAwMDAwMDEyNWQ5ZTgwYjVjN2M0Zjk4NDY2ZjkyMTE3OTZlYmY0MyIsImV4cCI6MTQ1Njg5NDE5NSwidGVuYW50IjoxLCJjb21wYW55Ijo1LCJzY29wZSI6W3sicmVzb3VyY2UiOiJhbGwifSx7InJlc291cmNlIjoicmVxdWVzdHNlcnZlciIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJyZXF1ZXN0bWV0YSIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJhcmRzcmVzb3VyY2UiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfSx7InJlc291cmNlIjoiYXJkc3JlcXVlc3QiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfV0sImlhdCI6MTQ1NjI4OTM5NX0.AWZuYNtj4lHfxpTQCutswUfUsJXwTMVPUmqTjFdVXSk"
 	}
 
@@ -66,6 +74,10 @@ func LoadDefaultConfig() {
 	redisDb = defconfiguration.RedisDb
 	redisPassword = defconfiguration.RedisPassword
 	port = defconfiguration.Port
+	rabbitMQIp = defconfiguration.RabbitMQIp
+	rabbitMQPort = defconfiguration.RabbitMQPort
+	rabbitMQUser = defconfiguration.RabbitMQUser
+	rabbitMQPassword = defconfiguration.RabbitMQPassword
 	accessToken = defconfiguration.AccessToken
 }
 
@@ -94,6 +106,10 @@ func InitiateRedis() {
 		redisPort = os.Getenv(envconfiguration.RedisPort)
 		redisDb, converr = strconv.Atoi(os.Getenv(envconfiguration.RedisDb))
 		redisPassword = os.Getenv(envconfiguration.RedisPassword)
+		rabbitMQIp = os.Getenv(envconfiguration.RabbitMQIp)
+		rabbitMQPort = os.Getenv(envconfiguration.RabbitMQPort)
+		rabbitMQUser = os.Getenv(envconfiguration.RabbitMQUser)
+		rabbitMQPassword = os.Getenv(envconfiguration.RabbitMQPassword)
 		port = os.Getenv(envconfiguration.Port)
 		accessToken = os.Getenv(envconfiguration.AccessToken)
 
@@ -111,6 +127,18 @@ func InitiateRedis() {
 		}
 		if port == "" {
 			port = defConfig.Port
+		}
+		if rabbitMQIp == "" {
+			rabbitMQIp = defConfig.RabbitMQIp
+		}
+		if rabbitMQPort == "" {
+			rabbitMQPort = defConfig.RabbitMQPort
+		}
+		if rabbitMQUser == "" {
+			rabbitMQUser = defConfig.RabbitMQUser
+		}
+		if rabbitMQPassword == "" {
+			rabbitMQPassword = defConfig.RabbitMQPassword
 		}
 		if accessToken == "" {
 			accessToken = defConfig.AccessToken

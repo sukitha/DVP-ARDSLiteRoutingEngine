@@ -4,5 +4,9 @@
 	"RedisDb": "SYS_REDIS_DB",
 	"RedisPassword":"SYS_REDIS_PASSWORD",
 	"Port":"HOST_ARDSLITEROUTINGENGINE_PORT",
+	"RabbitMQIp": "SYS_RABBITMQ_HOST",
+	"RabbitMQPort": "SYS_RABBITMQ_PORT",
+	"RabbitMQUser": "SYS_RABBITMQ_USER",
+	"RabbitMQPassword":"SYS_RABBITMQ_PASSWORD",
 	"AccessToken":"HOST_TOKEN"
 }
