@@ -42,21 +42,39 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 	return processingReqObjs
 }
 
+func GetRejectedQueueId(_queueId string) string {
+	splitQueueId := strings.Split(_queueId, ":")
+	splitQueueId[len(splitQueueId)-1] = "REJECTED"
+	return strings.Join(splitQueueId, ":")
+}
+
 func SetNextProcessingItem(_processingHash, _queueId string) {
-	nextQueueItem := RedisListLpop(_queueId)
-	if nextQueueItem == "" {
-		removeHResult := RedisRemoveHashField(_processingHash, _queueId)
-		if removeHResult {
-			fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+	rejectedQueueId := GetRejectedQueueId(_queueId)
+	nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
+
+	if nextRejectedQueueItem == "" {
+		nextQueueItem := RedisListLpop(_queueId)
+		if nextQueueItem == "" {
+			removeHResult := RedisRemoveHashField(_processingHash, _queueId)
+			if removeHResult {
+				fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+			} else {
+				fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+			}
 		} else {
-			fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+			setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
+			if setHResult {
+				fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+			} else {
+				fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+			}
 		}
 	} else {
-		setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
+		setHResult := RedisHashSetField(_processingHash, _queueId, nextRejectedQueueItem)
 		if setHResult {
-			fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+			fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
 		} else {
-			fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+			fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
 		}
 	}
 }
