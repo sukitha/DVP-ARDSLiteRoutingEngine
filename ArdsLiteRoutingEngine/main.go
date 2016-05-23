@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/DuoSoftware/gorest"
 	"net/http"
+	"time"
 )
 
 const layout = "2006-01-02T15:04:05Z07:00"
@@ -13,7 +14,11 @@ func main() {
 	fmt.Println("Starting Ards Route Engine")
 	InitiateRedis()
 	go InitiateService()
-	Worker()
+	for {
+		Worker()
+		fmt.Println("End Worker()")
+		time.Sleep(2 * time.Second)
+	}
 	//for {
 	//	//fmt.Println("Searching...")
 	//	availablePHashes := GetAllProcessingHashes()
