@@ -54,6 +54,7 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 				slotObj.SessionId = sessionId
 				slotObj.OtherInfo = "Inbound"
 				slotObj.MaxReservedTime = metaData.MaxReservedTime
+				slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
 
 				if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
 					fmt.Println("Return resource Data:", conInfo.RefInfo)

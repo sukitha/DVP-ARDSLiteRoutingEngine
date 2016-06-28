@@ -72,8 +72,9 @@ type RequestSelection struct {
 }
 
 type ReqMetaData struct {
-	MaxReservedTime int
-	MaxRejectCount  int
+	MaxReservedTime  int
+	MaxRejectCount   int
+	MaxAfterWorkTime int
 }
 
 //Resource
@@ -112,6 +113,7 @@ type CSlotInfo struct {
 	SessionId        string
 	LastReservedTime string
 	MaxReservedTime  int
+	MaxAfterWorkTime int
 	OtherInfo        string
 }
 
