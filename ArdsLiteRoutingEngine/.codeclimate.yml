@@ -1,19 +1,10 @@
 engines:
-  govet:
+  gofmt:
     enabled: true
   golint:
     enabled: true
-  eslint:
+  govet:
     enabled: true
-  csslint:
-    enabled: true
-  duplication:
-    enabled: true
-    config:
-      languages:
-      - ruby
-        #mass_threshold: 30
-      - javascript
 ratings:
   paths:
   - "**.go"
