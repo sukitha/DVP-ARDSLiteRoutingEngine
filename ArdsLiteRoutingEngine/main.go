@@ -14,21 +14,21 @@ func main() {
 	fmt.Println("Starting Ards Route Engine")
 	InitiateRedis()
 	go InitiateService()
-	for {
-		Worker()
-		fmt.Println("End Worker()")
-		time.Sleep(2 * time.Second)
-	}
 	//for {
-	//	//fmt.Println("Searching...")
-	//	availablePHashes := GetAllProcessingHashes()
-	//	for _, h := range availablePHashes {
-	//		if AcquireProcessingHashLock(h) == true {
-	//			go ExecuteRequestHash(h)
-	//		}
-	//	}
-	//	time.Sleep(200 * time.Millisecond)
+	//	Worker()
+	//	fmt.Println("End Worker()")
+	//	time.Sleep(2 * time.Second)
 	//}
+	for {
+		//fmt.Println("Searching...")
+		availablePHashes := GetAllProcessingHashes()
+		for _, h := range availablePHashes {
+			if AcquireProcessingHashLock(h) == true {
+				go ExecuteRequestHash(h)
+			}
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
 }
 
 func InitiateService() {
