@@ -30,8 +30,8 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 		fmt.Println(strReqObj)
 
 		if strReqObj == "" {
-			fmt.Println("Start SetNextProcessingItem")
-			SetNextProcessingItem(_processingHashKey, k)
+			//fmt.Println("Start SetNextProcessingItem")
+			//SetNextProcessingItem(_processingHashKey, k)
 		} else {
 			var reqObj Request
 			json.Unmarshal([]byte(strReqObj), &reqObj)
