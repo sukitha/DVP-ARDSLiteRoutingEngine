@@ -30,8 +30,8 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 		fmt.Println(strReqObj)
 
 		if strReqObj == "" {
-			//fmt.Println("Start SetNextProcessingItem")
-			//SetNextProcessingItem(_processingHashKey, k)
+			fmt.Println("Start SetNextProcessingItem")
+			SetNextProcessingItem(_processingHashKey, k)
 		} else {
 			var reqObj Request
 			json.Unmarshal([]byte(strReqObj), &reqObj)
@@ -55,12 +55,12 @@ func SetNextProcessingItem(_processingHash, _queueId string) {
 	if nextRejectedQueueItem == "" {
 		nextQueueItem := RedisListLpop(_queueId)
 		if nextQueueItem == "" {
-			//removeHResult := RedisRemoveHashField(_processingHash, _queueId)
-			//if removeHResult {
-			//	fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
-			//} else {
-			//	fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
-			//}
+			removeHResult := RedisRemoveHashField(_processingHash, _queueId)
+			if removeHResult {
+				fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+			} else {
+				fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+			}
 		} else {
 			setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
 			if setHResult {
@@ -152,28 +152,24 @@ func ExecuteRequestHash(_processingHashKey string) {
 	for {
 		if RedisCheckKeyExist(_processingHashKey) {
 			processingItems := GetAllProcessingItems(_processingHashKey)
-			if len(processingItems) > 0 {
-				sort.Sort(timeSliceReq(processingItems))
-				for _, longestWItem := range processingItems {
-					//if longestWItem != (Request{}) {
-					if longestWItem.SessionId != "" {
-						if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
-							if ContinueProcessing(longestWItem) {
-								//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
-								fmt.Println("Continue ARDS Process Success")
-							}
+			sort.Sort(timeSliceReq(processingItems))
+			for _, longestWItem := range processingItems {
+				//if longestWItem != (Request{}) {
+				if longestWItem.SessionId != "" {
+					if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
+						if ContinueProcessing(longestWItem) {
+							//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
+							fmt.Println("Continue ARDS Process Success")
 						}
 					}
 				}
-			} else {
-				return
 			}
 		} else {
-			//if ReleasetLock(_processingHashKey) == true {
-			//	fmt.Println("Release lock ", _processingHashKey, "success.")
-			//} else {
-			//	fmt.Println("Release lock ", _processingHashKey, "failed.")
-			//}
+			if ReleasetLock(_processingHashKey) == true {
+				fmt.Println("Release lock ", _processingHashKey, "success.")
+			} else {
+				fmt.Println("Release lock ", _processingHashKey, "failed.")
+			}
 			return
 		}
 	}
