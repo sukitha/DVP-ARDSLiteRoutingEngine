@@ -186,7 +186,7 @@ func RedisSearchKeys(pattern string) []string {
 
 	//authServer
 	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -207,7 +207,7 @@ func RedisSetNx(key, value string) bool {
 
 	//authServer
 	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -248,7 +248,7 @@ func RedisRemove(key string) bool {
 
 	//authServer
 	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -270,7 +270,7 @@ func RedisCheckKeyExist(key string) bool {
 
 	//authServer
 	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -295,7 +295,7 @@ func RedisHashGetAll(hkey string) map[string]string {
 
 	//authServer
 	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -316,7 +316,7 @@ func RedisHashSetField(hkey, field, value string) bool {
 
 	//authServer
 	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -337,7 +337,7 @@ func RedisRemoveHashField(hkey, field string) bool {
 
 	//authServer
 	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -360,7 +360,7 @@ func RedisListLpop(lname string) string {
 
 	//authServer
 	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
