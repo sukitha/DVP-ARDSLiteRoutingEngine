@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"time"
 )
 
 func GetAllProcessingHashes() []string {
@@ -176,5 +177,6 @@ func ExecuteRequestHash(_processingHashKey string) {
 			}
 			return
 		}
+		time.Sleep(2 * time.Second)
 	}
 }
