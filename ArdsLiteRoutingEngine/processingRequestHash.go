@@ -55,12 +55,12 @@ func SetNextProcessingItem(_processingHash, _queueId string) {
 	if nextRejectedQueueItem == "" {
 		nextQueueItem := RedisListLpop(_queueId)
 		if nextQueueItem == "" {
-			removeHResult := RedisRemoveHashField(_processingHash, _queueId)
-			if removeHResult {
-				fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
-			} else {
-				fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
-			}
+			//removeHResult := RedisRemoveHashField(_processingHash, _queueId)
+			//if removeHResult {
+			//	fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+			//} else {
+			//	fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+			//}
 		} else {
 			setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
 			if setHResult {
