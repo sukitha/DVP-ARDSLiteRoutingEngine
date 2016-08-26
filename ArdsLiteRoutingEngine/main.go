@@ -27,7 +27,7 @@ func main() {
 			go ExecuteRequestHash(h)
 			//}
 		}
-		time.Sleep(200 * time.Millisecond)
+		time.Sleep(2 * time.Second)
 	}
 }
 
