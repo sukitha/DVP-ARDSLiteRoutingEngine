@@ -30,7 +30,11 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 		fmt.Println("Start GetResourceState")
 
+		fmt.Println("conInfo.RejectCount:: ", conInfo.RejectCount)
+		fmt.Println("metaData.MaxRejectCount:: ", metaData.MaxRejectCount)
+
 		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
+			fmt.Println("===========================================Start====================================================")
 			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resObj)
 
 			var tagArray = make([]string, 8)
