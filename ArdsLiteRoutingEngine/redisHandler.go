@@ -163,8 +163,8 @@ func RedisGet(key string) string {
 	errHndlr(err)
 	defer client.Close()
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
-	errHndlr(authE.Err)
+	client.Cmd("auth", redisPassword)
+	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
@@ -185,7 +185,7 @@ func RedisSearchKeys(pattern string) []string {
 	defer client.Close()
 
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
+	client.Cmd("auth", redisPassword)
 	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
@@ -206,7 +206,7 @@ func RedisSetNx(key, value string) bool {
 	defer client.Close()
 
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
+	client.Cmd("auth", redisPassword)
 	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
@@ -247,7 +247,7 @@ func RedisRemove(key string) bool {
 	defer client.Close()
 
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
+	client.Cmd("auth", redisPassword)
 	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
@@ -269,7 +269,7 @@ func RedisCheckKeyExist(key string) bool {
 	defer client.Close()
 
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
+	client.Cmd("auth", redisPassword)
 	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
@@ -294,7 +294,7 @@ func RedisHashGetAll(hkey string) map[string]string {
 	defer client.Close()
 
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
+	client.Cmd("auth", redisPassword)
 	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
@@ -315,7 +315,7 @@ func RedisHashSetField(hkey, field, value string) bool {
 	defer client.Close()
 
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
+	client.Cmd("auth", redisPassword)
 	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
@@ -336,7 +336,7 @@ func RedisRemoveHashField(hkey, field string) bool {
 	defer client.Close()
 
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
+	client.Cmd("auth", redisPassword)
 	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
@@ -359,7 +359,7 @@ func RedisListLpop(lname string) string {
 	defer client.Close()
 
 	//authServer
-	authE := client.Cmd("auth", redisPassword)
+	client.Cmd("auth", redisPassword)
 	//errHndlr(authE.Err)
 	// select database
 	r := client.Cmd("select", redisDb)
