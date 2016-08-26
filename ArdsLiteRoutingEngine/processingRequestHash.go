@@ -152,24 +152,28 @@ func ExecuteRequestHash(_processingHashKey string) {
 	for {
 		if RedisCheckKeyExist(_processingHashKey) {
 			processingItems := GetAllProcessingItems(_processingHashKey)
-			sort.Sort(timeSliceReq(processingItems))
-			for _, longestWItem := range processingItems {
-				//if longestWItem != (Request{}) {
-				if longestWItem.SessionId != "" {
-					if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
-						if ContinueProcessing(longestWItem) {
-							//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
-							fmt.Println("Continue ARDS Process Success")
+			if len(processingItems) > 0 {
+				sort.Sort(timeSliceReq(processingItems))
+				for _, longestWItem := range processingItems {
+					//if longestWItem != (Request{}) {
+					if longestWItem.SessionId != "" {
+						if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
+							if ContinueProcessing(longestWItem) {
+								//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
+								fmt.Println("Continue ARDS Process Success")
+							}
 						}
 					}
 				}
+			} else {
+				return
 			}
 		} else {
-			if ReleasetLock(_processingHashKey) == true {
-				fmt.Println("Release lock ", _processingHashKey, "success.")
-			} else {
-				fmt.Println("Release lock ", _processingHashKey, "failed.")
-			}
+			//if ReleasetLock(_processingHashKey) == true {
+			//	fmt.Println("Release lock ", _processingHashKey, "success.")
+			//} else {
+			//	fmt.Println("Release lock ", _processingHashKey, "failed.")
+			//}
 			return
 		}
 	}

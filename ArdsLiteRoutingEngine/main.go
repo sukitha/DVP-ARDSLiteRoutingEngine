@@ -23,9 +23,9 @@ func main() {
 		//fmt.Println("Searching...")
 		availablePHashes := GetAllProcessingHashes()
 		for _, h := range availablePHashes {
-			if AcquireProcessingHashLock(h) == true {
-				go ExecuteRequestHash(h)
-			}
+			//if AcquireProcessingHashLock(h) == true {
+			go ExecuteRequestHash(h)
+			//}
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
