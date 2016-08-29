@@ -114,6 +114,7 @@ type CSlotInfo struct {
 	LastReservedTime string
 	MaxReservedTime  int
 	MaxAfterWorkTime int
+	maxRejectCount   int
 	OtherInfo        string
 }
 
