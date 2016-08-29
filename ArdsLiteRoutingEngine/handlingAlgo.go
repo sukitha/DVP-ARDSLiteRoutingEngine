@@ -21,6 +21,7 @@ func ReserveSlot(ardsLbIp, ardsLbPort string, slotInfo CSlotInfo) bool {
 	fmt.Println("URL:>", url)
 
 	slotInfoJson, _ := json.Marshal(slotInfo)
+	fmt.Println("request Data:: ", string(slotInfoJson))
 	var jsonStr = []byte(slotInfoJson)
 	authToken := fmt.Sprintf("Bearer %s", accessToken)
 	internalAuthToken := fmt.Sprintf("%d:%d", slotInfo.Tenant, slotInfo.Company)
