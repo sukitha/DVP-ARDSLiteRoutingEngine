@@ -102,20 +102,20 @@ type ResourceStatus struct {
 }
 
 type CSlotInfo struct {
-	Company          int
-	Tenant           int
-	HandlingType     string
-	State            string
-	HandlingRequest  string
-	ResourceId       string
-	SlotId           int
-	ObjKey           string
-	SessionId        string
-	LastReservedTime string
-	MaxReservedTime  int
-	MaxAfterWorkTime int
-	maxRejectCount   int
-	OtherInfo        string
+	Company            int
+	Tenant             int
+	HandlingType       string
+	State              string
+	HandlingRequest    string
+	ResourceId         string
+	SlotId             int
+	ObjKey             string
+	SessionId          string
+	LastReservedTime   string
+	MaxReservedTime    int
+	MaxAfterWorkTime   int
+	TempMaxRejectCount int
+	OtherInfo          string
 }
 
 type ConcurrencyInfo struct {
