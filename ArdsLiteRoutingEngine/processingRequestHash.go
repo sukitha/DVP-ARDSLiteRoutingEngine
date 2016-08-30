@@ -144,9 +144,15 @@ func AcquireProcessingHashLock(hashId string) bool {
 	}
 }
 
-func ReleasetLock(hashId string) bool {
+func ReleasetLock(hashId string) {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
-	return RedisRemove(lockKey)
+
+	if RedisRemove(lockKey) == true {
+		fmt.Println("Release lock ", lockKey, "success.")
+	} else {
+		fmt.Println("Release lock ", lockKey, "failed.")
+	}
+	return
 }
 
 func ExecuteRequestHash(_processingHashKey string) {
@@ -171,16 +177,14 @@ func ExecuteRequestHash(_processingHashKey string) {
 						}
 					}
 				}
+				ReleasetLock(_processingHashKey)
 				return
 			} else {
+				ReleasetLock(_processingHashKey)
 				return
 			}
 		} else {
-			if ReleasetLock(_processingHashKey) == true {
-				fmt.Println("Release lock ", _processingHashKey, "success.")
-			} else {
-				fmt.Println("Release lock ", _processingHashKey, "failed.")
-			}
+			ReleasetLock(_processingHashKey)
 			return
 		}
 		time.Sleep(2 * time.Second)
