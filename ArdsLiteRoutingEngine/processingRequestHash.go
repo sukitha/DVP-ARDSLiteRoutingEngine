@@ -171,6 +171,7 @@ func ExecuteRequestHash(_processingHashKey string) {
 						}
 					}
 				}
+				return
 			} else {
 				return
 			}
