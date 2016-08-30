@@ -150,6 +150,11 @@ func ReleasetLock(hashId string) bool {
 }
 
 func ExecuteRequestHash(_processingHashKey string) {
+	defer func() {
+		if r := recover(); r != nil {
+			ReleasetLock(_processingHashKey)
+		}
+	}()
 	for {
 		if RedisCheckKeyExist(_processingHashKey) {
 			processingItems := GetAllProcessingItems(_processingHashKey)
