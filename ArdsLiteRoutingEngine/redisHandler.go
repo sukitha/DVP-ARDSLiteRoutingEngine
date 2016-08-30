@@ -174,6 +174,17 @@ func RedisGet(key string) string {
 	return strObj
 }
 
+type ParseError struct {
+	Index int    // The index into the space-separated list of words.
+	Word  string // The word that generated the parse error.
+	Error error  // The raw error that precipitated this error, if any.
+}
+
+// String returns a human-readable error message.
+func (e *ParseError) String() string {
+	return fmt.Sprintf("pkg: error parsing %q as int", e.Word)
+}
+
 func RedisGet_v1(key string) (strObj string, err error) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -194,7 +205,7 @@ func RedisGet_v1(key string) (strObj string, err error) {
 	// select database
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
-
+	panic(&ParseError{1, "panic", err})
 	strObj, err = client.Cmd("get", key).Str()
 	fmt.Println(strObj)
 	return
