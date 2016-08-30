@@ -20,49 +20,55 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 		var resObj Resource
 		json.Unmarshal([]byte(strResObj), &resObj)
 
-		conInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, RequestType)
-		metaData := GetReqMetaData(reqCompany, reqTenant, ServerType, RequestType)
-		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
+		conInfo, cErr := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, RequestType)
+		if cErr == nil {
+			metaData, mErr := GetReqMetaData(reqCompany, reqTenant, ServerType, RequestType)
+			if mErr == nil {
+				resState, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
+				if sErr == nil {
 
-		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
-			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, resObj)
+					if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
+						ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, resObj)
 
-			var tagArray = make([]string, 8)
+						var tagArray = make([]string, 8)
 
-			tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
-			tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
-			tagArray[4] = fmt.Sprintf("handlingType_%s", RequestType)
-			tagArray[5] = fmt.Sprintf("state_%s", "Available")
-			tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
-			tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
+						tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
+						tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
+						tagArray[4] = fmt.Sprintf("handlingType_%s", RequestType)
+						tagArray[5] = fmt.Sprintf("state_%s", "Available")
+						tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
+						tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
 
-			tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
-			fmt.Println(tags)
-			availableSlots := RedisSearchKeys(tags)
+						tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
+						fmt.Println(tags)
+						availableSlots := RedisSearchKeys(tags)
 
-			for _, tagKey := range availableSlots {
-				strslotKey := RedisGet(tagKey)
-				fmt.Println(strslotKey)
+						for _, tagKey := range availableSlots {
+							strslotKey := RedisGet(tagKey)
+							fmt.Println(strslotKey)
 
-				strslotObj := RedisGet(strslotKey)
-				fmt.Println(strslotObj)
+							strslotObj := RedisGet(strslotKey)
+							fmt.Println(strslotObj)
 
-				var slotObj CSlotInfo
-				json.Unmarshal([]byte(strslotObj), &slotObj)
+							var slotObj CSlotInfo
+							json.Unmarshal([]byte(strslotObj), &slotObj)
 
-				slotObj.State = "Reserved"
-				slotObj.SessionId = sessionId
-				slotObj.OtherInfo = "Inbound"
-				slotObj.MaxReservedTime = metaData.MaxReservedTime
-				slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
-				slotObj.TempMaxRejectCount = metaData.MaxRejectCount
+							slotObj.State = "Reserved"
+							slotObj.SessionId = sessionId
+							slotObj.OtherInfo = "Inbound"
+							slotObj.MaxReservedTime = metaData.MaxReservedTime
+							slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
+							slotObj.TempMaxRejectCount = metaData.MaxRejectCount
 
-				if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
-					fmt.Println("Return resource Data:", conInfo.RefInfo)
-					selectedResList = AppendIfMissingString(selectedResList, conInfo.RefInfo)
-					if len(selectedResList) == nuOfResRequested {
-						selectedResListString, _ := json.Marshal(selectedResList)
-						return string(selectedResListString)
+							if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
+								fmt.Println("Return resource Data:", conInfo.RefInfo)
+								selectedResList = AppendIfMissingString(selectedResList, conInfo.RefInfo)
+								if len(selectedResList) == nuOfResRequested {
+									selectedResListString, _ := json.Marshal(selectedResList)
+									return string(selectedResListString)
+								}
+							}
+						}
 					}
 				}
 			}

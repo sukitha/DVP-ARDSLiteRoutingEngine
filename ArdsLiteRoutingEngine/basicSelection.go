@@ -73,8 +73,12 @@ func BasicSelection(_company, _tenent int, _sessionId string) []string {
 			json.Unmarshal([]byte(strResObj), &resObj)
 
 			if resObj.ResourceId != "" && IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo) {
-				concInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)
-				resourceConcInfo = append(resourceConcInfo, concInfo)
+				concInfo, err := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)
+				if err != nil {
+					fmt.Println("Error in GetConcurrencyInfo")
+				} else {
+					resourceConcInfo = append(resourceConcInfo, concInfo)
+				}
 				//matchingResources = AppendIfMissing(matchingResources, strResKey)
 				//fmt.Println(strResKey)
 			}

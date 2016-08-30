@@ -174,6 +174,32 @@ func RedisGet(key string) string {
 	return strObj
 }
 
+func RedisGet_v1(key string) (strObj string, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisGet", r)
+			var ok bool
+			err, ok = r.(error)
+			if !ok {
+				err = fmt.Errorf("Recovered in RedisGet: %v", r)
+			}
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+	//authServer
+	client.Cmd("auth", redisPassword)
+	//errHndlr(authE.Err)
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+
+	strObj, err = client.Cmd("get", key).Str()
+	fmt.Println(strObj)
+	return
+}
+
 func RedisSearchKeys(pattern string) []string {
 	defer func() {
 		if r := recover(); r != nil {

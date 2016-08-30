@@ -21,55 +21,64 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 		json.Unmarshal([]byte(strResObj), &resObj)
 
 		fmt.Println("Start GetConcurrencyInfo")
-		conInfo := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, requestType)
+		conInfo, cErr := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, requestType)
 		fmt.Println("End GetConcurrencyInfo")
 		fmt.Println("Start GetReqMetaData")
-		metaData := GetReqMetaData(reqCompany, reqTenant, serverType, requestType)
+		metaData, mErr := GetReqMetaData(reqCompany, reqTenant, serverType, requestType)
 		fmt.Println("End GetReqMetaData")
 		fmt.Println("Start GetResourceState")
-		resState := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
+		resState, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 		fmt.Println("Start GetResourceState")
 
 		fmt.Println("conInfo.RejectCount:: ", conInfo.RejectCount)
 		fmt.Println("metaData.MaxRejectCount:: ", metaData.MaxRejectCount)
 
-		if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
-			fmt.Println("===========================================Start====================================================")
-			ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resObj)
+		if cErr == nil {
 
-			var tagArray = make([]string, 8)
+			if mErr == nil {
 
-			tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
-			tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
-			tagArray[4] = fmt.Sprintf("handlingType_%s", requestType)
-			tagArray[5] = fmt.Sprintf("state_%s", "Available")
-			tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
-			tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
+				if sErr == nil {
 
-			tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
-			fmt.Println(tags)
-			availableSlots := RedisSearchKeys(tags)
+					if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
+						fmt.Println("===========================================Start====================================================")
+						ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resObj)
 
-			for _, tagKey := range availableSlots {
-				strslotKey := RedisGet(tagKey)
-				fmt.Println(strslotKey)
+						var tagArray = make([]string, 8)
 
-				strslotObj := RedisGet(strslotKey)
-				fmt.Println(strslotObj)
+						tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
+						tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
+						tagArray[4] = fmt.Sprintf("handlingType_%s", requestType)
+						tagArray[5] = fmt.Sprintf("state_%s", "Available")
+						tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
+						tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
 
-				var slotObj CSlotInfo
-				json.Unmarshal([]byte(strslotObj), &slotObj)
+						tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
+						fmt.Println(tags)
+						availableSlots := RedisSearchKeys(tags)
 
-				slotObj.State = "Reserved"
-				slotObj.SessionId = sessionId
-				slotObj.OtherInfo = "Inbound"
-				slotObj.MaxReservedTime = metaData.MaxReservedTime
-				slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
-				slotObj.TempMaxRejectCount = metaData.MaxRejectCount
+						for _, tagKey := range availableSlots {
+							strslotKey := RedisGet(tagKey)
+							fmt.Println(strslotKey)
 
-				if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
-					fmt.Println("Return resource Data:", resObj.OtherInfo)
-					return conInfo.RefInfo
+							strslotObj := RedisGet(strslotKey)
+							fmt.Println(strslotObj)
+
+							var slotObj CSlotInfo
+							json.Unmarshal([]byte(strslotObj), &slotObj)
+
+							slotObj.State = "Reserved"
+							slotObj.SessionId = sessionId
+							slotObj.OtherInfo = "Inbound"
+							slotObj.MaxReservedTime = metaData.MaxReservedTime
+							slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
+							slotObj.TempMaxRejectCount = metaData.MaxRejectCount
+
+							if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
+								fmt.Println("Return resource Data:", resObj.OtherInfo)
+								return conInfo.RefInfo
+							}
+						}
+					}
 				}
 			}
 		}

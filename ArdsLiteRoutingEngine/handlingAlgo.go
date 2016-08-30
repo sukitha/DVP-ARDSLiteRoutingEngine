@@ -95,26 +95,29 @@ func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 	}
 }
 
-func GetReqMetaData(_company, _tenent int, _serverType, _requestType string) ReqMetaData {
+func GetReqMetaData(_company, _tenent int, _serverType, _requestType string) (metaObj ReqMetaData, err error) {
 	key := fmt.Sprintf("ReqMETA:%d:%d:%s:%s", _company, _tenent, _serverType, _requestType)
 	fmt.Println(key)
-	strMetaObj := RedisGet(key)
-	fmt.Println(strMetaObj)
+	var strMetaObj string
+	strMetaObj, err = RedisGet_v1(key)
 
-	var metaObj ReqMetaData
+	fmt.Println(strMetaObj)
 	json.Unmarshal([]byte(strMetaObj), &metaObj)
 
-	return metaObj
+	return
 }
 
-func GetResourceState(_company, _tenant int, _resId string) string {
+func GetResourceState(_company, _tenant int, _resId string) (state string, err error) {
 	key := fmt.Sprintf("ResourceState:%d:%d:%s", _company, _tenant, _resId)
 	fmt.Println(key)
-	strResStateObj := RedisGet(key)
+	var strResStateObj string
+
+	strResStateObj, err = RedisGet_v1(key)
+
 	fmt.Println(strResStateObj)
 
 	var resStatus ResourceStatus
 	json.Unmarshal([]byte(strResStateObj), &resStatus)
-
-	return resStatus.State
+	state = resStatus.State
+	return
 }
