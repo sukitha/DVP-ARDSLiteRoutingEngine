@@ -25,6 +25,14 @@ func main() {
 		for _, h := range availablePHashes {
 			if AcquireProcessingHashLock(h) == true {
 				go ExecuteRequestHash(h)
+
+				if RedisCheckKeyExist(h) == false {
+					if ReleasetLock(h) == true {
+						fmt.Println("Release lock ", h, "success.")
+					} else {
+						fmt.Println("Release lock ", h, "failed.")
+					}
+				}
 			}
 		}
 		time.Sleep(2 * time.Second)
