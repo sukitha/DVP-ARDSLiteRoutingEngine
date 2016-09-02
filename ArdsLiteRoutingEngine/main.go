@@ -4,6 +4,7 @@ package main
 import (
 	"fmt"
 	"github.com/DuoSoftware/gorest"
+	"github.com/satori/go.uuid"
 	"net/http"
 	"time"
 )
@@ -23,8 +24,9 @@ func main() {
 		//fmt.Println("Searching...")
 		availablePHashes := GetAllProcessingHashes()
 		for _, h := range availablePHashes {
-			if AcquireProcessingHashLock(h) == true {
-				go ExecuteRequestHash(h)
+			u1 := uuid.NewV4()
+			if AcquireProcessingHashLock(h, u1) == true {
+				go ExecuteRequestHash(h, u1)
 			}
 		}
 		time.Sleep(2 * time.Second)

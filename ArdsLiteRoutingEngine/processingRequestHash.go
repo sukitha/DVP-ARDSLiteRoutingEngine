@@ -128,9 +128,9 @@ func ContinueProcessing(_request Request) bool {
 	return ContinueArdsProcess(_request)
 }
 
-func AcquireProcessingHashLock(hashId string) bool {
+func AcquireProcessingHashLock(hashId, uuid string) bool {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
-	if RedisSetNx(lockKey, hashId) == true {
+	if RedisSetNx(lockKey, uuid) == true {
 		fmt.Println("lockKey: ", lockKey)
 		//if RedisSetEx(lockKey, "LOCKED", 60) {
 		return true
@@ -143,10 +143,10 @@ func AcquireProcessingHashLock(hashId string) bool {
 	}
 }
 
-func ReleasetLock(hashId string) {
+func ReleasetLock(hashId, uuid string) {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
 
-	if RedisRemoveRLock(lockKey, hashId) == true {
+	if RedisRemoveRLock(lockKey, uuid) == true {
 		fmt.Println("Release lock ", lockKey, "success.")
 	} else {
 		fmt.Println("Release lock ", lockKey, "failed.")
@@ -154,10 +154,10 @@ func ReleasetLock(hashId string) {
 	return
 }
 
-func ExecuteRequestHash(_processingHashKey string) {
+func ExecuteRequestHash(_processingHashKey, uuid string) {
 	defer func() {
 		if r := recover(); r != nil {
-			ReleasetLock(_processingHashKey)
+			ReleasetLock(_processingHashKey, uuid)
 		}
 	}()
 	//for {
@@ -176,14 +176,14 @@ func ExecuteRequestHash(_processingHashKey string) {
 					}
 				}
 			}
-			ReleasetLock(_processingHashKey)
+			ReleasetLock(_processingHashKey, uuid)
 			return
 		} else {
-			ReleasetLock(_processingHashKey)
+			ReleasetLock(_processingHashKey, uuid)
 			return
 		}
 	} else {
-		ReleasetLock(_processingHashKey)
+		ReleasetLock(_processingHashKey, uuid)
 		return
 	}
 	//time.Sleep(200 * time.Millisecond)
