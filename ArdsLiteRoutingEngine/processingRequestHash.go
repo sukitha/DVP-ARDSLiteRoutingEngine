@@ -156,9 +156,9 @@ func ReleasetLock(hashId, uuid string) {
 
 func ExecuteRequestHash(_processingHashKey, uuid string) {
 	defer func() {
-		if r := recover(); r != nil {
+		//if r := recover(); r != nil {
 			ReleasetLock(_processingHashKey, uuid)
-		}
+		//}
 	}()
 	//for {
 	if RedisCheckKeyExist(_processingHashKey) {
