@@ -176,16 +176,16 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 					}
 				}
 			}
-			ReleasetLock(_processingHashKey, uuid)
-			return
-		} else {
-			ReleasetLock(_processingHashKey, uuid)
-			return
-		}
-	} else {
-		ReleasetLock(_processingHashKey, uuid)
-		return
-	}
+			//ReleasetLock(_processingHashKey, uuid)
+		//	return
+		} //else {
+			//ReleasetLock(_processingHashKey, uuid)
+		//	return
+		//}
+	} //else {
+		//ReleasetLock(_processingHashKey, uuid)
+	//	return
+	//}
 	//time.Sleep(200 * time.Millisecond)
 	//}
 }
