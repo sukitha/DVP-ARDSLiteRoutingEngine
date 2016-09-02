@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 )
 
 func GetAllProcessingHashes() []string {
@@ -131,7 +130,7 @@ func ContinueProcessing(_request Request) bool {
 
 func AcquireProcessingHashLock(hashId string) bool {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
-	if RedisSetNx(lockKey, "LOCKED") == true {
+	if RedisSetNx(lockKey, hashId) == true {
 		fmt.Println("lockKey: ", lockKey)
 		//if RedisSetEx(lockKey, "LOCKED", 60) {
 		return true
@@ -147,7 +146,7 @@ func AcquireProcessingHashLock(hashId string) bool {
 func ReleasetLock(hashId string) {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
 
-	if RedisRemove(lockKey) == true {
+	if RedisRemoveRLock(lockKey, hashId) == true {
 		fmt.Println("Release lock ", lockKey, "success.")
 	} else {
 		fmt.Println("Release lock ", lockKey, "failed.")
@@ -161,32 +160,32 @@ func ExecuteRequestHash(_processingHashKey string) {
 			ReleasetLock(_processingHashKey)
 		}
 	}()
-	for {
-		if RedisCheckKeyExist(_processingHashKey) {
-			processingItems := GetAllProcessingItems(_processingHashKey)
-			if len(processingItems) > 0 {
-				sort.Sort(timeSliceReq(processingItems))
-				for _, longestWItem := range processingItems {
-					//if longestWItem != (Request{}) {
-					if longestWItem.SessionId != "" {
-						if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
-							if ContinueProcessing(longestWItem) {
-								//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
-								fmt.Println("Continue ARDS Process Success")
-							}
+	//for {
+	if RedisCheckKeyExist(_processingHashKey) {
+		processingItems := GetAllProcessingItems(_processingHashKey)
+		if len(processingItems) > 0 {
+			sort.Sort(timeSliceReq(processingItems))
+			for _, longestWItem := range processingItems {
+				//if longestWItem != (Request{}) {
+				if longestWItem.SessionId != "" {
+					if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
+						if ContinueProcessing(longestWItem) {
+							//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
+							fmt.Println("Continue ARDS Process Success")
 						}
 					}
 				}
-				ReleasetLock(_processingHashKey)
-				return
-			} else {
-				ReleasetLock(_processingHashKey)
-				return
 			}
+			ReleasetLock(_processingHashKey)
+			return
 		} else {
 			ReleasetLock(_processingHashKey)
 			return
 		}
-		time.Sleep(2 * time.Second)
+	} else {
+		ReleasetLock(_processingHashKey)
+		return
 	}
+	//time.Sleep(200 * time.Millisecond)
+	//}
 }

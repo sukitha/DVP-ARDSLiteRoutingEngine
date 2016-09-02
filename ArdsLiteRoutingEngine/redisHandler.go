@@ -238,8 +238,8 @@ func RedisSetNx(key, value string) bool {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 
-	strObj, _ := client.Cmd("setnx", key, value).Bool()
-	fmt.Println("setnx: ", strObj)
+	strObj, _ := client.Cmd("set", key, value, "nx", "ex", 60).Bool()
+	fmt.Println("GetRLock: ", strObj)
 	return strObj
 }
 
@@ -261,6 +261,28 @@ func RedisSetNx(key, value string) bool {
 	fmt.Println("setex: ", strObj)
 	return strObj
 }*/
+
+func RedisRemoveRLock(key, value string) bool {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisRemoveRLock", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	//authServer
+	client.Cmd("auth", redisPassword)
+	//errHndlr(authE.Err)
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+	luaScript := "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end"
+	strObj, _ := client.Cmd("eval", luaScript, 1, key, value).Bool()
+	fmt.Println(strObj)
+	return strObj
+}
 
 func RedisRemove(key string) bool {
 	defer func() {
