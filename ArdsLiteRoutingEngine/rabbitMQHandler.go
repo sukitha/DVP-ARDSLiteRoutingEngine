@@ -91,8 +91,8 @@ func Worker() {
 				log.Printf("Received a message: %s", d.Body)
 				d.Ack(false)
 				hashKey := string(d.Body)
-				if AcquireProcessingHashLock(hashKey) == true {
-					go ExecuteRequestHash(hashKey)
+				if AcquireProcessingHashLock(hashKey, "test") == true {
+					go ExecuteRequestHash(hashKey, "test")
 				}
 				//dot_count := bytes.Count(d.Body, []byte("."))
 				//t := time.Duration(dot_count)

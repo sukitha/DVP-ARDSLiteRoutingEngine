@@ -25,8 +25,8 @@ func main() {
 		availablePHashes := GetAllProcessingHashes()
 		for _, h := range availablePHashes {
 			u1 := uuid.NewV4()
-			if AcquireProcessingHashLock(h, u1) == true {
-				go ExecuteRequestHash(h, u1)
+			if AcquireProcessingHashLock(h, u1.String()) == true {
+				go ExecuteRequestHash(h, u1.String())
 			}
 		}
 		time.Sleep(2 * time.Second)
