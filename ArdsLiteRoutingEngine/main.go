@@ -29,7 +29,7 @@ func main() {
 				go ExecuteRequestHash(h, u1.String())
 			}
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 
