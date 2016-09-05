@@ -6,9 +6,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 func Post(serviceurl string, postData, authToken, internalAuthToken string) bool {
+	fmt.Println("Start======================================:: ", time.Now().UTC())
 	fmt.Println("URL:>", serviceurl)
 
 	fmt.Println("PostData:>", postData)
@@ -29,9 +31,10 @@ func Post(serviceurl string, postData, authToken, internalAuthToken string) bool
 
 	fmt.Println("response Status:", resp.Status)
 	fmt.Println("response Headers:", resp.Header)
-	body, _ := ioutil.ReadAll(resp.Body)
-	result := string(body)
-	fmt.Println("response Body:", result)
+	//body, _ := ioutil.ReadAll(resp.Body)
+	//result := string(body)
+	fmt.Println("response CODE::", string(resp.StatusCode))
+	fmt.Println("End======================================:: ", time.Now().UTC())
 	if resp.StatusCode == 200 {
 		fmt.Println("Return true")
 		return true
