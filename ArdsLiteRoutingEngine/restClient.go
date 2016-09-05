@@ -32,7 +32,7 @@ func Post(serviceurl string, postData, authToken, internalAuthToken string) bool
 	body, _ := ioutil.ReadAll(resp.Body)
 	result := string(body)
 	fmt.Println("response Body:", result)
-	if result != "No matching resources at the moment" {
+	if resp.StatusCode == 200 {
 		fmt.Println("Return true")
 		return true
 	}
