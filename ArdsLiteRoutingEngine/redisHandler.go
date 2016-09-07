@@ -221,7 +221,7 @@ func RedisSearchKeys(pattern string) []string {
 	return strObj
 }
 
-func RedisSetNx(key, value string) bool {
+func RedisSetNx(key, value string, timeout int) bool {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in RedisSetNx", r)
@@ -238,7 +238,7 @@ func RedisSetNx(key, value string) bool {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 
-	strObj, _ := client.Cmd("set", key, value, "nx", "ex", 60).Bool()
+	strObj, _ := client.Cmd("set", key, value, "nx", "ex", timeout).Bool()
 	fmt.Println("GetRLock: ", strObj)
 	return strObj
 }
@@ -349,6 +349,27 @@ func RedisHashGetAll(hkey string) map[string]string {
 	errHndlr(r.Err)
 
 	strHash, _ := client.Cmd("hgetall", hkey).Hash()
+	return strHash
+}
+
+func RedisHashGetValue(hkey, queueId string) string {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisHashGetValue", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	//authServer
+	client.Cmd("auth", redisPassword)
+	//errHndlr(authE.Err)
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+
+	strHash := client.Cmd("hget", hkey, queueId).String()
 	return strHash
 }
 

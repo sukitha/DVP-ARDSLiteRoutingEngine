@@ -31,7 +31,7 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 
 		if strReqObj == "" {
 			fmt.Println("Start SetNextProcessingItem")
-			SetNextProcessingItem(_processingHashKey, k)
+			SetNextProcessingItem(_processingHashKey, k, v)
 		} else {
 			var reqObj Request
 			json.Unmarshal([]byte(strReqObj), &reqObj)
@@ -48,34 +48,39 @@ func GetRejectedQueueId(_queueId string) string {
 	return strings.Join(splitQueueId, ":")
 }
 
-func SetNextProcessingItem(_processingHash, _queueId string) {
-	rejectedQueueId := GetRejectedQueueId(_queueId)
-	nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
+func SetNextProcessingItem(_processingHash, _queueId, currentSession string) {
+	eSession := RedisHashGetValue(_processingHash, _queueId)
+	if eSession != "" && eSession == currentSession {
+		rejectedQueueId := GetRejectedQueueId(_queueId)
+		nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
 
-	if nextRejectedQueueItem == "" {
-		nextQueueItem := RedisListLpop(_queueId)
-		if nextQueueItem == "" {
-			removeHResult := RedisRemoveHashField(_processingHash, _queueId)
-			if removeHResult {
-				fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+		if nextRejectedQueueItem == "" {
+			nextQueueItem := RedisListLpop(_queueId)
+			if nextQueueItem == "" {
+				removeHResult := RedisRemoveHashField(_processingHash, _queueId)
+				if removeHResult {
+					fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+				} else {
+					fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+				}
 			} else {
-				fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+				setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
+				if setHResult {
+					fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+				} else {
+					fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+				}
 			}
 		} else {
-			setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
+			setHResult := RedisHashSetField(_processingHash, _queueId, nextRejectedQueueItem)
 			if setHResult {
-				fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+				fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
 			} else {
-				fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+				fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
 			}
 		}
 	} else {
-		setHResult := RedisHashSetField(_processingHash, _queueId, nextRejectedQueueItem)
-		if setHResult {
-			fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
-		} else {
-			fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
-		}
+		fmt.Println("session Mismatched, ignore setNextItem")
 	}
 }
 
@@ -130,7 +135,7 @@ func ContinueProcessing(_request Request) bool {
 
 func AcquireProcessingHashLock(hashId, uuid string) bool {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
-	if RedisSetNx(lockKey, uuid) == true {
+	if RedisSetNx(lockKey, uuid, 60) == true {
 		fmt.Println("lockKey: ", lockKey)
 		//if RedisSetEx(lockKey, "LOCKED", 60) {
 		return true
@@ -157,7 +162,7 @@ func ReleasetLock(hashId, uuid string) {
 func ExecuteRequestHash(_processingHashKey, uuid string) {
 	defer func() {
 		//if r := recover(); r != nil {
-			ReleasetLock(_processingHashKey, uuid)
+		ReleasetLock(_processingHashKey, uuid)
 		//}
 	}()
 	//for {
@@ -177,13 +182,13 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 				}
 			}
 			//ReleasetLock(_processingHashKey, uuid)
-		//	return
+			//	return
 		} //else {
-			//ReleasetLock(_processingHashKey, uuid)
+		//ReleasetLock(_processingHashKey, uuid)
 		//	return
 		//}
 	} //else {
-		//ReleasetLock(_processingHashKey, uuid)
+	//ReleasetLock(_processingHashKey, uuid)
 	//	return
 	//}
 	//time.Sleep(200 * time.Millisecond)
