@@ -23,11 +23,15 @@ func main() {
 	for {
 		//fmt.Println("Searching...")
 		availablePHashes := GetAllProcessingHashes()
-		for _, h := range availablePHashes {
-			u1 := uuid.NewV4()
-			if AcquireProcessingHashLock(h, u1.String()) == true {
-				go ExecuteRequestHash(h, u1.String())
+		if len(availablePHashes) > 0 {
+			for _, h := range availablePHashes {
+				u1 := uuid.NewV4()
+				if AcquireProcessingHashLock(h, u1.String()) == true {
+					go ExecuteRequestHash(h, u1.String())
+				}
 			}
+		} else {
+			fmt.Println("No Processing Hash Found...")
 		}
 		time.Sleep(1 * time.Second)
 	}
