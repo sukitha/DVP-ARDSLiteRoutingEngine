@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/satori/go.uuid"
 	"sort"
 	"strings"
 )
@@ -50,48 +49,48 @@ func GetRejectedQueueId(_queueId string) string {
 }
 
 func SetNextProcessingItem(_processingHash, _queueId, currentSession string) {
-	u1 := uuid.NewV4().String()
-	setNextLock := fmt.Sprintf("lock.setNextLock.%s", _queueId)
-	if RedisSetNx(setNextLock, u1, 1) == true {
-		eSession := RedisHashGetValue(_processingHash, _queueId)
-		if eSession != "" && eSession == currentSession {
-			rejectedQueueId := GetRejectedQueueId(_queueId)
-			nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
+	//u1 := uuid.NewV4().String()
+	//setNextLock := fmt.Sprintf("lock.setNextLock.%s", _queueId)
+	//if RedisSetNx(setNextLock, u1, 1) == true {
+	eSession := RedisHashGetValue(_processingHash, _queueId)
+	if eSession != "" && eSession == currentSession {
+		rejectedQueueId := GetRejectedQueueId(_queueId)
+		nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
 
-			if nextRejectedQueueItem == "" {
-				nextQueueItem := RedisListLpop(_queueId)
-				if nextQueueItem == "" {
-					removeHResult := RedisRemoveHashField(_processingHash, _queueId)
-					if removeHResult {
-						fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
-					} else {
-						fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
-					}
+		if nextRejectedQueueItem == "" {
+			nextQueueItem := RedisListLpop(_queueId)
+			if nextQueueItem == "" {
+				removeHResult := RedisRemoveHashField(_processingHash, _queueId)
+				if removeHResult {
+					fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
 				} else {
-					setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
-					if setHResult {
-						fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
-					} else {
-						fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
-					}
+					fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
 				}
 			} else {
-				setHResult := RedisHashSetField(_processingHash, _queueId, nextRejectedQueueItem)
+				setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
 				if setHResult {
-					fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
+					fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
 				} else {
-					fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
+					fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
 				}
 			}
 		} else {
-			fmt.Println("session Mismatched, ignore setNextItem")
+			setHResult := RedisHashSetField(_processingHash, _queueId, nextRejectedQueueItem)
+			if setHResult {
+				fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
+			} else {
+				fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
+			}
 		}
 	} else {
-		fmt.Println("Set Next Processing Item Fail To Aquire Lock")
+		fmt.Println("session Mismatched, ignore setNextItem")
 	}
+	//} else {
+	//fmt.Println("Set Next Processing Item Fail To Aquire Lock")
+	//}
 
 	defer func() {
-		ReleasetLock(setNextLock, u1)
+		//ReleasetLock(setNextLock, u1)
 	}()
 }
 
