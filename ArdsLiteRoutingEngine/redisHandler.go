@@ -201,6 +201,7 @@ func RedisGet_v1(key string) (strObj string, err error) {
 }
 
 func RedisSearchKeys(pattern string) []string {
+	fmt.Println("Start RedisSearchKeys")
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in RedisSearchKeys", r)

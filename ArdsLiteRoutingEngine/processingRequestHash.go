@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/satori/go.uuid"
 	"sort"
 	"strings"
 )
@@ -49,39 +50,49 @@ func GetRejectedQueueId(_queueId string) string {
 }
 
 func SetNextProcessingItem(_processingHash, _queueId, currentSession string) {
-	eSession := RedisHashGetValue(_processingHash, _queueId)
-	if eSession != "" && eSession == currentSession {
-		rejectedQueueId := GetRejectedQueueId(_queueId)
-		nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
+	u1 := uuid.NewV4().String()
+	setNextLock := fmt.Sprintf("lock.setNextLock.%s", _queueId)
+	if RedisSetNx(setNextLock, u1, 1) == true {
+		eSession := RedisHashGetValue(_processingHash, _queueId)
+		if eSession != "" && eSession == currentSession {
+			rejectedQueueId := GetRejectedQueueId(_queueId)
+			nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
 
-		if nextRejectedQueueItem == "" {
-			nextQueueItem := RedisListLpop(_queueId)
-			if nextQueueItem == "" {
-				removeHResult := RedisRemoveHashField(_processingHash, _queueId)
-				if removeHResult {
-					fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+			if nextRejectedQueueItem == "" {
+				nextQueueItem := RedisListLpop(_queueId)
+				if nextQueueItem == "" {
+					removeHResult := RedisRemoveHashField(_processingHash, _queueId)
+					if removeHResult {
+						fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+					} else {
+						fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+					}
 				} else {
-					fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+					setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
+					if setHResult {
+						fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+					} else {
+						fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+					}
 				}
 			} else {
-				setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
+				setHResult := RedisHashSetField(_processingHash, _queueId, nextRejectedQueueItem)
 				if setHResult {
-					fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+					fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
 				} else {
-					fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+					fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
 				}
 			}
 		} else {
-			setHResult := RedisHashSetField(_processingHash, _queueId, nextRejectedQueueItem)
-			if setHResult {
-				fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
-			} else {
-				fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
-			}
+			fmt.Println("session Mismatched, ignore setNextItem")
 		}
 	} else {
-		fmt.Println("session Mismatched, ignore setNextItem")
+		fmt.Println("Set Next Processing Item Fail To Aquire Lock")
 	}
+
+	defer func() {
+		ReleasetLock(setNextLock, u1)
+	}()
 }
 
 /*func GetLongestWaitingItem(_request []Request) Request {
@@ -178,19 +189,25 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 							//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
 							fmt.Println("Continue ARDS Process Success")
 						}
+					} else {
+						SetNextProcessingItem(_processingHashKey, longestWItem.QueueId, longestWItem.SessionId)
 					}
+				} else {
+					fmt.Println("No Session Found")
 				}
 			}
 			//ReleasetLock(_processingHashKey, uuid)
 			//	return
-		} //else {
+		} else {
+			fmt.Println("No Processing Items Found")
+			//ReleasetLock(_processingHashKey, uuid)
+			//	return
+		}
+	} else {
+		fmt.Println("No Processing Hash Found")
 		//ReleasetLock(_processingHashKey, uuid)
 		//	return
-		//}
-	} //else {
-	//ReleasetLock(_processingHashKey, uuid)
-	//	return
-	//}
+	}
 	//time.Sleep(200 * time.Millisecond)
 	//}
 }
