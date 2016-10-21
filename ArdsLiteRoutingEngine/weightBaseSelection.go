@@ -31,7 +31,7 @@ func CalculateWeight(reqAttributeInfo []ReqAttributeData, resAttributeInfo []Res
 	return calculatedWeight
 }
 
-func WeightBaseSelection(_company, _tenent int, _sessionId string) []string {
+func WeightBaseSelection(_company, _tenent int, _sessionId string) (result SelectionResult) {
 	requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
 	fmt.Println(requestKey)
 
@@ -102,7 +102,6 @@ func WeightBaseSelection(_company, _tenent int, _sessionId string) []string {
 		}
 
 	}
-
-	return matchingResources
-
+	result.Priority = matchingResources
+	return
 }

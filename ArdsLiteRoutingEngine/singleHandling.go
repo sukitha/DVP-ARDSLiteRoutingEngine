@@ -6,12 +6,12 @@ import (
 	"strings"
 )
 
-func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string, reqCompany, reqTenant int) string {
-	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resourceIds, reqCompany, reqTenant)
+func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectionResult, reqCompany, reqTenant int) string {
+	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, selectedResources, reqCompany, reqTenant)
 }
 
-func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string, reqCompany, reqTenant int) string {
-
+func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectionResult, reqCompany, reqTenant int) string {
+	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)

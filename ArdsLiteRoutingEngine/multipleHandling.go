@@ -6,12 +6,13 @@ import (
 	"strings"
 )
 
-func MultipleHandling(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, resourceIds []string, nuOfResRequested, reqCompany, reqTenant int) string {
-	return SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, resourceIds, nuOfResRequested, reqCompany, reqTenant)
+func MultipleHandling(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, selectedResources SelectionResult, nuOfResRequested, reqCompany, reqTenant int) string {
+	return SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, selectedResources, nuOfResRequested, reqCompany, reqTenant)
 }
 
-func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, resourceIds []string, nuOfResRequested, reqCompany, reqTenant int) string {
+func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, selectedResources SelectionResult, nuOfResRequested, reqCompany, reqTenant int) string {
 	selectedResList := make([]string, 0)
+	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)

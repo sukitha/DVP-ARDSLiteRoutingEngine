@@ -140,3 +140,8 @@ type MultiResCount struct {
 type updateCsReult struct {
 	IsSuccess bool
 }
+
+type SelectionResult struct {
+	Priority  []string
+	Threshold []string
+}

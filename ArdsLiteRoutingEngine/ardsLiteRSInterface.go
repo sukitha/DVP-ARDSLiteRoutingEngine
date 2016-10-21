@@ -57,17 +57,20 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 }*/
 
 func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
-	var selectionResult = make([]string, 0)
+	var selectionResult SelectionResult
 	var handlingResult = ""
 	switch SelectionAlgo {
 	case "BASIC":
-		selectionResult = BasicSelectionAlgo(Company, Tenant, SessionId)
+		selectionResult = BasicSelection(Company, Tenant, SessionId)
+		break
 	case "BASICTHRESHOLD":
-		selectionResult = BasicThresholdSelectionAlgo(Company, Tenant, SessionId)
+		selectionResult = BasicThresholdSelection(Company, Tenant, SessionId)
+		break
 	case "WEIGHTBASE":
-		selectionResult = WeightBaseSelectionAlgo(Company, Tenant, SessionId)
+		selectionResult = WeightBaseSelection(Company, Tenant, SessionId)
+		break
 	default:
-		selectionResult = make([]string, 0)
+		break
 	}
 
 	switch HandlingAlgo {

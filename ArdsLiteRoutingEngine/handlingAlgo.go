@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-func SingleResourceAlgo(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resourceIds []string, reqCompany, reqTenant int) string {
-	var result = SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resourceIds, reqCompany, reqTenant)
+func SingleResourceAlgo(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectionResult, reqCompany, reqTenant int) string {
+	var result = SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, selectedResources, reqCompany, reqTenant)
 	return result
 
 }

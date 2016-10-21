@@ -28,39 +28,6 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 	return
 }
 
-func BasicSelectionAlgo(Company, Tenant int, SessionId string) []string {
-
-	fmt.Println(Company)
-	fmt.Println(Tenant)
-	fmt.Println(SessionId)
-
-	var result = BasicSelection(Company, Tenant, SessionId)
-	return result
-
-}
-
-func BasicThresholdSelectionAlgo(Company, Tenant int, SessionId string) []string {
-
-	fmt.Println(Company)
-	fmt.Println(Tenant)
-	fmt.Println(SessionId)
-
-	var result = BasicThresholdSelection(Company, Tenant, SessionId)
-	return result
-
-}
-
-func WeightBaseSelectionAlgo(Company, Tenant int, SessionId string) []string {
-
-	fmt.Println(Company)
-	fmt.Println(Tenant)
-	fmt.Println(SessionId)
-
-	var result = WeightBaseSelection(Company, Tenant, SessionId)
-	return result
-
-}
-
 func GetConcurrencyInfo(_company, _tenant int, _resId, _category string) (ciObj ConcurrencyInfo, err error) {
 	key := fmt.Sprintf("ConcurrencyInfo:%d:%d:%s:%s", _company, _tenant, _resId, _category)
 	fmt.Println(key)

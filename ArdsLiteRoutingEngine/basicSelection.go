@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func BasicSelection(_company, _tenent int, _sessionId string) []string {
+func BasicSelection(_company, _tenent int, _sessionId string) (result SelectionResult) {
 	requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
 	fmt.Println(requestKey)
 
@@ -80,7 +80,7 @@ func BasicSelection(_company, _tenent int, _sessionId string) []string {
 		}
 
 	}
-
-	return matchingResources
+	result.Priority = matchingResources
+	return
 
 }
