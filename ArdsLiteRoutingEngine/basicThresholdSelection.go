@@ -67,7 +67,7 @@ func BasicThresholdSelection(_company, _tenent int, _sessionId string) (result S
 					fmt.Println("Error in GetConcurrencyInfo")
 				} else {
 					if _isThreshold {
-						resourceThresholdConcInfo = append(resourceConcInfo, concInfo)
+						resourceThresholdConcInfo = append(resourceThresholdConcInfo, concInfo)
 					} else {
 						resourceConcInfo = append(resourceConcInfo, concInfo)
 					}
