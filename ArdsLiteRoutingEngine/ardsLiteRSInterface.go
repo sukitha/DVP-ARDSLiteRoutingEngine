@@ -62,6 +62,8 @@ func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, S
 	switch SelectionAlgo {
 	case "BASIC":
 		selectionResult = BasicSelectionAlgo(Company, Tenant, SessionId)
+	case "BASICTHRESHOLD":
+		selectionResult = BasicThresholdSelectionAlgo(Company, Tenant, SessionId)
 	case "WEIGHTBASE":
 		selectionResult = WeightBaseSelectionAlgo(Company, Tenant, SessionId)
 	default:

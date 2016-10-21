@@ -5,6 +5,29 @@ import (
 	"fmt"
 )
 
+func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo []ResAttributeData) (isAttrAvailable, isThreshold bool) {
+	isAttrAvailable = false
+	isThreshold = false
+
+	for _, reqAtt := range reqAttributeInfo {
+		if len(reqAtt.AttributeCode) > 0 {
+			attCode := reqAtt.AttributeCode[0]
+
+			for _, resAtt := range resAttributeInfo {
+				if attCode == resAtt.Attribute && resAtt.HandlingType == reqAtt.HandlingType {
+					isAttrAvailable = true
+
+					if resAtt.Percentage > 0 && resAtt.Percentage <= 25 {
+						isThreshold = true
+					}
+					return
+				}
+			}
+		}
+	}
+	return
+}
+
 func BasicSelectionAlgo(Company, Tenant int, SessionId string) []string {
 
 	fmt.Println(Company)
@@ -12,6 +35,17 @@ func BasicSelectionAlgo(Company, Tenant int, SessionId string) []string {
 	fmt.Println(SessionId)
 
 	var result = BasicSelection(Company, Tenant, SessionId)
+	return result
+
+}
+
+func BasicThresholdSelectionAlgo(Company, Tenant int, SessionId string) []string {
+
+	fmt.Println(Company)
+	fmt.Println(Tenant)
+	fmt.Println(SessionId)
+
+	var result = BasicThresholdSelection(Company, Tenant, SessionId)
 	return result
 
 }

@@ -7,21 +7,6 @@ import (
 	"strings"
 )
 
-func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo []ResAttributeData) bool {
-	for _, reqAtt := range reqAttributeInfo {
-		if len(reqAtt.AttributeCode) > 0 {
-			attCode := reqAtt.AttributeCode[0]
-
-			for _, resAtt := range resAttributeInfo {
-				if attCode == resAtt.Attribute && resAtt.HandlingType == reqAtt.HandlingType {
-					return true
-				}
-			}
-		}
-	}
-	return false
-}
-
 func BasicSelection(_company, _tenent int, _sessionId string) []string {
 	requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
 	fmt.Println(requestKey)
@@ -72,7 +57,9 @@ func BasicSelection(_company, _tenent int, _sessionId string) []string {
 			var resObj Resource
 			json.Unmarshal([]byte(strResObj), &resObj)
 
-			if resObj.ResourceId != "" && IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo) {
+			_attAvailable, _ := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
+
+			if resObj.ResourceId != "" && _attAvailable {
 				concInfo, err := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)
 				if err != nil {
 					fmt.Println("Error in GetConcurrencyInfo")
