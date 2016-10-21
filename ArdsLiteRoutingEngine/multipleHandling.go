@@ -13,6 +13,8 @@ func MultipleHandling(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId s
 func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, selectedResources SelectionResult, nuOfResRequested, reqCompany, reqTenant int) string {
 	selectedResList := make([]string, 0)
 	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
+	fmt.Println("///////////////////////////////////////selectedResources/////////////////////////////////////////////////")
+	fmt.Println(resourceIds)
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)
