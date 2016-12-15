@@ -27,10 +27,10 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 		if cErr == nil {
 			metaData, mErr := GetReqMetaData(reqCompany, reqTenant, ServerType, RequestType)
 			if mErr == nil {
-				resState, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
+				resState, resMode, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 				if sErr == nil {
 
-					if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
+					if resState == "Available" && resMode == "Inbound" && conInfo.RejectCount < metaData.MaxRejectCount {
 						ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, resObj)
 
 						var tagArray = make([]string, 8)

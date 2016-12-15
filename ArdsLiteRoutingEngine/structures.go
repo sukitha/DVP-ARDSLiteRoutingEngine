@@ -99,6 +99,7 @@ type Resource struct {
 type ResourceStatus struct {
 	State  string
 	Reason string
+	Mode string
 }
 
 type CSlotInfo struct {

@@ -29,7 +29,7 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 		metaData, mErr := GetReqMetaData(reqCompany, reqTenant, serverType, requestType)
 		fmt.Println("End GetReqMetaData")
 		fmt.Println("Start GetResourceState")
-		resState, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
+		resState, resMode, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 		fmt.Println("Start GetResourceState")
 
 		fmt.Println("conInfo.RejectCount:: ", conInfo.RejectCount)
@@ -41,7 +41,7 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 
 				if sErr == nil {
 
-					if resState == "Available" && conInfo.RejectCount < metaData.MaxRejectCount {
+					if resState == "Available" && resMode == "Inbound" && conInfo.RejectCount < metaData.MaxRejectCount {
 						fmt.Println("===========================================Start====================================================")
 						ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resObj)
 
