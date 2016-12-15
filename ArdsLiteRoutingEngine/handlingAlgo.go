@@ -107,7 +107,7 @@ func GetReqMetaData(_company, _tenent int, _serverType, _requestType string) (me
 	return
 }
 
-func GetResourceState(_company, _tenant int, _resId string) (state string, err error) {
+func GetResourceState(_company, _tenant int, _resId string) (state string, mode string, err error) {
 	key := fmt.Sprintf("ResourceState:%d:%d:%s", _company, _tenant, _resId)
 	fmt.Println(key)
 	var strResStateObj string
@@ -119,5 +119,6 @@ func GetResourceState(_company, _tenant int, _resId string) (state string, err e
 	var resStatus ResourceStatus
 	json.Unmarshal([]byte(strResStateObj), &resStatus)
 	state = resStatus.State
+	mode = resStatus.Mode
 	return
 }
