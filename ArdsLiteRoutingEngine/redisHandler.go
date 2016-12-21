@@ -457,3 +457,27 @@ func RedisListLpop(lname string) string {
 	result, _ := client.Cmd("lpush", lname, value).Bool()
 	return result
 }*/
+
+/*-----------------------------Geo methods--------------------------------------*/
+
+func RedisGeoRadius(locationObj ReqLocationData) *redis.Reply {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisGeoRadius", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	//authServer
+	client.Cmd("auth", redisPassword)
+	//errHndlr(authE.Err)
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+
+	locationResult := client.Cmd("georadius", "positions", locationObj.Longitude, locationObj.Latitude, locationObj.Radius, locationObj.Metric, "WITHDIST", "ASC")
+	fmt.Println(locationResult)
+	return locationResult
+}
