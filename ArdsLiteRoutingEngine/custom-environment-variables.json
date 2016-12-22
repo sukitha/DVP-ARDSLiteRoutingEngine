@@ -2,6 +2,7 @@
     "RedisIp": "SYS_REDIS_HOST",
 	"RedisPort": "SYS_REDIS_PORT",
 	"RedisDb": "SYS_REDIS_DB_ARDS",
+	"LocationDb": "SYS_REDIS_DB_LOCATION",
 	"RedisPassword":"SYS_REDIS_PASSWORD",
 	"Port":"HOST_ARDSLITEROUTINGENGINE_PORT",
 	"RabbitMQIp": "SYS_RABBITMQ_HOST",

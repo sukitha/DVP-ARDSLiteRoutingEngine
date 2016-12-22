@@ -6,6 +6,7 @@ import (
 )
 
 func LocationBaseSelection(_company, _tenent int, _sessionId string) (result SelectionResult) {
+	fmt.Println("-----------Start Location base----------------")
 	var matchingResources = make([]string, 0)
 
 	requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
@@ -22,31 +23,39 @@ func LocationBaseSelection(_company, _tenent int, _sessionId string) (result Sel
 		var locationObj ReqLocationData
 		json.Unmarshal([]byte(reqObj.OtherInfo), &locationObj)
 
+		fmt.Println("reqOtherInfo:: ", locationObj)
+
 		if locationObj != (ReqLocationData{}) {
-
-			locationResult := RedisGeoRadius(locationObj)
-
+			fmt.Println("Start Get locations")
+			locationResult := RedisGeoRadius(_tenent, _company, locationObj)
+			fmt.Println("locations:: ", locationResult)
 			for _, lor := range locationResult.Elems {
 
 				resourceLocInfo, _ := lor.List()
 
 				if len(resourceLocInfo) > 1 {
-					resourceKey := fmt.Sprintf("Resource:%d:%d:%s", reqObj.Company, reqObj.Tenant, resourceLocInfo[0])
-					strResObj := RedisGet(resourceKey)
-					fmt.Println(strResObj)
+					issMapKey := fmt.Sprintf("ResourceIssMap:%d:%d:%s", _company, _tenent, resourceLocInfo[0])
+					fmt.Println("start map iss: ", issMapKey)
+					resourceKey := RedisGet(issMapKey)
+					fmt.Println("resourceKey: ", resourceKey)
+					if resourceKey != "" {
 
-					var resObj Resource
-					json.Unmarshal([]byte(strResObj), &resObj)
+						strResObj := RedisGet(resourceKey)
+						fmt.Println(strResObj)
 
-					if resObj.ResourceId != "" {
-						resKey := fmt.Sprintf("Resource:%d:%d:%s", resObj.Company, resObj.Tenant, resObj.ResourceId)
-						if len(reqObj.AttributeInfo) > 0 {
-							_attAvailable, _ := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
-							if _attAvailable {
+						var resObj Resource
+						json.Unmarshal([]byte(strResObj), &resObj)
+
+						if resObj.ResourceId != "" {
+							resKey := fmt.Sprintf("Resource:%d:%d:%s", resObj.Company, resObj.Tenant, resObj.ResourceId)
+							if len(reqObj.AttributeInfo) > 0 {
+								_attAvailable, _ := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
+								if _attAvailable {
+									matchingResources = AppendIfMissingString(matchingResources, resKey)
+								}
+							} else {
 								matchingResources = AppendIfMissingString(matchingResources, resKey)
 							}
-						} else {
-							matchingResources = AppendIfMissingString(matchingResources, resKey)
 						}
 					}
 				}

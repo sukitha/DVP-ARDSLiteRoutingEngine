@@ -6,6 +6,7 @@ type Configuration struct {
 	RedisIp          string
 	RedisPort        string
 	RedisDb          int
+	LocationDb       int
 	RedisPassword    string
 	Port             string
 	RabbitMQIp       string
@@ -19,6 +20,7 @@ type EnvConfiguration struct {
 	RedisIp          string
 	RedisPort        string
 	RedisDb          string
+	LocationDb       string
 	RedisPassword    string
 	Port             string
 	RabbitMQIp       string
