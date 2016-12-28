@@ -6,6 +6,7 @@ type Configuration struct {
 	RedisIp          string
 	RedisPort        string
 	RedisDb          int
+	LocationDb       int
 	RedisPassword    string
 	Port             string
 	RabbitMQIp       string
@@ -19,6 +20,7 @@ type EnvConfiguration struct {
 	RedisIp          string
 	RedisPort        string
 	RedisDb          string
+	LocationDb       string
 	RedisPassword    string
 	Port             string
 	RabbitMQIp       string
@@ -29,6 +31,13 @@ type EnvConfiguration struct {
 }
 
 //Request
+
+type ReqLocationData struct {
+	Longitude float32
+	Latitude  float32
+	Radius    int
+	Metric    string
+}
 
 type ReqAttributeData struct {
 	AttributeCode      []string
@@ -69,6 +78,7 @@ type RequestSelection struct {
 	RequestType   string
 	SessionId     string
 	AttributeInfo []ReqAttributeData
+	OtherInfo     string
 }
 
 type ReqMetaData struct {
@@ -99,7 +109,7 @@ type Resource struct {
 type ResourceStatus struct {
 	State  string
 	Reason string
-	Mode string
+	Mode   string
 }
 
 type CSlotInfo struct {

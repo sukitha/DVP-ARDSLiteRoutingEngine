@@ -14,7 +14,9 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 	selectedResList := make([]string, 0)
 	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
 	fmt.Println("///////////////////////////////////////selectedResources/////////////////////////////////////////////////")
-	fmt.Println(resourceIds)
+	fmt.Println("Priority:: ", selectedResources.Priority)
+	fmt.Println("Threshold:: ", selectedResources.Threshold)
+	fmt.Println("ResourceIds:: ", resourceIds)
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)
