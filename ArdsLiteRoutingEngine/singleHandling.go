@@ -13,7 +13,9 @@ func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId str
 func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectionResult, reqCompany, reqTenant int) string {
 	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
 	fmt.Println("///////////////////////////////////////selectedResources/////////////////////////////////////////////////")
-	fmt.Println(resourceIds)
+	fmt.Println("Priority:: ", selectedResources.Priority)
+	fmt.Println("Threshold:: ", selectedResources.Threshold)
+	fmt.Println("ResourceIds:: ", resourceIds)
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)

@@ -69,6 +69,9 @@ func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, S
 	case "WEIGHTBASE":
 		selectionResult = WeightBaseSelection(Company, Tenant, SessionId)
 		break
+	case "LOCATIONBASE":
+		selectionResult = LocationBaseSelection(Company, Tenant, SessionId)
+		break
 	default:
 		break
 	}

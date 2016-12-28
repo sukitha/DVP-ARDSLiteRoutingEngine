@@ -15,6 +15,7 @@ var dirPath string
 var redisIp string
 var redisPort string
 var redisDb int
+var locationDb int
 var redisPassword string
 var port string
 var accessToken string
@@ -53,7 +54,8 @@ func GetDefaultConfig() Configuration {
 		fmt.Println("error:", deferr)
 		defconfiguration.RedisIp = "192.168.3.200"
 		defconfiguration.RedisPort = "6379"
-		defconfiguration.RedisDb = 5
+		defconfiguration.RedisDb = 6
+		defconfiguration.LocationDb = 0
 		defconfiguration.RedisPassword = "DuoS123"
 		defconfiguration.Port = "2226"
 		defconfiguration.RabbitMQIp = "45.55.142.207"
@@ -72,6 +74,7 @@ func LoadDefaultConfig() {
 	redisIp = fmt.Sprintf("%s:%s", defconfiguration.RedisIp, defconfiguration.RedisPort)
 	redisPort = defconfiguration.RedisPort
 	redisDb = defconfiguration.RedisDb
+	locationDb = defconfiguration.LocationDb
 	redisPassword = defconfiguration.RedisPassword
 	port = defconfiguration.Port
 	rabbitMQIp = defconfiguration.RabbitMQIp
@@ -100,11 +103,13 @@ func InitiateRedis() {
 		fmt.Println("error:", enverr)
 		LoadDefaultConfig()
 	} else {
-		var converr error
+		var converr1 error
+		var converr2 error
 		defConfig := GetDefaultConfig()
 		redisIp = os.Getenv(envconfiguration.RedisIp)
 		redisPort = os.Getenv(envconfiguration.RedisPort)
-		redisDb, converr = strconv.Atoi(os.Getenv(envconfiguration.RedisDb))
+		redisDb, converr1 = strconv.Atoi(os.Getenv(envconfiguration.RedisDb))
+		locationDb, converr2 = strconv.Atoi(os.Getenv(envconfiguration.LocationDb))
 		redisPassword = os.Getenv(envconfiguration.RedisPassword)
 		rabbitMQIp = os.Getenv(envconfiguration.RabbitMQIp)
 		rabbitMQPort = os.Getenv(envconfiguration.RabbitMQPort)
@@ -119,8 +124,11 @@ func InitiateRedis() {
 		if redisPort == "" {
 			redisPort = defConfig.RedisPort
 		}
-		if redisDb == 0 || converr != nil {
+		if converr1 != nil {
 			redisDb = defConfig.RedisDb
+		}
+		if converr2 != nil {
+			locationDb = defConfig.LocationDb
 		}
 		if redisPassword == "" {
 			redisPassword = defConfig.RedisPassword
@@ -149,6 +157,7 @@ func InitiateRedis() {
 
 	fmt.Println("RedisIp:", redisIp)
 	fmt.Println("RedisDb:", redisDb)
+	fmt.Println("LocationDb:", locationDb)
 
 }
 
@@ -457,3 +466,29 @@ func RedisListLpop(lname string) string {
 	result, _ := client.Cmd("lpush", lname, value).Bool()
 	return result
 }*/
+
+/*-----------------------------Geo methods--------------------------------------*/
+
+func RedisGeoRadius(tenant, company int, locationObj ReqLocationData) *redis.Reply {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisGeoRadius", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	//authServer
+	client.Cmd("auth", redisPassword)
+	//errHndlr(authE.Err)
+	// select database
+	r := client.Cmd("select", locationDb)
+	errHndlr(r.Err)
+
+	locationInfoKey := fmt.Sprintf("location:%d:%d", tenant, company)
+	fmt.Println("locationInfoKey: ", locationInfoKey)
+	locationResult := client.Cmd("georadius", "positions", locationObj.Longitude, locationObj.Latitude, locationObj.Radius, locationObj.Metric, "WITHDIST", "ASC")
+	fmt.Println(locationResult)
+	return locationResult
+}

@@ -67,7 +67,7 @@ func BasicThresholdSelection(_company, _tenent int, _sessionId string) (result S
 					fmt.Println("Error in GetConcurrencyInfo")
 				} else {
 					if _isThreshold {
-						resourceThresholdConcInfo = append(resourceConcInfo, concInfo)
+						resourceThresholdConcInfo = append(resourceThresholdConcInfo, concInfo)
 					} else {
 						resourceConcInfo = append(resourceConcInfo, concInfo)
 					}
@@ -88,7 +88,7 @@ func BasicThresholdSelection(_company, _tenent int, _sessionId string) (result S
 
 		for _, res := range resourceThresholdConcInfo {
 			resKey := fmt.Sprintf("Resource:%d:%d:%s", res.Company, res.Tenant, res.ResourceId)
-			matchingThresholdResources = AppendIfMissingString(matchingResources, resKey)
+			matchingThresholdResources = AppendIfMissingString(matchingThresholdResources, resKey)
 			fmt.Println(resKey)
 		}
 
