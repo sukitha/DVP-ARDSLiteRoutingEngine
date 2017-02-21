@@ -1,6 +1,6 @@
 {
-    "RedisIp": "104.131.67.21",
-	"RedisPort": "6379",
+    "RedisIp": "45.55.142.207",
+	"RedisPort": "6389",
 	"RedisDb": 6,
 	"LocationDb": 0,
 	"RedisPassword":"DuoS123",

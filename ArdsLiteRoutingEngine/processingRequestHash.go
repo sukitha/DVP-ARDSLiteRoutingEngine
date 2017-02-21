@@ -179,7 +179,8 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 	if RedisCheckKeyExist(_processingHashKey) {
 		processingItems := GetAllProcessingItems(_processingHashKey)
 		if len(processingItems) > 0 {
-			sort.Sort(timeSliceReq(processingItems))
+			//sort.Sort(timeSliceReq(processingItems))
+			sort.Sort(ByReqPriority(processingItems))
 			for _, longestWItem := range processingItems {
 				//if longestWItem != (Request{}) {
 				if longestWItem.SessionId != "" {
