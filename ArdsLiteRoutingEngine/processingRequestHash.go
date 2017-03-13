@@ -182,6 +182,8 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 			//sort.Sort(timeSliceReq(processingItems))
 			sort.Sort(ByReqPriority(processingItems))
 			for _, longestWItem := range processingItems {
+
+				fmt.Println("Execute processing hash item::", longestWItem.Priority)
 				//if longestWItem != (Request{}) {
 				if longestWItem.SessionId != "" {
 					if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {

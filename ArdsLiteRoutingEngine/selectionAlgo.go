@@ -15,11 +15,16 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 
 			for _, resAtt := range resAttributeInfo {
 				if attCode == resAtt.Attribute && resAtt.HandlingType == reqAtt.HandlingType {
-					isAttrAvailable = true
+					if resAtt.Percentage > 0 {
+						isAttrAvailable = true
 
-					if resAtt.Percentage > 0 && resAtt.Percentage <= 25 {
-						isThreshold = true
+						if resAtt.Percentage > 0 && resAtt.Percentage <= 25 {
+							isThreshold = true
+						}
+					} else {
+						isAttrAvailable = false
 					}
+
 					return
 				}
 			}
