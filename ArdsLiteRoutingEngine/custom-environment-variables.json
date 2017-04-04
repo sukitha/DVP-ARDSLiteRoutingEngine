@@ -9,5 +9,6 @@
 	"RabbitMQPort": "SYS_RABBITMQ_PORT",
 	"RabbitMQUser": "SYS_RABBITMQ_USER",
 	"RabbitMQPassword":"SYS_RABBITMQ_PASSWORD",
+	"UseMsgQueue": "HOST_USE_MSG_QUEUE",
 	"AccessToken":"HOST_TOKEN"
 }

@@ -14,6 +14,7 @@ type Configuration struct {
 	RabbitMQUser     string
 	RabbitMQPassword string
 	AccessToken      string
+	UseMsgQueue      bool
 }
 
 type EnvConfiguration struct {
@@ -28,6 +29,7 @@ type EnvConfiguration struct {
 	RabbitMQUser     string
 	RabbitMQPassword string
 	AccessToken      string
+	UseMsgQueue      string
 }
 
 //Request

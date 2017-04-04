@@ -23,6 +23,7 @@ var rabbitMQIp string
 var rabbitMQPort string
 var rabbitMQUser string
 var rabbitMQPassword string
+var useMsgQueue bool
 
 func errHndlr(err error) {
 	if err != nil {
@@ -62,6 +63,7 @@ func GetDefaultConfig() Configuration {
 		defconfiguration.RabbitMQPort = "5672"
 		defconfiguration.RabbitMQUser = "guest"
 		defconfiguration.RabbitMQPassword = "guest"
+		defconfiguration.UseMsgQueue = false
 		defconfiguration.AccessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoZXNoYW5pbmRpa2EiLCJqdGkiOiIwZmIyNDJmZS02OGQwLTQ1MjEtOTM5NS0xYzE0M2M3MzNmNmEiLCJzdWIiOiI1NmE5ZTc1OWZiMDcxOTA3YTAwMDAwMDEyNWQ5ZTgwYjVjN2M0Zjk4NDY2ZjkyMTE3OTZlYmY0MyIsImV4cCI6MTQ1Njg5NDE5NSwidGVuYW50IjoxLCJjb21wYW55Ijo1LCJzY29wZSI6W3sicmVzb3VyY2UiOiJhbGwifSx7InJlc291cmNlIjoicmVxdWVzdHNlcnZlciIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJyZXF1ZXN0bWV0YSIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJhcmRzcmVzb3VyY2UiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfSx7InJlc291cmNlIjoiYXJkc3JlcXVlc3QiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfV0sImlhdCI6MTQ1NjI4OTM5NX0.AWZuYNtj4lHfxpTQCutswUfUsJXwTMVPUmqTjFdVXSk"
 	}
 
@@ -81,6 +83,7 @@ func LoadDefaultConfig() {
 	rabbitMQPort = defconfiguration.RabbitMQPort
 	rabbitMQUser = defconfiguration.RabbitMQUser
 	rabbitMQPassword = defconfiguration.RabbitMQPassword
+	useMsgQueue = defconfiguration.UseMsgQueue
 	accessToken = defconfiguration.AccessToken
 }
 
@@ -105,6 +108,7 @@ func InitiateRedis() {
 	} else {
 		var converr1 error
 		var converr2 error
+		var converr3 error
 		defConfig := GetDefaultConfig()
 		redisIp = os.Getenv(envconfiguration.RedisIp)
 		redisPort = os.Getenv(envconfiguration.RedisPort)
@@ -116,6 +120,7 @@ func InitiateRedis() {
 		rabbitMQUser = os.Getenv(envconfiguration.RabbitMQUser)
 		rabbitMQPassword = os.Getenv(envconfiguration.RabbitMQPassword)
 		port = os.Getenv(envconfiguration.Port)
+		useMsgQueue, converr3 = strconv.ParseBool(os.Getenv(envconfiguration.UseMsgQueue))
 		accessToken = os.Getenv(envconfiguration.AccessToken)
 
 		if redisIp == "" {
@@ -147,6 +152,9 @@ func InitiateRedis() {
 		}
 		if rabbitMQPassword == "" {
 			rabbitMQPassword = defConfig.RabbitMQPassword
+		}
+		if converr3 != nil {
+			useMsgQueue = defConfig.UseMsgQueue
 		}
 		if accessToken == "" {
 			accessToken = defConfig.AccessToken

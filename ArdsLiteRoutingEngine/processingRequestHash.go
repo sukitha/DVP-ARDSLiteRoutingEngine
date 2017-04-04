@@ -213,3 +213,44 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 	//time.Sleep(200 * time.Millisecond)
 	//}
 }
+
+func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
+	defer func() {
+
+		ReleasetLock(_processingHashKey, uuid)
+
+	}()
+	for RedisCheckKeyExist(_processingHashKey) {
+
+		processingItems := GetAllProcessingItems(_processingHashKey)
+
+		if len(processingItems) > 0 {
+
+			sort.Sort(ByReqPriority(processingItems))
+			for _, longestWItem := range processingItems {
+
+				fmt.Println("Execute processing hash item::", longestWItem.Priority)
+
+				if longestWItem.SessionId != "" {
+
+					if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
+
+						if ContinueProcessing(longestWItem) {
+
+							fmt.Println("Continue ARDS Process Success")
+						}
+					} else {
+
+						SetNextProcessingItem(_processingHashKey, longestWItem.QueueId, longestWItem.SessionId)
+					}
+				} else {
+
+					fmt.Println("No Session Found")
+				}
+			}
+		} else {
+
+			fmt.Println("No Processing Items Found")
+		}
+	}
+}
