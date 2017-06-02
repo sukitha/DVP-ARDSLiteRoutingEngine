@@ -63,6 +63,7 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 							slotObj.OtherInfo = "Inbound"
 							slotObj.MaxReservedTime = metaData.MaxReservedTime
 							slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
+							slotObj.MaxFreezeTime = metaData.MaxFreezeTime
 							slotObj.TempMaxRejectCount = metaData.MaxRejectCount
 
 							if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {

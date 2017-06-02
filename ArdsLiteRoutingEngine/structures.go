@@ -87,6 +87,7 @@ type ReqMetaData struct {
 	MaxReservedTime  int
 	MaxRejectCount   int
 	MaxAfterWorkTime int
+	MaxFreezeTime    int
 }
 
 //Resource
@@ -127,6 +128,7 @@ type CSlotInfo struct {
 	LastReservedTime   string
 	MaxReservedTime    int
 	MaxAfterWorkTime   int
+	MaxFreezeTime      int
 	TempMaxRejectCount int
 	OtherInfo          string
 }
