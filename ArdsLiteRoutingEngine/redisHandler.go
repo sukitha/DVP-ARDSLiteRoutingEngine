@@ -171,6 +171,7 @@ func InitiateRedis() {
 		redisIp = fmt.Sprintf("%s:%s", redisIp, redisPort)
 	}
 
+	fmt.Println("RoutingEngineId:", routingEngineId)
 	fmt.Println("RedisIp:", redisIp)
 	fmt.Println("RedisDb:", redisDb)
 	fmt.Println("LocationDb:", locationDb)
@@ -570,10 +571,13 @@ func RoutingEngineDistribution(pubChannelName string) string {
 	if activeRoutingKey == "" {
 		u1 := uuid.NewV4()
 		if RedisSetNx("ActiveRoutingEngineLock", u1.String(), 30) == true {
-			RedisSetNx("ActiveRoutingEngine", pubChannelName, 60)
-			RedisRemoveRLock("ActiveRoutingEngineLock", u1.String())
-
-			return pubChannelName
+			if RedisSetNx("ActiveRoutingEngine", pubChannelName, 60) == true {
+				RedisRemoveRLock("ActiveRoutingEngineLock", u1.String())
+				return pubChannelName
+			} else {
+				RedisRemoveRLock("ActiveRoutingEngineLock", u1.String())
+				return ""
+			}
 		} else {
 			fmt.Println("Aquire ActiveRoutingEngineLock failed")
 			return activeRoutingKey
