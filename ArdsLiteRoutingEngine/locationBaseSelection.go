@@ -29,7 +29,9 @@ func LocationBaseSelection(_company, _tenent int, _sessionId string) (result Sel
 			fmt.Println("Start Get locations")
 			locationResult := RedisGeoRadius(_tenent, _company, locationObj)
 			fmt.Println("locations:: ", locationResult)
-			for _, lor := range locationResult.Elems {
+
+			subReplys, _ := locationResult.Array()
+			for _, lor := range subReplys {
 
 				resourceLocInfo, _ := lor.List()
 

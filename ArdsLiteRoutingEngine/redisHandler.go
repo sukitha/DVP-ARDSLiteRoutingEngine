@@ -3,7 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/fzzy/radix/redis"
+	"github.com/mediocregopher/radix.v2/redis"
+	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -24,6 +25,7 @@ var rabbitMQPort string
 var rabbitMQUser string
 var rabbitMQPassword string
 var useMsgQueue bool
+var routingEngineId string
 
 func errHndlr(err error) {
 	if err != nil {
@@ -65,6 +67,7 @@ func GetDefaultConfig() Configuration {
 		defconfiguration.RabbitMQPassword = "guest"
 		defconfiguration.UseMsgQueue = false
 		defconfiguration.AccessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoZXNoYW5pbmRpa2EiLCJqdGkiOiIwZmIyNDJmZS02OGQwLTQ1MjEtOTM5NS0xYzE0M2M3MzNmNmEiLCJzdWIiOiI1NmE5ZTc1OWZiMDcxOTA3YTAwMDAwMDEyNWQ5ZTgwYjVjN2M0Zjk4NDY2ZjkyMTE3OTZlYmY0MyIsImV4cCI6MTQ1Njg5NDE5NSwidGVuYW50IjoxLCJjb21wYW55Ijo1LCJzY29wZSI6W3sicmVzb3VyY2UiOiJhbGwifSx7InJlc291cmNlIjoicmVxdWVzdHNlcnZlciIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJyZXF1ZXN0bWV0YSIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJhcmRzcmVzb3VyY2UiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfSx7InJlc291cmNlIjoiYXJkc3JlcXVlc3QiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfV0sImlhdCI6MTQ1NjI4OTM5NX0.AWZuYNtj4lHfxpTQCutswUfUsJXwTMVPUmqTjFdVXSk"
+		defconfiguration.RoutingEngineId = "1"
 	}
 
 	return defconfiguration
@@ -85,6 +88,7 @@ func LoadDefaultConfig() {
 	rabbitMQPassword = defconfiguration.RabbitMQPassword
 	useMsgQueue = defconfiguration.UseMsgQueue
 	accessToken = defconfiguration.AccessToken
+	routingEngineId = defconfiguration.RoutingEngineId
 }
 
 func InitiateRedis() {
@@ -122,6 +126,7 @@ func InitiateRedis() {
 		port = os.Getenv(envconfiguration.Port)
 		useMsgQueue, converr3 = strconv.ParseBool(os.Getenv(envconfiguration.UseMsgQueue))
 		accessToken = os.Getenv(envconfiguration.AccessToken)
+		routingEngineId = os.Getenv(envconfiguration.RoutingEngineId)
 
 		if redisIp == "" {
 			redisIp = defConfig.RedisIp
@@ -158,6 +163,9 @@ func InitiateRedis() {
 		}
 		if accessToken == "" {
 			accessToken = defConfig.AccessToken
+		}
+		if routingEngineId == "" {
+			routingEngineId = defConfig.RoutingEngineId
 		}
 
 		redisIp = fmt.Sprintf("%s:%s", redisIp, redisPort)
@@ -256,9 +264,15 @@ func RedisSetNx(key, value string, timeout int) bool {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 
-	strObj, _ := client.Cmd("set", key, value, "nx", "ex", timeout).Bool()
-	fmt.Println("GetRLock: ", strObj)
-	return strObj
+	tmpValue, _ := client.Cmd("set", key, value, "nx", "ex", timeout).Str()
+	if tmpValue == "OK" {
+		fmt.Println("GetRLock: ", true)
+		return true
+	} else {
+		fmt.Println("GetRLock: ", false)
+		return false
+	}
+
 }
 
 /*func RedisSetEx(key, value string, timeSec int) bool {
@@ -297,9 +311,14 @@ func RedisRemoveRLock(key, value string) bool {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 	luaScript := "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end"
-	strObj, _ := client.Cmd("eval", luaScript, 1, key, value).Bool()
-	fmt.Println(strObj)
-	return strObj
+	tmpValue, _ := client.Cmd("eval", luaScript, 1, key, value).Int()
+	if tmpValue == 1 {
+		fmt.Println("GetRLock: ", true)
+		return true
+	} else {
+		fmt.Println("GetRLock: ", false)
+		return false
+	}
 }
 
 func RedisRemove(key string) bool {
@@ -319,9 +338,15 @@ func RedisRemove(key string) bool {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 
-	strObj, _ := client.Cmd("del", key).Bool()
-	fmt.Println(strObj)
-	return strObj
+	tmpValue, _ := client.Cmd("del", key).Int()
+
+	if tmpValue == 1 {
+		fmt.Println("GetRLock: ", true)
+		return true
+	} else {
+		fmt.Println("GetRLock: ", false)
+		return false
+	}
 }
 
 func RedisCheckKeyExist(key string) bool {
@@ -341,10 +366,16 @@ func RedisCheckKeyExist(key string) bool {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 
-	result, sErr := client.Cmd("exists", key).Bool()
+	tmpValue, sErr := client.Cmd("exists", key).Int()
 	errHndlr(sErr)
-	fmt.Println(result)
-	return result
+
+	if tmpValue == 1 {
+		fmt.Println("GetRLock: ", true)
+		return true
+	} else {
+		fmt.Println("GetRLock: ", false)
+		return false
+	}
 }
 
 // Redis Hashes Methods
@@ -366,7 +397,7 @@ func RedisHashGetAll(hkey string) map[string]string {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 
-	strHash, _ := client.Cmd("hgetall", hkey).Hash()
+	strHash, _ := client.Cmd("hgetall", hkey).Map()
 	return strHash
 }
 
@@ -408,8 +439,15 @@ func RedisHashSetField(hkey, field, value string) bool {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 
-	result, _ := client.Cmd("hset", hkey, field, value).Bool()
-	return result
+	tmpValue, _ := client.Cmd("hset", hkey, field, value).Int()
+
+	if tmpValue == 1 {
+		fmt.Println("GetRLock: ", true)
+		return true
+	} else {
+		fmt.Println("GetRLock: ", false)
+		return false
+	}
 }
 
 func RedisRemoveHashField(hkey, field string) bool {
@@ -429,8 +467,15 @@ func RedisRemoveHashField(hkey, field string) bool {
 	r := client.Cmd("select", redisDb)
 	errHndlr(r.Err)
 
-	result, _ := client.Cmd("hdel", hkey, field).Bool()
-	return result
+	tmpValue, _ := client.Cmd("hdel", hkey, field).Int()
+
+	if tmpValue == 1 {
+		fmt.Println("GetRLock: ", true)
+		return true
+	} else {
+		fmt.Println("GetRLock: ", false)
+		return false
+	}
 }
 
 // Redis List Methods
@@ -477,7 +522,7 @@ func RedisListLpop(lname string) string {
 
 /*-----------------------------Geo methods--------------------------------------*/
 
-func RedisGeoRadius(tenant, company int, locationObj ReqLocationData) *redis.Reply {
+func RedisGeoRadius(tenant, company int, locationObj ReqLocationData) *redis.Resp {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered in RedisGeoRadius", r)
@@ -499,4 +544,54 @@ func RedisGeoRadius(tenant, company int, locationObj ReqLocationData) *redis.Rep
 	locationResult := client.Cmd("georadius", "positions", locationObj.Longitude, locationObj.Latitude, locationObj.Radius, locationObj.Metric, "WITHDIST", "ASC")
 	fmt.Println(locationResult)
 	return locationResult
+}
+
+func RoutingEngineDistribution(pubChannelName string) string {
+
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RoutingEngineDistribution", r)
+		}
+	}()
+	client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
+	errHndlr(err)
+	defer client.Close()
+
+	//authServer
+	client.Cmd("auth", redisPassword)
+	//errHndlr(authE.Err)
+
+	// select database
+	r := client.Cmd("select", redisDb)
+	errHndlr(r.Err)
+
+	activeRoutingKey, _ := client.Cmd("get", "ActiveRoutingEngine").Str()
+
+	if activeRoutingKey == "" {
+		u1 := uuid.NewV4()
+		if RedisSetNx("ActiveRoutingEngineLock", u1.String(), 30) == true {
+			RedisSetNx("ActiveRoutingEngine", pubChannelName, 60)
+			RedisRemoveRLock("ActiveRoutingEngineLock", u1.String())
+
+			return pubChannelName
+		} else {
+			fmt.Println("Aquire ActiveRoutingEngineLock failed")
+			return activeRoutingKey
+		}
+
+	} else {
+
+		if activeRoutingKey == pubChannelName {
+			expire, _ := client.Cmd("expire", "ActiveRoutingEngine", 60).Int()
+			if expire == 1 {
+				fmt.Println("Extend Active Routing Engine Expire Time Success")
+			} else {
+				fmt.Println("Extend Active Routing Engine Expire Time Failed")
+			}
+		}
+
+		return activeRoutingKey
+
+	}
+
 }

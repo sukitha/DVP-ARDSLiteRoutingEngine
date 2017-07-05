@@ -10,5 +10,6 @@
 	"RabbitMQUser": "SYS_RABBITMQ_USER",
 	"RabbitMQPassword":"SYS_RABBITMQ_PASSWORD",
 	"UseMsgQueue": "HOST_USE_MSG_QUEUE",
-	"AccessToken":"HOST_TOKEN"
+	"AccessToken":"HOST_TOKEN",
+	"RoutingEngineId": "HOST_ARDSLITEROUTINGENGINE_ID"
 }
