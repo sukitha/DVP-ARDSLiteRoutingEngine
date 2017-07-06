@@ -16,6 +16,10 @@ type Configuration struct {
 	AccessToken      string
 	UseMsgQueue      bool
 	RoutingEngineId  string
+	RedisMode        string
+	RedisClusterName string
+	SentinelHosts    string
+	SentinelPort     string
 }
 
 type EnvConfiguration struct {
@@ -32,6 +36,10 @@ type EnvConfiguration struct {
 	AccessToken      string
 	UseMsgQueue      string
 	RoutingEngineId  string
+	RedisMode        string
+	RedisClusterName string
+	SentinelHosts    string
+	SentinelPort     string
 }
 
 //Request
