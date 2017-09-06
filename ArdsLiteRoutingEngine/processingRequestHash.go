@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -31,7 +32,9 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 
 		if strReqObj == "" {
 			fmt.Println("Start SetNextProcessingItem")
-			SetNextProcessingItem(_processingHashKey, k, v)
+			tenantInt, _ := strconv.Atoi(tenant)
+			companyInt, _ := strconv.Atoi(company)
+			SetNextProcessingItem(tenantInt, companyInt, _processingHashKey, k, v, "")
 		} else {
 			var reqObj Request
 			json.Unmarshal([]byte(strReqObj), &reqObj)
@@ -43,12 +46,15 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 }
 
 func GetRejectedQueueId(_queueId string) string {
-	splitQueueId := strings.Split(_queueId, ":")
-	splitQueueId[len(splitQueueId)-1] = "REJECTED"
-	return strings.Join(splitQueueId, ":")
+	//splitQueueId := strings.Split(_queueId, ":")
+	//splitQueueId[len(splitQueueId)-1] = "REJECTED"
+	//return strings.Join(splitQueueId, ":")
+
+	rejectQueueId := fmt.Sprintf("%s:REJECTED", _queueId)
+	return rejectQueueId
 }
 
-func SetNextProcessingItem(_processingHash, _queueId, currentSession string) {
+func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, currentSession, requestState string) {
 	//u1 := uuid.NewV4().String()
 	//setNextLock := fmt.Sprintf("lock.setNextLock.%s", _queueId)
 	//if RedisSetNx(setNextLock, u1, 1) == true {
@@ -84,6 +90,10 @@ func SetNextProcessingItem(_processingHash, _queueId, currentSession string) {
 		}
 	} else {
 		fmt.Println("session Mismatched, ignore setNextItem")
+
+		if requestState == "TRYING" {
+			SetRequestState(company, tenant, currentSession, "QUEUED")
+		}
 	}
 	//} else {
 	//fmt.Println("Set Next Processing Item Fail To Aquire Lock")
@@ -133,6 +143,12 @@ func ContinueArdsProcess(_request Request) bool {
 func GetRequestState(_company, _tenant int, _sessionId string) string {
 	reqStateKey := fmt.Sprintf("RequestState:%d:%d:%s", _company, _tenant, _sessionId)
 	reqState := RedisGet(reqStateKey)
+	return reqState
+}
+
+func SetRequestState(_company, _tenant int, _sessionId, _newState string) string {
+	reqStateKey := fmt.Sprintf("RequestState:%d:%d:%s", _company, _tenant, _sessionId)
+	reqState := RedisSet(reqStateKey, _newState)
 	return reqState
 }
 
@@ -186,13 +202,14 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 				fmt.Println("Execute processing hash item::", longestWItem.Priority)
 				//if longestWItem != (Request{}) {
 				if longestWItem.SessionId != "" {
-					if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
+					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
+					if requestState == "QUEUED" {
 						if ContinueProcessing(longestWItem) {
 							//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
 							fmt.Println("Continue ARDS Process Success")
 						}
 					} else {
-						SetNextProcessingItem(_processingHashKey, longestWItem.QueueId, longestWItem.SessionId)
+						SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
 					}
 				} else {
 					fmt.Println("No Session Found")
@@ -232,8 +249,8 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 				fmt.Println("Execute processing hash item::", longestWItem.Priority)
 
 				if longestWItem.SessionId != "" {
-
-					if GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId) == "QUEUED" {
+					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
+					if requestState == "QUEUED" {
 
 						if ContinueProcessing(longestWItem) {
 
@@ -241,7 +258,7 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 						}
 					} else {
 
-						SetNextProcessingItem(_processingHashKey, longestWItem.QueueId, longestWItem.SessionId)
+						SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
 					}
 				} else {
 

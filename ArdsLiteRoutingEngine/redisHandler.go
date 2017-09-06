@@ -263,6 +263,32 @@ func InitiateRedis() {
 }
 
 // Redis String Methods
+func RedisSet(key, value string) string {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in RedisSet", r)
+		}
+	}()
+
+	var client *redis.Client
+	var err error
+
+	if redisMode == "sentinel" {
+		client, err = sentinelPool.GetMaster(redisClusterName)
+		errHndlrNew("OnReset", "getConnFromSentinel", err)
+		defer sentinelPool.PutMaster(redisClusterName, client)
+	} else {
+		client, err = redisPool.Get()
+		errHndlrNew("OnReset", "getConnFromPool", err)
+		defer redisPool.Put(client)
+	}
+
+	strObj, _ := client.Cmd("set", key, value).Str()
+	fmt.Println(strObj)
+	return strObj
+
+}
+
 func RedisGet(key string) string {
 	defer func() {
 		if r := recover(); r != nil {
