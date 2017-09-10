@@ -104,25 +104,15 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 	} else {
 
 		fmt.Println("session Mismatched, " + requestState + " ignore setNextItem")
-		SetRequestState(company, tenant, currentSession, "QUEUED")
+		//SetRequestState(company, tenant, currentSession, "QUEUED")
+		/*there is a new session added to the hash,
+		now the item should route on next processing
+		process next item will run through status and remove if the status is not queued
+		there is a possibility to lost the item if status changes has failed.
+		recheck all queue status set methods for concurrency and async operations.
+		*/
 
-		 //if requestState != "" {
-		 //
-			// SetRequestState(company, tenant, currentSession, "QUEUED")
-		 //}else {
-		 //
-			// removeHResult := RedisRemoveHashField(_processingHash, _queueId)
-			// if removeHResult {
-			//	 fmt.Println("Remove HashField Due to no session Success.." + _processingHash + "::" + _queueId)
-			// } else {
-			//	 fmt.Println("Remove HashField Due to no session Failed.. Critical issue" + _processingHash + "::" + _queueId)
-			// }
-		 //
-		 //}
 
-		//if requestState == "TRYING" {
-		//	SetRequestState(company, tenant, currentSession, "QUEUED")
-		//}
 	}
 	//} else {
 	//fmt.Println("Set Next Processing Item Fail To Aquire Lock")
