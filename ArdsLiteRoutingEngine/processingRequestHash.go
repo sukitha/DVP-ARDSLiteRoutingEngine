@@ -104,20 +104,21 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 	} else {
 
 		fmt.Println("session Mismatched, " + requestState + " ignore setNextItem")
+		SetRequestState(company, tenant, currentSession, "QUEUED")
 
-		 if requestState != "" {
-
-			 SetRequestState(company, tenant, currentSession, "QUEUED")
-		 }else{
-
-			 removeHResult := RedisRemoveHashField(_processingHash, _queueId)
-			 if removeHResult {
-				 fmt.Println("Remove HashField Due to no session Success.." + _processingHash + "::" + _queueId)
-			 } else {
-				 fmt.Println("Remove HashField Due to no session Failed.. Critical issue" + _processingHash + "::" + _queueId)
-			 }
-
-		 }
+		 //if requestState != "" {
+		 //
+			// SetRequestState(company, tenant, currentSession, "QUEUED")
+		 //}else {
+		 //
+			// removeHResult := RedisRemoveHashField(_processingHash, _queueId)
+			// if removeHResult {
+			//	 fmt.Println("Remove HashField Due to no session Success.." + _processingHash + "::" + _queueId)
+			// } else {
+			//	 fmt.Println("Remove HashField Due to no session Failed.. Critical issue" + _processingHash + "::" + _queueId)
+			// }
+		 //
+		 //}
 
 		//if requestState == "TRYING" {
 		//	SetRequestState(company, tenant, currentSession, "QUEUED")
@@ -128,7 +129,7 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 	//}
 
 	defer func() {
-		//ReleasetLock(setNextLock, u1)
+		//ReleasetLock(setNextLock, u1)l
 	}()
 }
 
@@ -237,7 +238,7 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 							fmt.Println("Continue ARDS Process Success")
 						}
 					} else {
-						fmt.Println("State of the queue item" +longestWItem.SessionId +"is not queued ->"+ requestState)
+						fmt.Println("State of the queue item" + longestWItem.SessionId + "is not queued ->" + requestState)
 						SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
 					}
 				} else {
