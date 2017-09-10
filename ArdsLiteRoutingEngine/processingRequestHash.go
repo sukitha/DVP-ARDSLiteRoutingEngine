@@ -70,6 +70,8 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 	//setNextLock := fmt.Sprintf("lock.setNextLock.%s", _queueId)
 	//if RedisSetNx(setNextLock, u1, 1) == true {
 	eSession := RedisHashGetValue(_processingHash, _queueId)
+
+	fmt.Println("Item in "+_processingHash+"set next processing item in queue "+_queueId+ " with session "+ currentSession +" has now in hash "+eSession)
 	if eSession != "" && eSession == currentSession {
 		rejectedQueueId := GetRejectedQueueId(_queueId)
 		nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
@@ -235,6 +237,7 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 							fmt.Println("Continue ARDS Process Success")
 						}
 					} else {
+						fmt.Println("State of the queue item" +longestWItem.SessionId +"is not queued ->"+ requestState)
 						SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
 					}
 				} else {
