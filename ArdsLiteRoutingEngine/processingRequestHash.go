@@ -39,7 +39,18 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 			var reqObj Request
 			json.Unmarshal([]byte(strReqObj), &reqObj)
 
-			processingReqObjs = AppendIfMissingReq(processingReqObjs, reqObj)
+			if reqObj.SessionId == "" {
+
+				fmt.Println("Critical issue request object found empty ---> set next item "+ k + "value " + v)
+
+				tenantInt, _ := strconv.Atoi(tenant)
+				companyInt, _ := strconv.Atoi(company)
+				SetNextProcessingItem(tenantInt, companyInt, _processingHashKey, k, v, "")
+
+			}else {
+
+				processingReqObjs = AppendIfMissingReq(processingReqObjs, reqObj)
+			}
 		}
 	}
 	return processingReqObjs
