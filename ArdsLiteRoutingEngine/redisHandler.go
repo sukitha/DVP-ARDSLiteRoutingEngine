@@ -828,7 +828,11 @@ func RedisHashGetValue(hkey, queueId string) string {
 		defer redisPool.Put(client)
 	}
 
-	strHash := client.Cmd("hget", hkey, queueId).String()
+	listItem,_:= client.Cmd("hget", hkey, queueId).List()
+
+	fmt.Println(listItem)
+
+	strHash := listItem[0]
 	return strHash
 
 	/*if redisMode == "instance" {
