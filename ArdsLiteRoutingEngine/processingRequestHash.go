@@ -89,11 +89,12 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 			}
 		}
 	} else {
-		fmt.Println("session Mismatched, ignore setNextItem")
+		fmt.Println("session Mismatched, "+ requestState +" ignore setNextItem")
+		SetRequestState(company, tenant, currentSession, "QUEUED")
 
-		if requestState == "TRYING" {
-			SetRequestState(company, tenant, currentSession, "QUEUED")
-		}
+		//if requestState == "TRYING" {
+		//	SetRequestState(company, tenant, currentSession, "QUEUED")
+		//}
 	}
 	//} else {
 	//fmt.Println("Set Next Processing Item Fail To Aquire Lock")
