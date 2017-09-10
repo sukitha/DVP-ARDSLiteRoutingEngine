@@ -89,8 +89,22 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 			}
 		}
 	} else {
-		fmt.Println("session Mismatched, "+ requestState +" ignore setNextItem")
-		SetRequestState(company, tenant, currentSession, "QUEUED")
+
+		fmt.Println("session Mismatched, " + requestState + " ignore setNextItem")
+
+		 if requestState != "" {
+
+			 SetRequestState(company, tenant, currentSession, "QUEUED")
+		 }else{
+
+			 removeHResult := RedisRemoveHashField(_processingHash, _queueId)
+			 if removeHResult {
+				 fmt.Println("Remove HashField Due to no session Success.." + _processingHash + "::" + _queueId)
+			 } else {
+				 fmt.Println("Remove HashField Due to no session Failed.. Critical issue" + _processingHash + "::" + _queueId)
+			 }
+
+		 }
 
 		//if requestState == "TRYING" {
 		//	SetRequestState(company, tenant, currentSession, "QUEUED")
