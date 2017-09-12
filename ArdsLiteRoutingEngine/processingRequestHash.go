@@ -9,7 +9,7 @@ import (
 )
 
 func GetAllProcessingHashes() []string {
-	processingHashSearchKey := fmt.Sprintf("ProcessingHash:%s:%s", "*", "*")
+	processingHashSearchKey := fmt.Sprintf("ProcessingHash:%s:%s:%s", "*", "*", "*")
 	processingHashes := RedisSearchKeys(processingHashSearchKey)
 	return processingHashes
 }
