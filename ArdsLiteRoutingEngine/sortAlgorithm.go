@@ -53,7 +53,15 @@ func (p ByReqPriority) Len() int {
 func (p ByReqPriority) Less(i, j int) bool {
 	prio1, _ := strconv.Atoi(p[i].Priority)
 	prio2, _ := strconv.Atoi(p[j].Priority)
-	return prio1 > prio2
+	if prio1 > prio2 {
+		return true
+	}else if prio1 == prio2{
+		t1, _ := time.Parse(layout, p[i].ArriveTime)
+		t2, _ := time.Parse(layout, p[j].ArriveTime)
+		return t1.Before(t2)
+	}else {
+		return false
+	}
 }
 func (p ByReqPriority) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
