@@ -166,7 +166,12 @@ type updateCsReult struct {
 	IsSuccess bool
 }
 
-type SelectionResult struct {
+type SelectedResource struct  {
 	Priority  []string
 	Threshold []string
+}
+
+type SelectionResult struct {
+	Request string
+	Resources SelectedResource
 }

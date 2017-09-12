@@ -44,3 +44,26 @@ func GetConcurrencyInfo(_company, _tenant int, _resId, _category string) (ciObj 
 
 	return
 }
+
+func SelectResources(_company, _tenant int, _requests []Request, _selectionAlgo string) []SelectionResult {
+	var selectionResult []SelectionResult
+
+	switch _selectionAlgo {
+	case "BASIC":
+		selectionResult = BasicSelection(_company, _tenant, _requests)
+		break
+	case "BASICTHRESHOLD":
+		selectionResult = BasicThresholdSelection(_company, _tenant, _requests)
+		break
+	case "WEIGHTBASE":
+		selectionResult = WeightBaseSelection(_company, _tenant, _requests)
+		break
+	case "LOCATIONBASE":
+		selectionResult = LocationBaseSelection(_company, _tenant, _requests)
+		break
+	default:
+		break
+	}
+
+	return selectionResult
+}

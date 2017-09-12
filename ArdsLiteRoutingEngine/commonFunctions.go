@@ -23,6 +23,15 @@ func AppendIfMissingString(dataList []string, i string) []string {
 	return append(dataList, i)
 }
 
+func CheckExistingString(dataList []string, i string) bool {
+	for _, ele := range dataList {
+		if ele == i {
+			return true
+		}
+	}
+	return false
+}
+
 func CreateHost(_ip, _port string) string {
 	testIp := net.ParseIP(_ip)
 	if testIp.To4() == nil {
@@ -30,4 +39,16 @@ func CreateHost(_ip, _port string) string {
 	} else {
 		return fmt.Sprintf("%s:%s", _ip, _port)
 	}
+}
+
+func GetSelectedResourceForRequest(records []SelectionResult, sessionId string) (resourceForRequest SelectedResource, isExisting bool) {
+	for _, record := range records {
+		if record.Request == sessionId {
+			resourceForRequest = record.Resources
+			isExisting = true
+			return
+		}
+	}
+	isExisting = false
+	return
 }

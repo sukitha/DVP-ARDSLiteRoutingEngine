@@ -171,11 +171,13 @@ func SetRequestState(_company, _tenant int, _sessionId, _newState string) string
 	return reqState
 }
 
-func ContinueProcessing(_request Request) bool {
+func ContinueProcessing(_request Request, _selectedResources SelectedResource) (continueProcessingResult bool, handlingResource []string) {
 	fmt.Println("ReqOtherInfo:", _request.OtherInfo)
-	var result = SelectResources(_request.Company, _request.Tenant, _request.ResourceCount, _request.LbIp, _request.LbPort, _request.SessionId, _request.ServerType, _request.RequestType, _request.SelectionAlgo, _request.HandlingAlgo, _request.OtherInfo)
+	var result string
+	result, handlingResource = HandlingResources(_request.Company, _request.Tenant, _request.ResourceCount, _request.LbIp, _request.LbPort, _request.SessionId, _request.ServerType, _request.RequestType, _request.HandlingAlgo, _request.OtherInfo, _selectedResources)
 	_request.HandlingResource = result
-	return ContinueArdsProcess(_request)
+	continueProcessingResult = ContinueArdsProcess(_request)
+	return
 }
 
 func AcquireProcessingHashLock(hashId, uuid string) bool {
@@ -214,8 +216,26 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 	if RedisCheckKeyExist(_processingHashKey) {
 		processingItems := GetAllProcessingItems(_processingHashKey)
 		if len(processingItems) > 0 {
+
+			defaultRequest := processingItems[0]
+
+			//switch (processingItems[0].ReqSelectionAlgo) {
+			//case "LONGESTWAITING":
+			//	sort.Sort(timeSliceReq(processingItems))
+			//	break
+			//case "PRIORITY":
+			//	sort.Sort(ByReqPriority(processingItems))
+			//	break
+			//default:
+			//	sort.Sort(timeSliceReq(processingItems))
+			//	break
+			//}
+
 			//sort.Sort(timeSliceReq(processingItems))
 			sort.Sort(ByReqPriority(processingItems))
+
+			selectedResourcesForHash := SelectResources(defaultRequest.Company, defaultRequest.Tenant, processingItems, defaultRequest.SelectionAlgo)
+
 			for _, longestWItem := range processingItems {
 
 				fmt.Println("Execute processing hash item::", longestWItem.Priority)
@@ -223,9 +243,14 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 				if longestWItem.SessionId != "" {
 					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
 					if requestState == "QUEUED" {
-						if ContinueProcessing(longestWItem) {
-							//SetNextProcessingItem(_processingHashKey, longestWItem.QueueId)
-							fmt.Println("Continue ARDS Process Success")
+						resourceForRequest, isExist := GetSelectedResourceForRequest(selectedResourcesForHash, longestWItem.SessionId)
+						if isExist {
+							continueProcessingResult, _ := ContinueProcessing(longestWItem, resourceForRequest)
+							if continueProcessingResult{
+								fmt.Println("Continue ARDS Process Success")
+							}
+						}else {
+							fmt.Println("Request not found in Selected Resource Data")
 						}
 					} else {
 						fmt.Println("State of the queue item" + longestWItem.SessionId + "is not queued ->" + requestState)
@@ -263,7 +288,12 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 
 		if len(processingItems) > 0 {
 
+			defaultRequest := processingItems[0]
+
 			sort.Sort(ByReqPriority(processingItems))
+
+			selectedResourcesForHash := SelectResources(defaultRequest.Company, defaultRequest.Tenant, processingItems, defaultRequest.SelectionAlgo)
+
 			for _, longestWItem := range processingItems {
 
 				fmt.Println("Execute processing hash item::", longestWItem.Priority)
@@ -272,9 +302,14 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
 					if requestState == "QUEUED" {
 
-						if ContinueProcessing(longestWItem) {
-
-							fmt.Println("Continue ARDS Process Success")
+						resourceForRequest, isExist := GetSelectedResourceForRequest(selectedResourcesForHash, longestWItem.SessionId)
+						if isExist {
+							continueProcessingResult, _ := ContinueProcessing(longestWItem, resourceForRequest)
+							if continueProcessingResult{
+								fmt.Println("Continue ARDS Process Success")
+							}
+						}else {
+							fmt.Println("Request not found in Selected Resource Data")
 						}
 					} else {
 
