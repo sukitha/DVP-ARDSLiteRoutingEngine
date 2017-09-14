@@ -255,6 +255,7 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 						if isExist {
 							continueProcessingResult, handlingResource := ContinueProcessing(longestWItem, resourceForRequest)
 							if continueProcessingResult{
+								log.Println("handlingResource: ", handlingResource)
 								pickedResources = append(pickedResources, handlingResource...)
 								fmt.Println("Continue ARDS Process Success")
 							}
