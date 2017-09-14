@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"log"
 )
 
 func AppendIfMissingReq(dataList []Request, i Request) []Request {
@@ -23,6 +24,7 @@ func AppendIfMissingString(dataList []string, i string) []string {
 	return append(dataList, i)
 }
 
+
 func CheckExistingString(dataList []string, i string) bool {
 	for _, ele := range dataList {
 		if ele == i {
@@ -41,9 +43,13 @@ func CreateHost(_ip, _port string) string {
 	}
 }
 
-func GetSelectedResourceForRequest(records []SelectionResult, sessionId string) (resourceForRequest SelectedResource, isExisting bool) {
+func GetSelectedResourceForRequest(records []SelectionResult, sessionId string, pickedResources []string) (resourceForRequest SelectedResource, isExisting bool) {
 	for _, record := range records {
 		if record.Request == sessionId {
+			log.Println("AvailableResources: ", record.Resources)
+
+			record.Resources.Priority = DiffArray(pickedResources, record.Resources.Priority)
+			record.Resources.Threshold = DiffArray(pickedResources, record.Resources.Threshold)
 			resourceForRequest = record.Resources
 			isExisting = true
 			return
@@ -51,4 +57,18 @@ func GetSelectedResourceForRequest(records []SelectionResult, sessionId string) 
 	}
 	isExisting = false
 	return
+}
+
+func DiffArray(a, b []string) []string {
+	m := make(map[string]bool)
+	for _, s := range a {
+		m[s] = true
+	}
+	result := make([]string, 0)
+	for _, s := range b {
+		if !m[s] {
+			result = append(result, s)
+		}
+	}
+	return result
 }

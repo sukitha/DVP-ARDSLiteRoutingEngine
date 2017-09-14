@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"log"
 )
 
 func GetAllProcessingHashes() []string {
@@ -235,6 +236,7 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 			sort.Sort(ByReqPriority(processingItems))
 
 			selectedResourcesForHash := SelectResources(defaultRequest.Company, defaultRequest.Tenant, processingItems, defaultRequest.SelectionAlgo)
+			pickedResources := make([]string, 0)
 
 			for _, longestWItem := range processingItems {
 
@@ -243,10 +245,17 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 				if longestWItem.SessionId != "" {
 					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
 					if requestState == "QUEUED" {
-						resourceForRequest, isExist := GetSelectedResourceForRequest(selectedResourcesForHash, longestWItem.SessionId)
+
+						log.Println("pickedResources: ", pickedResources)
+
+						resourceForRequest, isExist := GetSelectedResourceForRequest(selectedResourcesForHash, longestWItem.SessionId, pickedResources)
+
+						log.Println("resourceForRequest: ", resourceForRequest)
+
 						if isExist {
-							continueProcessingResult, _ := ContinueProcessing(longestWItem, resourceForRequest)
+							continueProcessingResult, handlingResource := ContinueProcessing(longestWItem, resourceForRequest)
 							if continueProcessingResult{
+								pickedResources = append(pickedResources, handlingResource...)
 								fmt.Println("Continue ARDS Process Success")
 							}
 						}else {
@@ -293,6 +302,7 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 			sort.Sort(ByReqPriority(processingItems))
 
 			selectedResourcesForHash := SelectResources(defaultRequest.Company, defaultRequest.Tenant, processingItems, defaultRequest.SelectionAlgo)
+			pickedResources := make([]string, 0)
 
 			for _, longestWItem := range processingItems {
 
@@ -302,10 +312,11 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
 					if requestState == "QUEUED" {
 
-						resourceForRequest, isExist := GetSelectedResourceForRequest(selectedResourcesForHash, longestWItem.SessionId)
+						resourceForRequest, isExist := GetSelectedResourceForRequest(selectedResourcesForHash, longestWItem.SessionId, pickedResources)
 						if isExist {
-							continueProcessingResult, _ := ContinueProcessing(longestWItem, resourceForRequest)
+							continueProcessingResult, handlingResource := ContinueProcessing(longestWItem, resourceForRequest)
 							if continueProcessingResult{
+								pickedResources = append(pickedResources, handlingResource...)
 								fmt.Println("Continue ARDS Process Success")
 							}
 						}else {
