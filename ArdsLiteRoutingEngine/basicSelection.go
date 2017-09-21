@@ -60,7 +60,7 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 				var resObj Resource
 				json.Unmarshal([]byte(strResObj), &resObj)
 
-				_attAvailable, _ := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
+				_attAvailable, _ := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo, reqObj.RequestType)
 
 				if resObj.ResourceId != "" && _attAvailable {
 					concInfo, err := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)

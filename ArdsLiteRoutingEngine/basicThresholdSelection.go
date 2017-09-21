@@ -65,7 +65,7 @@ func BasicThresholdSelection(_company, _tenent int, _requests []Request) (result
 				var resObj Resource
 				json.Unmarshal([]byte(strResObj), &resObj)
 
-				_attAvailable, _isThreshold := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
+				_attAvailable, _isThreshold := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo, reqObj.RequestType)
 
 				if resObj.ResourceId != "" && _attAvailable {
 					concInfo, err := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)

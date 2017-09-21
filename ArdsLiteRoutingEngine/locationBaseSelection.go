@@ -58,7 +58,7 @@ func LocationBaseSelection(_company, _tenent int, _requests []Request) (result [
 							if resObj.ResourceId != "" {
 								resKey := fmt.Sprintf("Resource:%d:%d:%s", resObj.Company, resObj.Tenant, resObj.ResourceId)
 								if len(reqObj.AttributeInfo) > 0 {
-									_attAvailable, _ := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
+									_attAvailable, _ := IsAttributeAvailable(reqObj.AttributeInfo, resObj.ResourceAttributeInfo, reqObj.RequestType)
 									if _attAvailable {
 										matchingResources = AppendIfMissingString(matchingResources, resKey)
 									}
