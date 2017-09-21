@@ -30,8 +30,6 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 					isThreshold = true
 				}
 			}
-
-			break
 		}
 	}
 
