@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectionResult, reqCompany, reqTenant int) string {
+func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
 	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, selectedResources, reqCompany, reqTenant)
 }
 
-func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectionResult, reqCompany, reqTenant int) string {
+func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
 	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
 	fmt.Println("///////////////////////////////////////selectedResources/////////////////////////////////////////////////")
 	fmt.Println("Priority:: ", selectedResources.Priority)
@@ -80,7 +80,9 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 
 							if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
 								fmt.Println("Return resource Data:", resObj.OtherInfo)
-								return conInfo.RefInfo
+								handlingResult = conInfo.RefInfo
+								handlingResource = key
+								return
 							}
 						}
 					}
@@ -89,5 +91,7 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 		}
 
 	}
-	return "No matching resources at the moment"
+	handlingResult = "No matching resources at the moment"
+	handlingResource = ""
+	return
 }
