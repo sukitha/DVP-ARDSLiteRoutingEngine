@@ -156,6 +156,7 @@ type ConcurrencyInfo struct {
 type WeightBaseResourceInfo struct {
 	ResourceId string
 	Weight     float64
+	LastConnectedTime   string
 }
 
 type MultiResCount struct {

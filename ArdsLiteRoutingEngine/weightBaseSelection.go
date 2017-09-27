@@ -31,84 +31,85 @@ func CalculateWeight(reqAttributeInfo []ReqAttributeData, resAttributeInfo []Res
 	return calculatedWeight
 }
 
-func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []SelectionResult) {
-	//requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
-	//fmt.Println(requestKey)
-	//
-	//strReqObj := RedisGet(requestKey)
-	//fmt.Println(strReqObj)
-	//
-	//var reqObj RequestSelection
-	//json.Unmarshal([]byte(strReqObj), &reqObj)
+func WeightBaseSelection(_company, _tenent int, _sessionId string) (result SelectionResult) {
+	requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
+	fmt.Println(requestKey)
 
-	var selectedResources = make([]SelectionResult, len(_requests))
+	strReqObj := RedisGet(requestKey)
+	fmt.Println(strReqObj)
 
-	for i, reqObj := range _requests {
+	var reqObj RequestSelection
+	json.Unmarshal([]byte(strReqObj), &reqObj)
 
-		selectedResources[i].Request = reqObj.SessionId
+	var resourceWeightInfo = make([]WeightBaseResourceInfo, 0)
+	var matchingResources = make([]string, 0)
+	if len(reqObj.AttributeInfo) > 0 {
+		var tagArray = make([]string, 3)
 
-		var resourceWeightInfo = make([]WeightBaseResourceInfo, 0)
-		var matchingResources = make([]string, 0)
-		if len(reqObj.AttributeInfo) > 0 {
-			var tagArray = make([]string, 3)
+		tagArray[0] = fmt.Sprintf("company_%d", reqObj.Company)
+		tagArray[1] = fmt.Sprintf("tenant_%d", reqObj.Tenant)
+		//tagArray[2] = fmt.Sprintf("class_%s", reqObj.Class)
+		//tagArray[3] = fmt.Sprintf("type_%s", reqObj.Type)
+		//tagArray[4] = fmt.Sprintf("category_%s", reqObj.Category)
+		tagArray[2] = fmt.Sprintf("objtype_%s", "Resource")
 
-			tagArray[0] = fmt.Sprintf("company_%d", reqObj.Company)
-			tagArray[1] = fmt.Sprintf("tenant_%d", reqObj.Tenant)
-			//tagArray[2] = fmt.Sprintf("class_%s", reqObj.Class)
-			//tagArray[3] = fmt.Sprintf("type_%s", reqObj.Type)
-			//tagArray[4] = fmt.Sprintf("category_%s", reqObj.Category)
-			tagArray[2] = fmt.Sprintf("objtype_%s", "Resource")
+		attInfo := make([]string, 0)
 
-			attInfo := make([]string, 0)
+		for _, value := range reqObj.AttributeInfo {
+			for _, att := range value.AttributeCode {
+				attInfo = AppendIfMissingString(attInfo, att)
+			}
+		}
 
-			for _, value := range reqObj.AttributeInfo {
-				for _, att := range value.AttributeCode {
-					attInfo = AppendIfMissingString(attInfo, att)
+		sort.Sort(ByStringValue(attInfo))
+		for _, att := range attInfo {
+			fmt.Println("attCode", att)
+			tagArray = AppendIfMissingString(tagArray, fmt.Sprintf("attribute_%s", att))
+		}
+
+		tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
+		fmt.Println(tags)
+
+		val := RedisSearchKeys(tags)
+		lenth := len(val)
+		fmt.Println(lenth)
+
+		for _, match := range val {
+			strResKey := RedisGet(match)
+			strResObj := RedisGet(strResKey)
+			fmt.Println(strResObj)
+
+			var resObj Resource
+			json.Unmarshal([]byte(strResObj), &resObj)
+
+			if resObj.ResourceId != "" {
+				concInfo, err := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)
+				if err != nil {
+					fmt.Println("Error in GetConcurrencyInfo")
 				}
-			}
+				calcWeight := CalculateWeight(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
+				resKey := fmt.Sprintf("Resource:%d:%d:%s", resObj.Company, resObj.Tenant, resObj.ResourceId)
+				var tempWeightInfo WeightBaseResourceInfo
+				tempWeightInfo.ResourceId = resKey
+				tempWeightInfo.Weight = calcWeight
+				tempWeightInfo.LastConnectedTime=concInfo.LastConnectedTime
 
-			sort.Sort(ByStringValue(attInfo))
-			for _, att := range attInfo {
-				fmt.Println("attCode", att)
-				tagArray = AppendIfMissingString(tagArray, fmt.Sprintf("attribute_%s", att))
-			}
-
-			tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
-			fmt.Println(tags)
-
-			val := RedisSearchKeys(tags)
-			lenth := len(val)
-			fmt.Println(lenth)
-
-			for _, match := range val {
-				strResKey := RedisGet(match)
-				strResObj := RedisGet(strResKey)
-				fmt.Println(strResObj)
-
-				var resObj Resource
-				json.Unmarshal([]byte(strResObj), &resObj)
-
-				if resObj.ResourceId != "" {
-					calcWeight := CalculateWeight(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
-					resKey := fmt.Sprintf("Resource:%d:%d:%s", resObj.Company, resObj.Tenant, resObj.ResourceId)
-					var tempWeightInfo WeightBaseResourceInfo
-					tempWeightInfo.ResourceId = resKey
-					tempWeightInfo.Weight = calcWeight
-
-					resourceWeightInfo = append(resourceWeightInfo, tempWeightInfo)
-				}
-			}
-
-			sort.Sort(ByNumericValue(resourceWeightInfo))
-
-			for _, res := range resourceWeightInfo {
-				matchingResources = AppendIfMissingString(matchingResources, res.ResourceId)
-				logWeight := fmt.Sprintf("###################################### %s --------- %f", res.ResourceId, res.Weight)
-				fmt.Println(logWeight)
+				resourceWeightInfo = append(resourceWeightInfo, tempWeightInfo)
 			}
 
 		}
-		selectedResources[i].Resources.Priority = matchingResources
+
+		//sort.Sort(ByNumericValue(resourceWeightInfo))
+		sort.Sort(ByWaitingTime(resourceWeightInfo))
+
+		for _, res := range resourceWeightInfo {
+			matchingResources = AppendIfMissingString(matchingResources, res.ResourceId)
+			logWeight := fmt.Sprintf("###################################### %s --------- %f", res.ResourceId, res.Weight)
+			fmt.Println(logWeight)
+		}
+
+
 	}
-	return selectedResources
+	result.Priority = matchingResources
+	return
 }
