@@ -10,6 +10,7 @@ type ByStringValue []string
 type timeSlice []ConcurrencyInfo
 type ByNumericValue []WeightBaseResourceInfo
 type ByReqPriority []Request
+type ByWaitingTime []WeightBaseResourceInfo
 
 func (p timeSliceReq) Len() int {
 	return len(p)
@@ -65,4 +66,23 @@ func (p ByReqPriority) Less(i, j int) bool {
 }
 func (p ByReqPriority) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
+}
+
+func (a ByWaitingTime) Len() int      { return len(a) }
+func (a ByWaitingTime) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByWaitingTime) Less(i, j int) bool {
+	layout := "2006-01-02T15:04:05.000Z"
+	t1,_:=time.Parse(layout, a[i].LastConnectedTime)
+	t2,_:=time.Parse(layout, a[j].LastConnectedTime)
+
+	if(a[i].Weight==a[j].Weight){
+		w1 := time.Since(t1).Seconds()
+		w2 := time.Since(t2).Seconds()
+		return w1 > w2
+	}else{
+		w1 := a[i].Weight
+		w2 := a[j].Weight
+		return w1 > w2
+	}
+
 }
