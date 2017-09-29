@@ -69,6 +69,7 @@ type Request struct {
 	ArriveTime       string
 	Priority         string
 	QueueId          string
+	QueueName        string
 	ReqHandlingAlgo  string
 	ReqSelectionAlgo string
 	ServingAlgo      string
@@ -166,12 +167,12 @@ type updateCsReult struct {
 	IsSuccess bool
 }
 
-type SelectedResource struct  {
+type SelectedResource struct {
 	Priority  []string
 	Threshold []string
 }
 
 type SelectionResult struct {
-	Request string
+	Request   string
 	Resources SelectedResource
 }
