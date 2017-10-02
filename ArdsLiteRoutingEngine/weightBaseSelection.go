@@ -97,19 +97,15 @@ func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []S
 					tempWeightInfo.Weight = calcWeight
 					if err != nil {
 						fmt.Println("Error in GetConcurrencyInfo")
-						//tempWeightInfo.LastConnectedTime=""
 					}
-
 					if(concInfo.LastConnectedTime==""){
 						tempWeightInfo.LastConnectedTime=""
 					}else{
 						tempWeightInfo.LastConnectedTime=concInfo.LastConnectedTime
 					}
-
 					resourceWeightInfo = append(resourceWeightInfo, tempWeightInfo)
 				}
 			}
-
 			//ort.Sort(ByNumericValue(resourceWeightInfo))
 			sort.Sort(ByWaitingTime(resourceWeightInfo))
 			for _, res := range resourceWeightInfo {
