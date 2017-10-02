@@ -90,15 +90,21 @@ func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []S
 
 				if resObj.ResourceId != "" {
 					concInfo, err := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)
-					if err != nil {
-						fmt.Println("Error in GetConcurrencyInfo")
-					}
 					calcWeight := CalculateWeight(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
 					resKey := fmt.Sprintf("Resource:%d:%d:%s", resObj.Company, resObj.Tenant, resObj.ResourceId)
 					var tempWeightInfo WeightBaseResourceInfo
 					tempWeightInfo.ResourceId = resKey
 					tempWeightInfo.Weight = calcWeight
-					tempWeightInfo.LastConnectedTime=concInfo.LastConnectedTime
+					if err != nil {
+						fmt.Println("Error in GetConcurrencyInfo")
+						//tempWeightInfo.LastConnectedTime=""
+					}
+
+					if(concInfo.LastConnectedTime==""){
+						tempWeightInfo.LastConnectedTime=""
+					}else{
+						tempWeightInfo.LastConnectedTime=concInfo.LastConnectedTime
+					}
 
 					resourceWeightInfo = append(resourceWeightInfo, tempWeightInfo)
 				}
