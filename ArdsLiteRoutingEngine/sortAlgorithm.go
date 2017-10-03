@@ -74,7 +74,7 @@ func (a ByWaitingTime) Less(i, j int) bool {
 
 	if a[i].Weight == a[j].Weight {
 		if a[i].LastConnectedTime != "" && a[j].LastConnectedTime != "" {
-			layout := "2006-01-02T15:04:05.000Z"
+			//layout := "2006-01-02T15:04:05.000Z"
 			t1, _ := time.Parse(layout, a[i].LastConnectedTime)
 			t2, _ := time.Parse(layout, a[j].LastConnectedTime)
 
