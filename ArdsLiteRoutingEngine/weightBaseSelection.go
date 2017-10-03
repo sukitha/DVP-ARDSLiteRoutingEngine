@@ -108,19 +108,8 @@ func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []S
 					resourceWeightInfo = append(resourceWeightInfo, tempWeightInfo)
 				}
 			}
-			//ort.Sort(ByNumericValue(resourceWeightInfo))
-			fmt.Println("befor sort")
-			for _, res := range resourceWeightInfo {
-				fmt.Println(res)
-			}
-
 
 			sort.Sort(ByWaitingTime(resourceWeightInfo))
-
-			fmt.Println("after sort")
-			for _, res := range resourceWeightInfo {
-				fmt.Println(res)
-			}
 			for _, res := range resourceWeightInfo {
 				matchingResources = AppendIfMissingString(matchingResources, res.ResourceId)
 				logWeight := fmt.Sprintf("###################################### %s --------- %f --------%s", res.ResourceId, res.Weight,res.LastConnectedTime)
