@@ -89,21 +89,30 @@ func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []S
 				json.Unmarshal([]byte(strResObj), &resObj)
 
 				if resObj.ResourceId != "" {
+					concInfo, err := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)
 					calcWeight := CalculateWeight(reqObj.AttributeInfo, resObj.ResourceAttributeInfo)
 					resKey := fmt.Sprintf("Resource:%d:%d:%s", resObj.Company, resObj.Tenant, resObj.ResourceId)
 					var tempWeightInfo WeightBaseResourceInfo
 					tempWeightInfo.ResourceId = resKey
 					tempWeightInfo.Weight = calcWeight
-
+					if err != nil {
+						fmt.Println("Error in GetConcurrencyInfo")
+						tempWeightInfo.LastConnectedTime = ""
+					} else {
+						if concInfo.LastConnectedTime == "" {
+							tempWeightInfo.LastConnectedTime = ""
+						} else {
+							tempWeightInfo.LastConnectedTime = concInfo.LastConnectedTime
+						}
+					}
 					resourceWeightInfo = append(resourceWeightInfo, tempWeightInfo)
 				}
 			}
 
-			sort.Sort(ByNumericValue(resourceWeightInfo))
-
+			sort.Sort(ByWaitingTime(resourceWeightInfo))
 			for _, res := range resourceWeightInfo {
 				matchingResources = AppendIfMissingString(matchingResources, res.ResourceId)
-				logWeight := fmt.Sprintf("###################################### %s --------- %f", res.ResourceId, res.Weight)
+				logWeight := fmt.Sprintf("###################################### %s --------- %f --------%s", res.ResourceId, res.Weight,res.LastConnectedTime)
 				fmt.Println(logWeight)
 			}
 
