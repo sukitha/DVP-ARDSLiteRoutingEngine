@@ -27,13 +27,19 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 		json.Unmarshal([]byte(strResObj), &resObj)
 
 		conInfo, cErr := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, RequestType)
+
+		fmt.Println("conInfo.RejectCount:: ", conInfo.RejectCount)
+		fmt.Println("conInfo.IsRejectCountExceeded:: ", conInfo.IsRejectCountExceeded)
+
 		if cErr == nil {
 			metaData, mErr := GetReqMetaData(reqCompany, reqTenant, ServerType, RequestType)
+			fmt.Println("metaData.MaxRejectCount:: ", metaData.MaxRejectCount)
+
 			if mErr == nil {
 				resState, resMode, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
 				if sErr == nil {
 
-					if resState == "Available" && resMode == "Inbound" && conInfo.RejectCount < metaData.MaxRejectCount {
+					if resState == "Available" && resMode == "Inbound" && conInfo.RejectCount < metaData.MaxRejectCount && conInfo.IsRejectCountExceeded == false {
 						ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, resObj)
 
 						var tagArray = make([]string, 8)

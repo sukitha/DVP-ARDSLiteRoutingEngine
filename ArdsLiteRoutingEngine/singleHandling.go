@@ -35,6 +35,7 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 		fmt.Println("Start GetResourceState")
 
 		fmt.Println("conInfo.RejectCount:: ", conInfo.RejectCount)
+		fmt.Println("conInfo.IsRejectCountExceeded:: ", conInfo.IsRejectCountExceeded)
 		fmt.Println("metaData.MaxRejectCount:: ", metaData.MaxRejectCount)
 
 		if cErr == nil {
@@ -43,7 +44,7 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 
 				if sErr == nil {
 
-					if resState == "Available" && resMode == "Inbound" && conInfo.RejectCount < metaData.MaxRejectCount {
+					if resState == "Available" && resMode == "Inbound" && conInfo.RejectCount < metaData.MaxRejectCount && conInfo.IsRejectCountExceeded == false {
 						fmt.Println("===========================================Start====================================================")
 						ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resObj)
 

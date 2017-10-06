@@ -145,19 +145,20 @@ type CSlotInfo struct {
 }
 
 type ConcurrencyInfo struct {
-	Company             int
-	Tenant              int
-	RejectCount         int
-	ResourceId          string
-	LastConnectedTime   string
-	LastRejectedSession string
-	RefInfo             string
+	Company               int
+	Tenant                int
+	RejectCount           int
+	ResourceId            string
+	LastConnectedTime     string
+	LastRejectedSession   string
+	RefInfo               string
+	IsRejectCountExceeded bool
 }
 
 type WeightBaseResourceInfo struct {
-	ResourceId string
-	Weight     float64
-	LastConnectedTime   string
+	ResourceId        string
+	Weight            float64
+	LastConnectedTime string
 }
 
 type MultiResCount struct {
