@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mediocregopher/radix.v2/pool"
-	"github.com/mediocregopher/radix.v2/redis"
-	"github.com/mediocregopher/radix.v2/sentinel"
-	"github.com/mediocregopher/radix.v2/util"
-	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/mediocregopher/radix.v2/pool"
+	"github.com/mediocregopher/radix.v2/redis"
+	"github.com/mediocregopher/radix.v2/sentinel"
+	"github.com/mediocregopher/radix.v2/util"
+	"github.com/satori/go.uuid"
 )
 
 var dirPath string
@@ -828,9 +829,7 @@ func RedisHashGetValue(hkey, queueId string) string {
 		defer redisPool.Put(client)
 	}
 
-
-
-	strHash,_:= client.Cmd("hget", hkey, queueId).Str()
+	strHash, _ := client.Cmd("hget", hkey, queueId).Str()
 	return strHash
 
 	/*if redisMode == "instance" {
@@ -1158,6 +1157,10 @@ func RoutingEngineDistribution(pubChannelName string) string {
 		errHndlrNew("OnReset", "getConnFromPool", err)
 		defer redisPool.Put(client)
 	}
+
+	fmt.Println("Sentinal Master.Addr: ", client.Addr)
+	fmt.Println("Sentinal Master.Network: ", client.Network)
+	fmt.Println("Sentinal Master.LastCritical.Error(): ", client.LastCritical.Error())
 
 	activeRoutingKey, _ := client.Cmd("get", "ActiveRoutingEngine").Str()
 
