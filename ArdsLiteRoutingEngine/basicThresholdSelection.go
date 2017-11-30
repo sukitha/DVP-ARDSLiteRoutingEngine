@@ -47,7 +47,7 @@ func BasicThresholdSelection(_company, _tenent int, _requests []Request) (result
 
 			sort.Sort(ByStringValue(attInfo))
 			for _, att := range attInfo {
-				fmt.Println("attCode", att)
+				//fmt.Println("attCode", att)
 				tagArray = AppendIfMissingString(tagArray, fmt.Sprintf("attribute_%s", att))
 			}
 
@@ -60,7 +60,7 @@ func BasicThresholdSelection(_company, _tenent int, _requests []Request) (result
 			for _, match := range val {
 				strResKey := RedisGet(match)
 				strResObj := RedisGet(strResKey)
-				fmt.Println(strResObj)
+				//fmt.Println(strResObj)
 
 				var resObj Resource
 				json.Unmarshal([]byte(strResObj), &resObj)

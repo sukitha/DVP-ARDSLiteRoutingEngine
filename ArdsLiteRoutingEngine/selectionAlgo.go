@@ -68,10 +68,10 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 
 func GetConcurrencyInfo(_company, _tenant int, _resId, _category string) (ciObj ConcurrencyInfo, err error) {
 	key := fmt.Sprintf("ConcurrencyInfo:%d:%d:%s:%s", _company, _tenant, _resId, _category)
-	fmt.Println(key)
+	//fmt.Println(key)
 	var strCiObj string
 	strCiObj, err = RedisGet_v1(key)
-	fmt.Println(strCiObj)
+	//fmt.Println(strCiObj)
 
 	json.Unmarshal([]byte(strCiObj), &ciObj)
 

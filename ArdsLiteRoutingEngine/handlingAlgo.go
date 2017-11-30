@@ -67,7 +67,7 @@ func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 	tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
 
 	tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
-	fmt.Println(tags)
+	//fmt.Println(tags)
 	reservedSlots := RedisSearchKeys(tags)
 
 	for _, tagKey := range reservedSlots {
@@ -75,7 +75,7 @@ func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 		fmt.Println(strslotKey)
 
 		strslotObj := RedisGet(strslotKey)
-		fmt.Println(strslotObj)
+		//fmt.Println(strslotObj)
 
 		var slotObj CSlotInfo
 		json.Unmarshal([]byte(strslotObj), &slotObj)
@@ -97,11 +97,11 @@ func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 
 func GetReqMetaData(_company, _tenent int, _serverType, _requestType string) (metaObj ReqMetaData, err error) {
 	key := fmt.Sprintf("ReqMETA:%d:%d:%s:%s", _company, _tenent, _serverType, _requestType)
-	fmt.Println(key)
+	//fmt.Println(key)
 	var strMetaObj string
 	strMetaObj, err = RedisGet_v1(key)
 
-	fmt.Println(strMetaObj)
+	//fmt.Println(strMetaObj)
 	json.Unmarshal([]byte(strMetaObj), &metaObj)
 
 	return
@@ -134,7 +134,7 @@ func HandlingResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort,
 		handlingResult, singleHandlingResource = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectedResources, Company, Tenant)
 		handlingResource = append(handlingResource, singleHandlingResource)
 	case "MULTIPLE":
-		fmt.Println("ReqOtherInfo:", OtherInfo)
+		//fmt.Println("ReqOtherInfo:", OtherInfo)
 		resCount := ResourceCount
 		fmt.Println("GetRequestedResCount:", resCount)
 		handlingResult, handlingResource = MultipleHandling(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectedResources, resCount, Company, Tenant)

@@ -42,7 +42,7 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 
 			sort.Sort(ByStringValue(attInfo))
 			for _, att := range attInfo {
-				fmt.Println("attCode", att)
+				//fmt.Println("attCode", att)
 				tagArray = AppendIfMissingString(tagArray, fmt.Sprintf("attribute_%s", att))
 			}
 
@@ -55,7 +55,7 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 			for _, match := range val {
 				strResKey := RedisGet(match)
 				strResObj := RedisGet(strResKey)
-				fmt.Println(strResObj)
+				//fmt.Println(strResObj)
 
 				var resObj Resource
 				json.Unmarshal([]byte(strResObj), &resObj)

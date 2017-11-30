@@ -296,7 +296,7 @@ func RedisSet(key, value string) string {
 	}
 
 	strObj, _ := client.Cmd("set", key, value).Str()
-	fmt.Println(strObj)
+	//fmt.Println(strObj)
 	return strObj
 
 }
@@ -332,7 +332,7 @@ func RedisGet(key string) string {
 	}
 
 	strObj, _ := client.Cmd("get", key).Str()
-	fmt.Println(strObj)
+	//fmt.Println(strObj)
 	return strObj
 	/*if redisMode == "instance" {
 		client, err := redis.DialTimeout("tcp", redisIp, time.Duration(10)*time.Second)
@@ -395,7 +395,7 @@ func RedisGet_v1(key string) (strObj string, err error) {
 	}
 
 	strObj, err = client.Cmd("get", key).Str()
-	fmt.Println(strObj)
+	//fmt.Println(strObj)
 	return
 
 	/*if redisMode == "instance" {
@@ -706,10 +706,10 @@ func RedisRemove(key string) bool {
 	tmpValue, _ := client.Cmd("del", key).Int()
 
 	if tmpValue == 1 {
-		fmt.Println("GetRLock: ", true)
+		//fmt.Println("GetRLock: ", true)
 		return true
 	} else {
-		fmt.Println("GetRLock: ", false)
+		//fmt.Println("GetRLock: ", false)
 		return false
 	}
 
@@ -788,10 +788,10 @@ func RedisCheckKeyExist(key string) bool {
 	errHndlr(sErr)
 
 	if tmpValue == 1 {
-		fmt.Println("GetRLock: ", true)
+		//fmt.Println("GetRLock: ", true)
 		return true
 	} else {
-		fmt.Println("GetRLock: ", false)
+		//fmt.Println("GetRLock: ", false)
 		return false
 	}
 
@@ -993,10 +993,10 @@ func RedisHashSetField(hkey, field, value string) bool {
 	tmpValue, _ := client.Cmd("hset", hkey, field, value).Int()
 
 	if tmpValue == 1 {
-		fmt.Println("GetRLock: ", true)
+		//fmt.Println("GetRLock: ", true)
 		return true
 	} else {
-		fmt.Println("GetRLock: ", false)
+		//fmt.Println("GetRLock: ", false)
 		return false
 	}
 
@@ -1074,10 +1074,10 @@ func RedisRemoveHashField(hkey, field string) bool {
 	tmpValue, _ := client.Cmd("hdel", hkey, field).Int()
 
 	if tmpValue == 1 {
-		fmt.Println("GetRLock: ", true)
+		//fmt.Println("GetRLock: ", true)
 		return true
 	} else {
-		fmt.Println("GetRLock: ", false)
+		//fmt.Println("GetRLock: ", false)
 		return false
 	}
 

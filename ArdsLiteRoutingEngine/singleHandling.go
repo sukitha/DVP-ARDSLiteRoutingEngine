@@ -19,7 +19,7 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 	for _, key := range resourceIds {
 		fmt.Println(key)
 		strResObj := RedisGet(key)
-		fmt.Println(strResObj)
+		//fmt.Println(strResObj)
 
 		var resObj Resource
 		json.Unmarshal([]byte(strResObj), &resObj)
@@ -58,15 +58,15 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 						tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
 
 						tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
-						fmt.Println(tags)
+						//fmt.Println(tags)
 						availableSlots := RedisSearchKeys(tags)
 
 						for _, tagKey := range availableSlots {
 							strslotKey := RedisGet(tagKey)
-							fmt.Println(strslotKey)
+							//fmt.Println(strslotKey)
 
 							strslotObj := RedisGet(strslotKey)
-							fmt.Println(strslotObj)
+							//fmt.Println(strslotObj)
 
 							var slotObj CSlotInfo
 							json.Unmarshal([]byte(strslotObj), &slotObj)
