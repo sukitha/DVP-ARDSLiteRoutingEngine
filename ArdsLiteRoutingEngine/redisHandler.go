@@ -1311,7 +1311,7 @@ func RoutingEngineDistribution(pubChannelName string) string {
 	}
 
 	fmt.Println("Sentinal Master.Addr: ", client.Addr)
-	fmt.Println("Sentinal Master.Network: ", client.Network)
+	//fmt.Println("Sentinal Master.Network: ", client.Network)
 	//fmt.Println("Sentinal Master.LastCritical.Error(): ", client.LastCritical.Error())
 
 	activeRoutingKey, _ := client.Cmd("get", "ActiveRoutingEngine").Str()
@@ -1336,7 +1336,7 @@ func RoutingEngineDistribution(pubChannelName string) string {
 		if activeRoutingKey == pubChannelName {
 			expire, _ := client.Cmd("expire", "ActiveRoutingEngine", 60).Int()
 			if expire == 1 {
-				fmt.Println("Extend Active Routing Engine Expire Time Success")
+				//fmt.Println("Extend Active Routing Engine Expire Time Success")
 			} else {
 				fmt.Println("Extend Active Routing Engine Expire Time Failed")
 			}
