@@ -89,13 +89,13 @@ func BasicThresholdSelection(_company, _tenent int, _requests []Request) (result
 			for _, res := range resourceConcInfo {
 				resKey := fmt.Sprintf("Resource:%d:%d:%s", res.Company, res.Tenant, res.ResourceId)
 				matchingResources = AppendIfMissingString(matchingResources, resKey)
-				fmt.Println(resKey)
+				//fmt.Println(resKey)
 			}
 
 			for _, res := range resourceThresholdConcInfo {
 				resKey := fmt.Sprintf("Resource:%d:%d:%s", res.Company, res.Tenant, res.ResourceId)
 				matchingThresholdResources = AppendIfMissingString(matchingThresholdResources, resKey)
-				fmt.Println(resKey)
+				//fmt.Println(resKey)
 			}
 
 		}

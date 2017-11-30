@@ -467,7 +467,7 @@ func RedisSearchKeys(pattern string) []string {
 		matchingKeys = AppendIfMissing(matchingKeys, scanResult.Next())
 	}
 
-	fmt.Println("Scan Result:: ", matchingKeys)
+	//fmt.Println("Scan Result:: ", matchingKeys)
 	return matchingKeys
 	/*if redisMode == "instance" {
 

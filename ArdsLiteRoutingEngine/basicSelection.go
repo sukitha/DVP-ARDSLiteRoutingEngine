@@ -79,7 +79,7 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 			for _, res := range resourceConcInfo {
 				resKey := fmt.Sprintf("Resource:%d:%d:%s", res.Company, res.Tenant, res.ResourceId)
 				matchingResources = AppendIfMissingString(matchingResources, resKey)
-				fmt.Println(resKey)
+				//fmt.Println(resKey)
 			}
 
 		}
