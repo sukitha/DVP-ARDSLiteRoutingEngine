@@ -39,7 +39,7 @@ func ReserveSlot(ardsLbIp, ardsLbPort string, slotInfo CSlotInfo) bool {
 	defer resp.Body.Close()
 
 	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
+	//fmt.Println("response Headers:", resp.Header)
 	body, _ := ioutil.ReadAll(resp.Body)
 	result := string(body)
 	fmt.Println("response Body:", result)

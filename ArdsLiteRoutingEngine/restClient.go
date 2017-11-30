@@ -30,10 +30,11 @@ func Post(serviceurl string, postData, authToken, internalAuthToken string) bool
 	defer resp.Body.Close()
 
 	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
-	//body, _ := ioutil.ReadAll(resp.Body)
-	//result := string(body)
-	fmt.Println("response CODE::", string(resp.StatusCode))
+	//fmt.Println("response Headers:", resp.Header)
+	body, _ := ioutil.ReadAll(resp.Body)
+	result := string(body)
+	fmt.Println("response Body:", result)
+	//fmt.Println("response CODE::", string(resp.StatusCode))
 	fmt.Println("End======================================:: ", time.Now().UTC())
 	if resp.StatusCode == 200 {
 		fmt.Println("Return true")

@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 	"strings"
-	"log"
 )
 
 func GetAllProcessingHashes() []string {
@@ -42,13 +42,13 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 
 			if reqObj.SessionId == "" {
 
-				fmt.Println("Critical issue request object found empty ---> set next item "+ k + "value " + v)
+				fmt.Println("Critical issue request object found empty ---> set next item " + k + "value " + v)
 
 				tenantInt, _ := strconv.Atoi(tenant)
 				companyInt, _ := strconv.Atoi(company)
 				SetNextProcessingItem(tenantInt, companyInt, _processingHashKey, k, v, "")
 
-			}else {
+			} else {
 
 				processingReqObjs = AppendIfMissingReq(processingReqObjs, reqObj)
 			}
@@ -72,7 +72,7 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 	//if RedisSetNx(setNextLock, u1, 1) == true {
 	eSession := RedisHashGetValue(_processingHash, _queueId)
 
-	fmt.Println("Item in "+_processingHash+"set next processing item in queue "+_queueId+ " with session "+ currentSession +" has now in hash "+eSession)
+	fmt.Println("Item in " + _processingHash + "set next processing item in queue " + _queueId + " with session " + currentSession + " has now in hash " + eSession)
 	if eSession != "" && eSession == currentSession {
 		rejectedQueueId := GetRejectedQueueId(_queueId)
 		nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
@@ -112,7 +112,6 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 		there is a possibility to lost the item if status changes has failed.
 		recheck all queue status set methods for concurrency and async operations.
 		*/
-
 
 	}
 	//} else {
@@ -240,9 +239,10 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 
 			for _, longestWItem := range processingItems {
 
-				fmt.Println("Execute processing hash item::", longestWItem.Priority)
 				//if longestWItem != (Request{}) {
 				if longestWItem.SessionId != "" {
+
+					fmt.Println("Execute processing hash item::", longestWItem.SessionId)
 					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
 					if requestState == "QUEUED" {
 
@@ -254,12 +254,12 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 
 						if isExist {
 							continueProcessingResult, handlingResource := ContinueProcessing(longestWItem, resourceForRequest)
-							if continueProcessingResult{
+							if continueProcessingResult {
 								log.Println("handlingResource: ", handlingResource)
 								pickedResources = append(pickedResources, handlingResource...)
 								fmt.Println("Continue ARDS Process Success")
 							}
-						}else {
+						} else {
 							fmt.Println("Request not found in Selected Resource Data")
 						}
 					} else {
@@ -316,11 +316,11 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 						resourceForRequest, isExist := GetSelectedResourceForRequest(selectedResourcesForHash, longestWItem.SessionId, pickedResources)
 						if isExist {
 							continueProcessingResult, handlingResource := ContinueProcessing(longestWItem, resourceForRequest)
-							if continueProcessingResult{
+							if continueProcessingResult {
 								pickedResources = append(pickedResources, handlingResource...)
 								fmt.Println("Continue ARDS Process Success")
 							}
-						}else {
+						} else {
 							fmt.Println("Request not found in Selected Resource Data")
 						}
 					} else {
