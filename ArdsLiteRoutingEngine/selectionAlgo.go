@@ -33,13 +33,13 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 		}
 	}
 
-	fmt.Println("Check Attribute Availability:: ", reqAttributeAvailability)
+	//fmt.Println("Check Attribute Availability:: ", reqAttributeAvailability)
 
 	for _, availability := range reqAttributeAvailability {
 		isAttrAvailable = isAttrAvailable && availability
 	}
 
-	fmt.Println("Check Attribute Availability Return:: isAttrAvailable: ", isAttrAvailable, " isThreshold: ", isThreshold)
+	//fmt.Println("Check Attribute Availability Return:: isAttrAvailable: ", isAttrAvailable, " isThreshold: ", isThreshold)
 
 	return
 

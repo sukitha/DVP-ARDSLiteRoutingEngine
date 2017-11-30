@@ -24,15 +24,15 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 		var resObj Resource
 		json.Unmarshal([]byte(strResObj), &resObj)
 
-		fmt.Println("Start GetConcurrencyInfo")
+		//fmt.Println("Start GetConcurrencyInfo")
 		conInfo, cErr := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, requestType)
-		fmt.Println("End GetConcurrencyInfo")
-		fmt.Println("Start GetReqMetaData")
+		//fmt.Println("End GetConcurrencyInfo")
+		//fmt.Println("Start GetReqMetaData")
 		metaData, mErr := GetReqMetaData(reqCompany, reqTenant, serverType, requestType)
-		fmt.Println("End GetReqMetaData")
-		fmt.Println("Start GetResourceState")
+		//fmt.Println("End GetReqMetaData")
+		//fmt.Println("Start GetResourceState")
 		resState, resMode, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
-		fmt.Println("Start GetResourceState")
+		//fmt.Println("Start GetResourceState")
 
 		fmt.Println("conInfo.RejectCount:: ", conInfo.RejectCount)
 		fmt.Println("conInfo.IsRejectCountExceeded:: ", conInfo.IsRejectCountExceeded)

@@ -427,7 +427,7 @@ func RedisGet_v1(key string) (strObj string, err error) {
 }
 
 func RedisSearchKeys(pattern string) []string {
-	fmt.Println("Start RedisSearchKeys")
+	//fmt.Println("Start RedisSearchKeys")
 	var client *redis.Client
 	var err error
 
