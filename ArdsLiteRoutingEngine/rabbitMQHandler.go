@@ -2,21 +2,22 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/satori/go.uuid"
 	"github.com/streadway/amqp"
-	"log"
 )
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		fmt.Println("%s: %s", msg, err)
+		log.Println("%s: %s", msg, err)
 	}
 }
 
 func amqpDial() (*amqp.Connection, error) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in amqpDial", r)
+			log.Println("Recovered in amqpDial", r)
 		}
 	}()
 
@@ -29,7 +30,7 @@ func amqpDial() (*amqp.Connection, error) {
 func Worker() {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in RabbitMQ Worker", r)
+			log.Println("Recovered in RabbitMQ Worker", r)
 		}
 	}()
 
@@ -79,15 +80,15 @@ func Worker() {
 			forever <- true
 		}()
 		//go func() {
-		//	fmt.Println("Start New")
+		//	log.Println("Start New")
 		//	for *cont {
-		//		fmt.Println("cont..")
+		//		log.Println("cont..")
 		//		time.Sleep(2 * time.Second)
 		//	}
 		//}()
 
 		go func() {
-			fmt.Println("Start New msgs")
+			log.Println("Start New msgs")
 			for d := range msgs {
 				log.Printf("Received a message: %s", d.Body)
 				d.Ack(false)
@@ -101,7 +102,7 @@ func Worker() {
 				//time.Sleep(t * time.Second)
 				log.Printf("Done")
 			}
-			fmt.Println("End msgs")
+			log.Println("End msgs")
 		}()
 
 		log.Printf(" Routing Engine Waiting for requests. To exit press CTRL+C")

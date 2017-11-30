@@ -3,16 +3,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/DuoSoftware/gorest"
-	"github.com/satori/go.uuid"
+	"log"
 	"net/http"
 	"time"
+
+	"github.com/DuoSoftware/gorest"
+	"github.com/satori/go.uuid"
 )
 
 const layout = "2006-01-02T15:04:05Z07:00"
 
 func main() {
-	fmt.Println("Starting Ards Route Engine")
+	log.Println("Starting Ards Route Engine")
 	InitiateRedis()
 	go InitiateService()
 
@@ -20,7 +22,7 @@ func main() {
 		//-------------------Amqp Based Routing---------------------------------------
 		for {
 			Worker()
-			fmt.Println("End Worker()")
+			log.Println("End Worker()")
 			time.Sleep(2 * time.Second)
 		}
 	} else {
@@ -38,7 +40,7 @@ func main() {
 						}
 					}
 				} else {
-					fmt.Println("No Processing Hash Found...")
+					log.Println("No Processing Hash Found...")
 				}
 			}
 			time.Sleep(1 * time.Second)

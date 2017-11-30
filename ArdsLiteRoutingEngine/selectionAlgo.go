@@ -33,13 +33,13 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 		}
 	}
 
-	//fmt.Println("Check Attribute Availability:: ", reqAttributeAvailability)
+	//log.Println("Check Attribute Availability:: ", reqAttributeAvailability)
 
 	for _, availability := range reqAttributeAvailability {
 		isAttrAvailable = isAttrAvailable && availability
 	}
 
-	//fmt.Println("Check Attribute Availability Return:: isAttrAvailable: ", isAttrAvailable, " isThreshold: ", isThreshold)
+	//log.Println("Check Attribute Availability Return:: isAttrAvailable: ", isAttrAvailable, " isThreshold: ", isThreshold)
 
 	return
 
@@ -68,10 +68,10 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 
 func GetConcurrencyInfo(_company, _tenant int, _resId, _category string) (ciObj ConcurrencyInfo, err error) {
 	key := fmt.Sprintf("ConcurrencyInfo:%d:%d:%s:%s", _company, _tenant, _resId, _category)
-	//fmt.Println(key)
+	//log.Println(key)
 	var strCiObj string
 	strCiObj, err = RedisGet_v1(key)
-	//fmt.Println(strCiObj)
+	//log.Println(strCiObj)
 
 	json.Unmarshal([]byte(strCiObj), &ciObj)
 

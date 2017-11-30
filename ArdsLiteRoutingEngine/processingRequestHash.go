@@ -16,7 +16,7 @@ func GetAllProcessingHashes() []string {
 }
 
 func GetAllProcessingItems(_processingHashKey string) []Request {
-	fmt.Println(_processingHashKey)
+	log.Println(_processingHashKey)
 	keyItems := strings.Split(_processingHashKey, ":")
 
 	company := keyItems[1]
@@ -26,13 +26,13 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 	processingReqObjs := make([]Request, 0)
 
 	for k, v := range strHash {
-		fmt.Println("k:", k, "v:", v)
+		log.Println("k:", k, "v:", v)
 		requestKey := fmt.Sprintf("Request:%s:%s:%s", company, tenant, v)
 		strReqObj := RedisGet(requestKey)
-		fmt.Println(strReqObj)
+		log.Println(strReqObj)
 
 		if strReqObj == "" {
-			fmt.Println("Start SetNextProcessingItem")
+			log.Println("Start SetNextProcessingItem")
 			tenantInt, _ := strconv.Atoi(tenant)
 			companyInt, _ := strconv.Atoi(company)
 			SetNextProcessingItem(tenantInt, companyInt, _processingHashKey, k, v, "")
@@ -42,7 +42,7 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 
 			if reqObj.SessionId == "" {
 
-				fmt.Println("Critical issue request object found empty ---> set next item " + k + "value " + v)
+				log.Println("Critical issue request object found empty ---> set next item " + k + "value " + v)
 
 				tenantInt, _ := strconv.Atoi(tenant)
 				companyInt, _ := strconv.Atoi(company)
@@ -72,7 +72,7 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 	//if RedisSetNx(setNextLock, u1, 1) == true {
 	eSession := RedisHashGetValue(_processingHash, _queueId)
 
-	fmt.Println("Item in " + _processingHash + "set next processing item in queue " + _queueId + " with session " + currentSession + " has now in hash " + eSession)
+	log.Println("Item in " + _processingHash + "set next processing item in queue " + _queueId + " with session " + currentSession + " has now in hash " + eSession)
 	if eSession != "" && eSession == currentSession {
 		rejectedQueueId := GetRejectedQueueId(_queueId)
 		nextRejectedQueueItem := RedisListLpop(rejectedQueueId)
@@ -82,29 +82,29 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 			if nextQueueItem == "" {
 				removeHResult := RedisRemoveHashField(_processingHash, _queueId)
 				if removeHResult {
-					fmt.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
+					log.Println("Remove HashField Success.." + _processingHash + "::" + _queueId)
 				} else {
-					fmt.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
+					log.Println("Remove HashField Failed.." + _processingHash + "::" + _queueId)
 				}
 			} else {
 				setHResult := RedisHashSetField(_processingHash, _queueId, nextQueueItem)
 				if setHResult {
-					fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+					log.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
 				} else {
-					fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
+					log.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextQueueItem)
 				}
 			}
 		} else {
 			setHResult := RedisHashSetField(_processingHash, _queueId, nextRejectedQueueItem)
 			if setHResult {
-				fmt.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
+				log.Println("Set HashField Success.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
 			} else {
-				fmt.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
+				log.Println("Set HashField Failed.." + _processingHash + "::" + _queueId + "::" + nextRejectedQueueItem)
 			}
 		}
 	} else {
 
-		fmt.Println("session Mismatched, " + requestState + " ignore setNextItem")
+		log.Println("session Mismatched, " + requestState + " ignore setNextItem")
 		//SetRequestState(company, tenant, currentSession, "QUEUED")
 		/*there is a new session added to the hash,
 		now the item should route on next processing
@@ -115,7 +115,7 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 
 	}
 	//} else {
-	//fmt.Println("Set Next Processing Item Fail To Aquire Lock")
+	//log.Println("Set Next Processing Item Fail To Aquire Lock")
 	//}
 
 	defer func() {
@@ -148,10 +148,10 @@ func ContinueArdsProcess(_request Request) bool {
 		internalAuthToken := fmt.Sprintf("%d:%d", _request.Tenant, _request.Company)
 		ardsUrl := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/continueprocess", CreateHost(_request.LbIp, _request.LbPort))
 		if Post(ardsUrl, string(req[:]), authToken, internalAuthToken) {
-			fmt.Println("Continue Ards Process Success")
+			log.Println("Continue Ards Process Success")
 			return true
 		} else {
-			fmt.Println("Continue Ards Process Failed")
+			log.Println("Continue Ards Process Failed")
 			return false
 		}
 	} else {
@@ -172,7 +172,7 @@ func SetRequestState(_company, _tenant int, _sessionId, _newState string) string
 }
 
 func ContinueProcessing(_request Request, _selectedResources SelectedResource) (continueProcessingResult bool, handlingResource []string) {
-	fmt.Println("ReqOtherInfo:", _request.OtherInfo)
+	log.Println("ReqOtherInfo:", _request.OtherInfo)
 	var result string
 	result, handlingResource = HandlingResources(_request.Company, _request.Tenant, _request.ResourceCount, _request.LbIp, _request.LbPort, _request.SessionId, _request.ServerType, _request.RequestType, _request.HandlingAlgo, _request.OtherInfo, _selectedResources)
 	_request.HandlingResource = result
@@ -183,7 +183,7 @@ func ContinueProcessing(_request Request, _selectedResources SelectedResource) (
 func AcquireProcessingHashLock(hashId, uuid string) bool {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
 	if RedisSetNx(lockKey, uuid, 60) == true {
-		fmt.Println("lockKey: ", lockKey)
+		log.Println("lockKey: ", lockKey)
 		//if RedisSetEx(lockKey, "LOCKED", 60) {
 		return true
 		//} else {
@@ -199,9 +199,9 @@ func ReleasetLock(hashId, uuid string) {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
 
 	if RedisRemoveRLock(lockKey, uuid) == true {
-		fmt.Println("Release lock ", lockKey, "success.")
+		log.Println("Release lock ", lockKey, "success.")
 	} else {
-		fmt.Println("Release lock ", lockKey, "failed.")
+		log.Println("Release lock ", lockKey, "failed.")
 	}
 	return
 }
@@ -242,7 +242,7 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 				//if longestWItem != (Request{}) {
 				if longestWItem.SessionId != "" {
 
-					fmt.Println("Execute processing hash item::", longestWItem.SessionId)
+					log.Println("Execute processing hash item::", longestWItem.SessionId)
 					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
 					if requestState == "QUEUED" {
 
@@ -257,28 +257,28 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 							if continueProcessingResult {
 								log.Println("handlingResource: ", handlingResource)
 								pickedResources = append(pickedResources, handlingResource...)
-								fmt.Println("Continue ARDS Process Success")
+								log.Println("Continue ARDS Process Success")
 							}
 						} else {
-							fmt.Println("Request not found in Selected Resource Data")
+							log.Println("Request not found in Selected Resource Data")
 						}
 					} else {
-						fmt.Println("State of the queue item" + longestWItem.SessionId + "is not queued ->" + requestState)
+						log.Println("State of the queue item" + longestWItem.SessionId + "is not queued ->" + requestState)
 						SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
 					}
 				} else {
-					fmt.Println("No Session Found")
+					log.Println("No Session Found")
 				}
 			}
 			//ReleasetLock(_processingHashKey, uuid)
 			//	return
 		} else {
-			fmt.Println("No Processing Items Found")
+			log.Println("No Processing Items Found")
 			//ReleasetLock(_processingHashKey, uuid)
 			//	return
 		}
 	} else {
-		fmt.Println("No Processing Hash Found")
+		log.Println("No Processing Hash Found")
 		//ReleasetLock(_processingHashKey, uuid)
 		//	return
 	}
@@ -307,7 +307,7 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 
 			for _, longestWItem := range processingItems {
 
-				fmt.Println("Execute processing hash item::", longestWItem.Priority)
+				log.Println("Execute processing hash item::", longestWItem.Priority)
 
 				if longestWItem.SessionId != "" {
 					requestState := GetRequestState(longestWItem.Company, longestWItem.Tenant, longestWItem.SessionId)
@@ -318,10 +318,10 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 							continueProcessingResult, handlingResource := ContinueProcessing(longestWItem, resourceForRequest)
 							if continueProcessingResult {
 								pickedResources = append(pickedResources, handlingResource...)
-								fmt.Println("Continue ARDS Process Success")
+								log.Println("Continue ARDS Process Success")
 							}
 						} else {
-							fmt.Println("Request not found in Selected Resource Data")
+							log.Println("Request not found in Selected Resource Data")
 						}
 					} else {
 
@@ -329,12 +329,12 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 					}
 				} else {
 
-					fmt.Println("No Session Found")
+					log.Println("No Session Found")
 				}
 			}
 		} else {
 
-			fmt.Println("No Processing Items Found")
+			log.Println("No Processing Items Found")
 		}
 	}
 }

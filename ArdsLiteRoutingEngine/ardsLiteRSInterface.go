@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+
 	"github.com/DuoSoftware/gorest"
 )
 
@@ -14,10 +16,10 @@ type ArdsLiteRS struct {
 func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
 	const longForm = "Jan 2, 2006 at 3:04pm (MST)"
 
-	fmt.Println("Company:", Company)
-	fmt.Println("Tenant:", Tenant)
-	fmt.Println("SessionId:", SessionId)
-	fmt.Println("OtherInfo:", OtherInfo)
+	log.Println("Company:", Company)
+	log.Println("Tenant:", Tenant)
+	log.Println("SessionId:", SessionId)
+	log.Println("OtherInfo:", OtherInfo)
 
 	byt := []byte(OtherInfo)
 	var otherInfo string
@@ -27,7 +29,7 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 
 	if RedisCheckKeyExist(requestKey) {
 		strReqObj := RedisGet(requestKey)
-		fmt.Println(strReqObj)
+		log.Println(strReqObj)
 
 		var reqObj Request
 		json.Unmarshal([]byte(strReqObj), &reqObj)
@@ -45,7 +47,6 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 	return "Session Invalied"
 
 }
-
 
 /*func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
 	var selectionResult SelectionResult
@@ -71,9 +72,9 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 	case "SINGLE":
 		handlingResult = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectionResult, Company, Tenant)
 	case "MULTIPLE":
-		fmt.Println("ReqOtherInfo:", OtherInfo)
+		log.Println("ReqOtherInfo:", OtherInfo)
 		resCount := ResourceCount
-		fmt.Println("GetRequestedResCount:", resCount)
+		log.Println("GetRequestedResCount:", resCount)
 		handlingResult = MultipleHandling(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectionResult, resCount, Company, Tenant)
 	default:
 		handlingResult = ""

@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"sort"
 	"strings"
 )
 
 func BasicSelection(_company, _tenent int, _requests []Request) (result []SelectionResult) {
 	//requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
-	//fmt.Println(requestKey)
+	//log.Println(requestKey)
 	//
 	//strReqObj := RedisGet(requestKey)
-	//fmt.Println(strReqObj)
+	//log.Println(strReqObj)
 	//
 	//var reqObj RequestSelection
 	//json.Unmarshal([]byte(strReqObj), &reqObj)
@@ -42,20 +43,20 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 
 			sort.Sort(ByStringValue(attInfo))
 			for _, att := range attInfo {
-				//fmt.Println("attCode", att)
+				//log.Println("attCode", att)
 				tagArray = AppendIfMissingString(tagArray, fmt.Sprintf("attribute_%s", att))
 			}
 
 			tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
-			fmt.Println(tags)
+			log.Println(tags)
 			val := RedisSearchKeys(tags)
 			lenth := len(val)
-			fmt.Println(lenth)
+			log.Println(lenth)
 
 			for _, match := range val {
 				strResKey := RedisGet(match)
 				strResObj := RedisGet(strResKey)
-				//fmt.Println(strResObj)
+				//log.Println(strResObj)
 
 				var resObj Resource
 				json.Unmarshal([]byte(strResObj), &resObj)
@@ -65,12 +66,12 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 				if resObj.ResourceId != "" && _attAvailable {
 					concInfo, err := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, reqObj.RequestType)
 					if err != nil {
-						fmt.Println("Error in GetConcurrencyInfo")
+						log.Println("Error in GetConcurrencyInfo")
 					} else {
 						resourceConcInfo = append(resourceConcInfo, concInfo)
 					}
 					//matchingResources = AppendIfMissing(matchingResources, strResKey)
-					//fmt.Println(strResKey)
+					//log.Println(strResKey)
 				}
 			}
 
@@ -79,7 +80,7 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 			for _, res := range resourceConcInfo {
 				resKey := fmt.Sprintf("Resource:%d:%d:%s", res.Company, res.Tenant, res.ResourceId)
 				matchingResources = AppendIfMissingString(matchingResources, resKey)
-				//fmt.Println(resKey)
+				//log.Println(resKey)
 			}
 
 		}

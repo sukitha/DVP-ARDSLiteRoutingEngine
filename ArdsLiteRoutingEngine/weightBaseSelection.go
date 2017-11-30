@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -19,8 +20,8 @@ func CalculateWeight(reqAttributeInfo []ReqAttributeData, resAttributeInfo []Res
 				if attCode == resAtt.Attribute && resAtt.HandlingType == reqAtt.HandlingType {
 
 					reqAttPrecentage, _ := strconv.ParseFloat(reqAtt.WeightPrecentage, 64)
-					fmt.Println("**********reqAttPrecentage:", reqAttPrecentage)
-					fmt.Println("**********resAttPrecentage:", resAtt.Percentage)
+					log.Println("**********reqAttPrecentage:", reqAttPrecentage)
+					log.Println("**********resAttPrecentage:", resAtt.Percentage)
 					reqWeight := reqAttPrecentage / 100.00
 					resAttWeight := resAtt.Percentage / 100.00
 					calculatedWeight = calculatedWeight + (reqWeight * resAttWeight)
@@ -33,10 +34,10 @@ func CalculateWeight(reqAttributeInfo []ReqAttributeData, resAttributeInfo []Res
 
 func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []SelectionResult) {
 	//requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
-	//fmt.Println(requestKey)
+	//log.Println(requestKey)
 	//
 	//strReqObj := RedisGet(requestKey)
-	//fmt.Println(strReqObj)
+	//log.Println(strReqObj)
 	//
 	//var reqObj RequestSelection
 	//json.Unmarshal([]byte(strReqObj), &reqObj)
@@ -69,21 +70,21 @@ func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []S
 
 			sort.Sort(ByStringValue(attInfo))
 			for _, att := range attInfo {
-				fmt.Println("attCode", att)
+				log.Println("attCode", att)
 				tagArray = AppendIfMissingString(tagArray, fmt.Sprintf("attribute_%s", att))
 			}
 
 			tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
-			fmt.Println(tags)
+			log.Println(tags)
 
 			val := RedisSearchKeys(tags)
 			lenth := len(val)
-			fmt.Println(lenth)
+			log.Println(lenth)
 
 			for _, match := range val {
 				strResKey := RedisGet(match)
 				strResObj := RedisGet(strResKey)
-				fmt.Println(strResObj)
+				log.Println(strResObj)
 
 				var resObj Resource
 				json.Unmarshal([]byte(strResObj), &resObj)
@@ -96,7 +97,7 @@ func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []S
 					tempWeightInfo.ResourceId = resKey
 					tempWeightInfo.Weight = calcWeight
 					if err != nil {
-						fmt.Println("Error in GetConcurrencyInfo")
+						log.Println("Error in GetConcurrencyInfo")
 						tempWeightInfo.LastConnectedTime = ""
 					} else {
 						if concInfo.LastConnectedTime == "" {
@@ -112,8 +113,8 @@ func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []S
 			sort.Sort(ByWaitingTime(resourceWeightInfo))
 			for _, res := range resourceWeightInfo {
 				matchingResources = AppendIfMissingString(matchingResources, res.ResourceId)
-				logWeight := fmt.Sprintf("###################################### %s --------- %f --------%s", res.ResourceId, res.Weight,res.LastConnectedTime)
-				fmt.Println(logWeight)
+				logWeight := fmt.Sprintf("###################################### %s --------- %f --------%s", res.ResourceId, res.Weight, res.LastConnectedTime)
+				log.Println(logWeight)
 			}
 
 		}

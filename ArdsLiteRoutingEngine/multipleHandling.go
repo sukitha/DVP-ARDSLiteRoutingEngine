@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -14,26 +15,26 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 	selectedResList := make([]string, 0)
 	selectedResKeyList := make([]string, 0)
 	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
-	fmt.Println("///////////////////////////////////////selectedResources/////////////////////////////////////////////////")
-	fmt.Println("Priority:: ", selectedResources.Priority)
-	fmt.Println("Threshold:: ", selectedResources.Threshold)
-	fmt.Println("ResourceIds:: ", resourceIds)
+	log.Println("///////////////////////////////////////selectedResources/////////////////////////////////////////////////")
+	log.Println("Priority:: ", selectedResources.Priority)
+	log.Println("Threshold:: ", selectedResources.Threshold)
+	log.Println("ResourceIds:: ", resourceIds)
 	for _, key := range resourceIds {
-		fmt.Println(key)
+		log.Println(key)
 		strResObj := RedisGet(key)
-		fmt.Println(strResObj)
+		log.Println(strResObj)
 
 		var resObj Resource
 		json.Unmarshal([]byte(strResObj), &resObj)
 
 		conInfo, cErr := GetConcurrencyInfo(resObj.Company, resObj.Tenant, resObj.ResourceId, RequestType)
 
-		fmt.Println("conInfo.RejectCount:: ", conInfo.RejectCount)
-		fmt.Println("conInfo.IsRejectCountExceeded:: ", conInfo.IsRejectCountExceeded)
+		log.Println("conInfo.RejectCount:: ", conInfo.RejectCount)
+		log.Println("conInfo.IsRejectCountExceeded:: ", conInfo.IsRejectCountExceeded)
 
 		if cErr == nil {
 			metaData, mErr := GetReqMetaData(reqCompany, reqTenant, ServerType, RequestType)
-			fmt.Println("metaData.MaxRejectCount:: ", metaData.MaxRejectCount)
+			log.Println("metaData.MaxRejectCount:: ", metaData.MaxRejectCount)
 
 			if mErr == nil {
 				resState, resMode, sErr := GetResourceState(resObj.Company, resObj.Tenant, resObj.ResourceId)
@@ -52,15 +53,15 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 						tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
 
 						tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
-						fmt.Println(tags)
+						log.Println(tags)
 						availableSlots := RedisSearchKeys(tags)
 
 						for _, tagKey := range availableSlots {
 							strslotKey := RedisGet(tagKey)
-							fmt.Println(strslotKey)
+							log.Println(strslotKey)
 
 							strslotObj := RedisGet(strslotKey)
-							fmt.Println(strslotObj)
+							log.Println(strslotObj)
 
 							var slotObj CSlotInfo
 							json.Unmarshal([]byte(strslotObj), &slotObj)
@@ -74,7 +75,7 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 							slotObj.TempMaxRejectCount = metaData.MaxRejectCount
 
 							if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
-								fmt.Println("Return resource Data:", conInfo.RefInfo)
+								log.Println("Return resource Data:", conInfo.RefInfo)
 								selectedResList = AppendIfMissingString(selectedResList, conInfo.RefInfo)
 								selectedResKeyList = AppendIfMissingString(selectedResKeyList, key)
 								if len(selectedResList) == nuOfResRequested {

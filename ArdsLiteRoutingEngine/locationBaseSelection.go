@@ -3,17 +3,17 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 )
 
 func LocationBaseSelection(_company, _tenent int, _requests []Request) (result []SelectionResult) {
-	fmt.Println("-----------Start Location base----------------")
-
+	log.Println("-----------Start Location base----------------")
 
 	//requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
-	//fmt.Println(requestKey)
+	//log.Println(requestKey)
 	//
 	//strReqObj := RedisGet(requestKey)
-	//fmt.Println(strReqObj)
+	//log.Println(strReqObj)
 	//
 	//var reqObj RequestSelection
 	//json.Unmarshal([]byte(strReqObj), &reqObj)
@@ -30,12 +30,12 @@ func LocationBaseSelection(_company, _tenent int, _requests []Request) (result [
 			var locationObj ReqLocationData
 			json.Unmarshal([]byte(reqObj.OtherInfo), &locationObj)
 
-			fmt.Println("reqOtherInfo:: ", locationObj)
+			log.Println("reqOtherInfo:: ", locationObj)
 
 			if locationObj != (ReqLocationData{}) {
-				fmt.Println("Start Get locations")
+				log.Println("Start Get locations")
 				locationResult := RedisGeoRadius(_tenent, _company, locationObj)
-				fmt.Println("locations:: ", locationResult)
+				log.Println("locations:: ", locationResult)
 
 				subReplys, _ := locationResult.Array()
 				for _, lor := range subReplys {
@@ -44,13 +44,13 @@ func LocationBaseSelection(_company, _tenent int, _requests []Request) (result [
 
 					if len(resourceLocInfo) > 1 {
 						issMapKey := fmt.Sprintf("ResourceIssMap:%d:%d:%s", _company, _tenent, resourceLocInfo[0])
-						fmt.Println("start map iss: ", issMapKey)
+						log.Println("start map iss: ", issMapKey)
 						resourceKey := RedisGet(issMapKey)
-						fmt.Println("resourceKey: ", resourceKey)
+						log.Println("resourceKey: ", resourceKey)
 						if resourceKey != "" {
 
 							strResObj := RedisGet(resourceKey)
-							fmt.Println(strResObj)
+							log.Println(strResObj)
 
 							var resObj Resource
 							json.Unmarshal([]byte(strResObj), &resObj)
