@@ -252,11 +252,17 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 
 						log.Println("resourceForRequest: ", resourceForRequest)
 
-						if isExist {
+						if isExist && (len(resourceForRequest.Priority) > 0 || len(resourceForRequest.Threshold) > 0) {
 							continueProcessingResult, handlingResource := ContinueProcessing(longestWItem, resourceForRequest)
 							if continueProcessingResult {
 								log.Println("handlingResource: ", handlingResource)
-								pickedResources = append(pickedResources, handlingResource...)
+
+								//pickedResources = append(pickedResources, handlingResource...)
+								if len(handlingResource) > 0 {
+									pickedResources = append(pickedResources, resourceForRequest.Priority...)
+									pickedResources = append(pickedResources, resourceForRequest.Threshold...)
+								}
+
 								log.Println("Continue ARDS Process Success")
 							}
 						} else {
