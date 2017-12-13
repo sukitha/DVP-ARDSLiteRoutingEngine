@@ -145,7 +145,7 @@ func SetNextProcessingItem_Ards(tenant, company int, _processingHash, _queueId, 
 		internalAuthToken := fmt.Sprintf("%d:%d", tenant, company)
 
 		ardsUrl := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/queue/setNextProcessingItem", CreateHost(ardsServiceHost, ardsServicePort))
-		if Post(ardsUrl, string(req[:]), authToken, internalAuthToken) {
+		if Put(ardsUrl, string(req[:]), authToken, internalAuthToken) {
 			log.Println("SetNextProcessingItem Ards Process Success")
 		} else {
 			log.Println("SetNextProcessingItem Ards Process Failed")
