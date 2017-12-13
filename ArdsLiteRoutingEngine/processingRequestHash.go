@@ -35,7 +35,8 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 			log.Println("Start SetNextProcessingItem")
 			tenantInt, _ := strconv.Atoi(tenant)
 			companyInt, _ := strconv.Atoi(company)
-			SetNextProcessingItem(tenantInt, companyInt, _processingHashKey, k, v, "")
+			//SetNextProcessingItem(tenantInt, companyInt, _processingHashKey, k, v, "")
+			SetNextProcessingItem_Ards(tenantInt, companyInt, _processingHashKey, k, v)
 		} else {
 			var reqObj Request
 			json.Unmarshal([]byte(strReqObj), &reqObj)
@@ -46,7 +47,8 @@ func GetAllProcessingItems(_processingHashKey string) []Request {
 
 				tenantInt, _ := strconv.Atoi(tenant)
 				companyInt, _ := strconv.Atoi(company)
-				SetNextProcessingItem(tenantInt, companyInt, _processingHashKey, k, v, "")
+				//SetNextProcessingItem(tenantInt, companyInt, _processingHashKey, k, v, "")
+				SetNextProcessingItem_Ards(tenantInt, companyInt, _processingHashKey, k, v)
 
 			} else {
 
@@ -123,6 +125,34 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 	}()
 }
 
+func SetNextProcessingItem_Ards(tenant, company int, _processingHash, _queueId, currentSession string) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recovered in SetNextProcessingItem_Ards", r)
+		}
+	}()
+
+	if _processingHash != "" && _queueId != "" && currentSession != "" {
+
+		var setNextData SetNextData
+		setNextData.ProcessingHashId = _processingHash
+		setNextData.QueueId = _queueId
+		setNextData.CurrentSession = currentSession
+
+		req, _ := json.Marshal(setNextData)
+
+		authToken := fmt.Sprintf("Bearer %s", accessToken)
+		internalAuthToken := fmt.Sprintf("%d:%d", tenant, company)
+
+		ardsUrl := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/queue/setNextProcessingItem", CreateHost(ardsServiceHost, ardsServicePort))
+		if Post(ardsUrl, string(req[:]), authToken, internalAuthToken) {
+			log.Println("SetNextProcessingItem Ards Process Success")
+		} else {
+			log.Println("SetNextProcessingItem Ards Process Failed")
+		}
+	}
+}
+
 /*func GetLongestWaitingItem(_request []Request) Request {
 	longetWaitingItem := Request{}
 	reqCount := len(_request)
@@ -142,6 +172,11 @@ func SetNextProcessingItem(tenant, company int, _processingHash, _queueId, curre
 }*/
 
 func ContinueArdsProcess(_request Request) bool {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Recovered in ContinueArdsProcess", r)
+		}
+	}()
 	if _request.ReqHandlingAlgo == "QUEUE" && _request.HandlingResource != "No matching resources at the moment" {
 		req, _ := json.Marshal(_request)
 		authToken := fmt.Sprintf("Bearer %s", accessToken)
@@ -264,7 +299,8 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 						}
 					} else {
 						log.Println("State of the queue item" + longestWItem.SessionId + "is not queued ->" + requestState)
-						SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
+						//SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
+						SetNextProcessingItem_Ards(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId)
 					}
 				} else {
 					log.Println("No Session Found")
@@ -325,7 +361,8 @@ func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {
 						}
 					} else {
 
-						SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
+						//SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
+						SetNextProcessingItem_Ards(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId)
 					}
 				} else {
 

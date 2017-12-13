@@ -20,6 +20,8 @@ type Configuration struct {
 	RedisClusterName string
 	SentinelHosts    string
 	SentinelPort     string
+	ArdsServiceHost  string
+	ArdsServicePort  string
 }
 
 type EnvConfiguration struct {
@@ -40,6 +42,8 @@ type EnvConfiguration struct {
 	RedisClusterName string
 	SentinelHosts    string
 	SentinelPort     string
+	ArdsServiceHost  string
+	ArdsServicePort  string
 }
 
 //Request
@@ -99,6 +103,12 @@ type ReqMetaData struct {
 	MaxRejectCount   int
 	MaxAfterWorkTime int
 	MaxFreezeTime    int
+}
+
+type SetNextData struct {
+	QueueId          string
+	ProcessingHashId string
+	CurrentSession   string
 }
 
 //Resource
