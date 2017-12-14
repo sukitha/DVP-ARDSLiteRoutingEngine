@@ -35,6 +35,8 @@ var redisMode string
 var redisClusterName string
 var sentinelHosts string
 var sentinelPort string
+var ardsServiceHost string
+var ardsServicePort string
 
 var sentinelPool *sentinel.Client
 var redisPool *pool.Pool
@@ -66,31 +68,14 @@ func GetDefaultConfig() Configuration {
 	content, operr := ioutil.ReadFile(confPath)
 	if operr != nil {
 		log.Println(operr)
+		panic(operr)
 	}
 
 	defconfiguration := Configuration{}
 	deferr := json.Unmarshal(content, &defconfiguration)
 
 	if deferr != nil {
-		log.Println("error:", deferr)
-		defconfiguration.RedisIp = "192.168.3.200"
-		defconfiguration.RedisPort = "6379"
-		defconfiguration.RedisDb = 6
-		defconfiguration.LocationDb = 0
-		defconfiguration.RedisPassword = "DuoS123"
-		defconfiguration.Port = "2226"
-		defconfiguration.RabbitMQIp = "45.55.142.207"
-		defconfiguration.RabbitMQPort = "5672"
-		defconfiguration.RabbitMQUser = "guest"
-		defconfiguration.RabbitMQPassword = "guest"
-		defconfiguration.UseMsgQueue = false
-		defconfiguration.AccessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoZXNoYW5pbmRpa2EiLCJqdGkiOiIwZmIyNDJmZS02OGQwLTQ1MjEtOTM5NS0xYzE0M2M3MzNmNmEiLCJzdWIiOiI1NmE5ZTc1OWZiMDcxOTA3YTAwMDAwMDEyNWQ5ZTgwYjVjN2M0Zjk4NDY2ZjkyMTE3OTZlYmY0MyIsImV4cCI6MTQ1Njg5NDE5NSwidGVuYW50IjoxLCJjb21wYW55Ijo1LCJzY29wZSI6W3sicmVzb3VyY2UiOiJhbGwifSx7InJlc291cmNlIjoicmVxdWVzdHNlcnZlciIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJyZXF1ZXN0bWV0YSIsImFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl19LHsicmVzb3VyY2UiOiJhcmRzcmVzb3VyY2UiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfSx7InJlc291cmNlIjoiYXJkc3JlcXVlc3QiLCJhY3Rpb25zIjpbInJlYWQiLCJ3cml0ZSIsImRlbGV0ZSJdfV0sImlhdCI6MTQ1NjI4OTM5NX0.AWZuYNtj4lHfxpTQCutswUfUsJXwTMVPUmqTjFdVXSk"
-		defconfiguration.RoutingEngineId = "1"
-		defconfiguration.RedisMode = "instance"
-		//instance, cluster, sentinel
-		defconfiguration.RedisClusterName = "redis-cluster"
-		defconfiguration.SentinelHosts = "138.197.90.92,45.55.205.92,138.197.90.92"
-		defconfiguration.SentinelPort = "16389"
+		panic(deferr)
 	}
 
 	return defconfiguration
@@ -116,6 +101,8 @@ func LoadDefaultConfig() {
 	redisClusterName = defconfiguration.RedisClusterName
 	sentinelHosts = defconfiguration.SentinelHosts
 	sentinelPort = defconfiguration.SentinelPort
+	ardsServiceHost = defconfiguration.ArdsServiceHost
+	ardsServicePort = defconfiguration.ArdsServicePort
 }
 
 func InitiateRedis() {
@@ -158,6 +145,8 @@ func InitiateRedis() {
 		redisClusterName = os.Getenv(envconfiguration.RedisClusterName)
 		sentinelHosts = os.Getenv(envconfiguration.SentinelHosts)
 		sentinelPort = os.Getenv(envconfiguration.SentinelPort)
+		ardsServiceHost = os.Getenv(envconfiguration.ArdsServiceHost)
+		ardsServicePort = os.Getenv(envconfiguration.ArdsServicePort)
 
 		if redisIp == "" {
 			redisIp = defConfig.RedisIp
@@ -209,6 +198,12 @@ func InitiateRedis() {
 		}
 		if sentinelPort == "" {
 			sentinelPort = defConfig.SentinelPort
+		}
+		if ardsServiceHost == "" {
+			ardsServiceHost = defConfig.ArdsServiceHost
+		}
+		if ardsServicePort == "" {
+			ardsServicePort = defConfig.ArdsServicePort
 		}
 
 		redisIp = fmt.Sprintf("%s:%s", redisIp, redisPort)

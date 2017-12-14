@@ -15,5 +15,7 @@
 	"RedisMode":"SYS_REDIS_MODE",
 	"RedisClusterName":"SYS_REDIS_SENTINEL_NAME",
 	"SentinelHosts": "SYS_REDIS_SENTINEL_HOSTS",
-	"SentinelPort": "SYS_REDIS_SENTINEL_PORT"
+	"SentinelPort": "SYS_REDIS_SENTINEL_PORT",
+	"ArdsServiceHost":"SYS_ARDSLITESERVICE_HOST",
+	"ArdsServicePort":"SYS_ARDSLITESERVICE_PORT"
 }
