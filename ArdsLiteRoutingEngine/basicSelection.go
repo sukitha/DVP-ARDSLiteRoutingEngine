@@ -29,8 +29,8 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 		if len(reqObj.AttributeInfo) > 0 {
 			var tagArray = make([]string, 3)
 
-			tagArray[0] = fmt.Sprintf("company_%d", reqObj.Company)
-			tagArray[1] = fmt.Sprintf("tenant_%d", reqObj.Tenant)
+			tagArray[0] = fmt.Sprintf("company_%d:", reqObj.Company)
+			tagArray[1] = fmt.Sprintf("tenant_%d:", reqObj.Tenant)
 			tagArray[2] = fmt.Sprintf("objtype_%s", "Resource")
 
 			attInfo := make([]string, 0)
@@ -44,7 +44,7 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 			sort.Sort(ByStringValue(attInfo))
 			for _, att := range attInfo {
 				//log.Println("attCode", att)
-				tagArray = AppendIfMissingString(tagArray, fmt.Sprintf("attribute_%s", att))
+				tagArray = AppendIfMissingString(tagArray, fmt.Sprintf(":attribute_%s", att))
 			}
 
 			tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
