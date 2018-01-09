@@ -59,11 +59,11 @@ func ReserveSlot(ardsLbIp, ardsLbPort string, slotInfo CSlotInfo) bool {
 func ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, resObj Resource) {
 	var tagArray = make([]string, 8)
 
-	tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
-	tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
-	tagArray[4] = fmt.Sprintf("handlingType_%s", requestType)
-	tagArray[5] = fmt.Sprintf("state_%s", "Reserved")
-	tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
+	tagArray[0] = fmt.Sprintf("company_%d:", resObj.Company)
+	tagArray[1] = fmt.Sprintf("tenant_%d:", resObj.Tenant)
+	tagArray[4] = fmt.Sprintf("handlingType_%s:", requestType)
+	tagArray[5] = fmt.Sprintf("state_%s:", "Reserved")
+	tagArray[6] = fmt.Sprintf("resourceid_%s:", resObj.ResourceId)
 	tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
 
 	tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))

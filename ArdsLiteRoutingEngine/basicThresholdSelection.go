@@ -24,8 +24,8 @@ func BasicThresholdSelection(_company, _tenent int, _sessionId string) (result S
 	if len(reqObj.AttributeInfo) > 0 {
 		var tagArray = make([]string, 3)
 
-		tagArray[0] = fmt.Sprintf("company_%d", reqObj.Company)
-		tagArray[1] = fmt.Sprintf("tenant_%d", reqObj.Tenant)
+		tagArray[0] = fmt.Sprintf("company_%d:", reqObj.Company)
+		tagArray[1] = fmt.Sprintf("tenant_%d:", reqObj.Tenant)
 		//tagArray[2] = fmt.Sprintf("class_%s", reqObj.Class)
 		//tagArray[3] = fmt.Sprintf("type_%s", reqObj.Type)
 		//tagArray[4] = fmt.Sprintf("category_%s", reqObj.Category)
@@ -41,8 +41,8 @@ func BasicThresholdSelection(_company, _tenent int, _sessionId string) (result S
 
 		sort.Sort(ByStringValue(attInfo))
 		for _, att := range attInfo {
-			fmt.Println("attCode", att)
-			tagArray = AppendIfMissingString(tagArray, fmt.Sprintf("attribute_%s", att))
+			//log.Println("attCode", att)
+			tagArray = AppendIfMissingString(tagArray, fmt.Sprintf(":attribute_%s", att))
 		}
 
 		tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))

@@ -37,11 +37,11 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 
 						var tagArray = make([]string, 8)
 
-						tagArray[0] = fmt.Sprintf("company_%d", resObj.Company)
-						tagArray[1] = fmt.Sprintf("tenant_%d", resObj.Tenant)
-						tagArray[4] = fmt.Sprintf("handlingType_%s", RequestType)
-						tagArray[5] = fmt.Sprintf("state_%s", "Available")
-						tagArray[6] = fmt.Sprintf("resourceid_%s", resObj.ResourceId)
+						tagArray[0] = fmt.Sprintf("company_%d:", resObj.Company)
+						tagArray[1] = fmt.Sprintf("tenant_%d:", resObj.Tenant)
+						tagArray[4] = fmt.Sprintf("handlingType_%s:", RequestType)
+						tagArray[5] = fmt.Sprintf("state_%s:", "Available")
+						tagArray[6] = fmt.Sprintf("resourceid_%s:", resObj.ResourceId)
 						tagArray[7] = fmt.Sprintf("objtype_%s", "CSlotInfo")
 
 						tags := fmt.Sprintf("tag:*%s*", strings.Join(tagArray, "*"))
