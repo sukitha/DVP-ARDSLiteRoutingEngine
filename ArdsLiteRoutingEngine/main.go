@@ -32,7 +32,7 @@ func main() {
 				availablePHashes := GetAllProcessingHashes()
 				if len(availablePHashes) > 0 {
 					for _, h := range availablePHashes {
-						u1 := uuid.NewV4()
+						u1, _ := uuid.NewV4()
 						if AcquireProcessingHashLock(h, u1.String()) == true {
 							go ExecuteRequestHash(h, u1.String())
 						}
