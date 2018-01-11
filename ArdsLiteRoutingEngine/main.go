@@ -3,10 +3,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/DuoSoftware/gorest"
-	"github.com/satori/go.uuid"
 	"net/http"
 	"time"
+
+	"github.com/DuoSoftware/gorest"
+	"github.com/satori/go.uuid"
 )
 
 const layout = "2006-01-02T15:04:05Z07:00"
@@ -32,7 +33,7 @@ func main() {
 				availablePHashes := GetAllProcessingHashes()
 				if len(availablePHashes) > 0 {
 					for _, h := range availablePHashes {
-						u1 := uuid.NewV4()
+						u1, _ := uuid.NewV4()
 						if AcquireProcessingHashLock(h, u1.String()) == true {
 							go ExecuteRequestHash(h, u1.String())
 						}

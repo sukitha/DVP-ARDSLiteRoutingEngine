@@ -3,16 +3,17 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mediocregopher/radix.v2/pool"
-	"github.com/mediocregopher/radix.v2/redis"
-	"github.com/mediocregopher/radix.v2/sentinel"
-	"github.com/mediocregopher/radix.v2/util"
-	"github.com/satori/go.uuid"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/mediocregopher/radix.v2/pool"
+	"github.com/mediocregopher/radix.v2/redis"
+	"github.com/mediocregopher/radix.v2/sentinel"
+	"github.com/mediocregopher/radix.v2/util"
+	"github.com/satori/go.uuid"
 )
 
 var dirPath string
@@ -1160,7 +1161,7 @@ func RoutingEngineDistribution(pubChannelName string) string {
 	activeRoutingKey, _ := client.Cmd("get", "ActiveRoutingEngine").Str()
 
 	if activeRoutingKey == "" {
-		u1 := uuid.NewV4()
+		u1, _ := uuid.NewV4()
 		if RedisSetNx("ActiveRoutingEngineLock", u1.String(), 30) == true {
 			if RedisSetNx("ActiveRoutingEngine", pubChannelName, 60) == true {
 				RedisRemoveRLock("ActiveRoutingEngineLock", u1.String())
