@@ -1318,7 +1318,7 @@ func RoutingEngineDistribution(pubChannelName string) string {
 	activeRoutingKey, _ := client.Cmd("get", "ActiveRoutingEngine").Str()
 
 	if activeRoutingKey == "" {
-		u1 := uuid.NewV4()
+		u1, _ := uuid.NewV4()
 		if RedisSetNx("ActiveRoutingEngineLock", u1.String(), 30) == true {
 			if RedisSetNx("ActiveRoutingEngine", pubChannelName, 60) == true {
 				RedisRemoveRLock("ActiveRoutingEngineLock", u1.String())
