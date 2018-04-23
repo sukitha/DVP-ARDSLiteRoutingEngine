@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+//Post Invokes third pary service with http post
 func Post(serviceurl string, postData, authToken, internalAuthToken string) bool {
 	log.Println("Start======================================:: ", time.Now().UTC())
 	log.Println("URL:>", serviceurl)
@@ -46,6 +47,7 @@ func Post(serviceurl string, postData, authToken, internalAuthToken string) bool
 	return false
 }
 
+//Put Invokes third pary service with http put
 func Put(serviceurl string, postData, authToken, internalAuthToken string) bool {
 	log.Println("Start======================================:: ", time.Now().UTC())
 	log.Println("URL:>", serviceurl)
@@ -82,6 +84,7 @@ func Put(serviceurl string, postData, authToken, internalAuthToken string) bool 
 	return false
 }
 
+//Get Invokes third pary service with http put
 func Get(serviceurl, path, param string) string {
 	request := fmt.Sprintf("http://%s", serviceurl)
 
@@ -91,7 +94,10 @@ func Get(serviceurl, path, param string) string {
 
 	log.Println(u.String())
 
-	resp, _ := http.Get(u.String())
+	resp, err := http.Get(u.String())
+	if err != nil {
+		return ""
+	}
 	defer resp.Body.Close()
 
 	if resp != nil {

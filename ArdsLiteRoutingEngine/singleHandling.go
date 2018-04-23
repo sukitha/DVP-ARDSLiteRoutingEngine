@@ -7,11 +7,13 @@ import (
 	"strings"
 )
 
-func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
-	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, selectedResources, reqCompany, reqTenant)
+//SingleHandling return selected resource for the request
+func SingleHandling(ardsLbIP, ardsLbPort, serverType, requestType, sessionID string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
+	return SelectHandlingResource(ardsLbIP, ardsLbPort, serverType, requestType, sessionID, selectedResources, reqCompany, reqTenant)
 }
 
-func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
+//SelectHandlingResource find and select the resource for handle the request accourding to their availablility
+func SelectHandlingResource(ardsLbIP, ardsLbPort, serverType, requestType, sessionID string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
 	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
 	log.Println("///////////////////////////////////////selectedResources/////////////////////////////////////////////////")
 	log.Println("Priority:: ", selectedResources.Priority)
@@ -47,7 +49,7 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 
 					if resState == "Available" && resMode == "Inbound" && conInfo.RejectCount < metaData.MaxRejectCount && conInfo.IsRejectCountExceeded == false {
 						log.Println("===========================================Start====================================================")
-						ClearSlotOnMaxRecerved(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, resObj)
+						ClearSlotOnMaxRecerved(ardsLbIP, ardsLbPort, serverType, requestType, sessionID, resObj)
 
 						var tagArray = make([]string, 8)
 
@@ -73,14 +75,14 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 							json.Unmarshal([]byte(strslotObj), &slotObj)
 
 							slotObj.State = "Reserved"
-							slotObj.SessionId = sessionId
+							slotObj.SessionId = sessionID
 							slotObj.OtherInfo = "Inbound"
 							slotObj.MaxReservedTime = metaData.MaxReservedTime
 							slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
 							slotObj.MaxFreezeTime = metaData.MaxFreezeTime
 							slotObj.TempMaxRejectCount = metaData.MaxRejectCount
 
-							if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
+							if ReserveSlot(ardsLbIP, ardsLbPort, slotObj) == true {
 								log.Println("Return resource Data:", resObj.OtherInfo)
 								handlingResult = conInfo.RefInfo
 								handlingResource = key

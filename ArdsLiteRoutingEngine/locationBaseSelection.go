@@ -6,6 +6,7 @@ import (
 	"log"
 )
 
+//LocationBaseSelection select resources based on their longitude and latitude values
 func LocationBaseSelection(_company, _tenent int, _requests []Request) (result []SelectionResult) {
 	log.Println("-----------Start Location base----------------")
 

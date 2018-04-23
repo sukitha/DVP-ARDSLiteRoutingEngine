@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+//GetAllProcessingHashes search and return all the processing hashes from Redis
 func GetAllProcessingHashes() []string {
 	processingHashSearchKey := fmt.Sprintf("ProcessingHash:%s:%s", "*", "*")
 	processingHashes := RedisSearchKeys(processingHashSearchKey)
@@ -243,30 +244,15 @@ func ReleasetLock(hashId, uuid string) {
 
 func ExecuteRequestHash(_processingHashKey, uuid string) {
 	defer func() {
-		//if r := recover(); r != nil {
 		ReleasetLock(_processingHashKey, uuid)
-		//}
 	}()
-	//for {
+
 	if RedisCheckKeyExist(_processingHashKey) {
 		processingItems := GetAllProcessingItems(_processingHashKey)
 		if len(processingItems) > 0 {
 
 			defaultRequest := processingItems[0]
 
-			//switch (processingItems[0].ReqSelectionAlgo) {
-			//case "LONGESTWAITING":
-			//	sort.Sort(timeSliceReq(processingItems))
-			//	break
-			//case "PRIORITY":
-			//	sort.Sort(ByReqPriority(processingItems))
-			//	break
-			//default:
-			//	sort.Sort(timeSliceReq(processingItems))
-			//	break
-			//}
-
-			//sort.Sort(timeSliceReq(processingItems))
 			sort.Sort(ByReqPriority(processingItems))
 
 			selectedResourcesForHash := SelectResources(defaultRequest.Company, defaultRequest.Tenant, processingItems, defaultRequest.SelectionAlgo)
@@ -274,7 +260,6 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 
 			for _, longestWItem := range processingItems {
 
-				//if longestWItem != (Request{}) {
 				if longestWItem.SessionId != "" {
 
 					log.Println("Execute processing hash item::", longestWItem.SessionId)
@@ -293,33 +278,25 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 								log.Println("handlingResource: ", handlingResource)
 								pickedResources = append(pickedResources, handlingResource...)
 								log.Println("Continue ARDS Process Success")
+								break
 							}
 						} else {
 							log.Println("Request not found in Selected Resource Data")
 						}
 					} else {
 						log.Println("State of the queue item" + longestWItem.SessionId + "is not queued ->" + requestState)
-						//SetNextProcessingItem(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId, requestState)
 						SetNextProcessingItem_Ards(longestWItem.Tenant, longestWItem.Company, _processingHashKey, longestWItem.QueueId, longestWItem.SessionId)
 					}
 				} else {
 					log.Println("No Session Found")
 				}
 			}
-			//ReleasetLock(_processingHashKey, uuid)
-			//	return
 		} else {
 			log.Println("No Processing Items Found")
-			//ReleasetLock(_processingHashKey, uuid)
-			//	return
 		}
 	} else {
 		log.Println("No Processing Hash Found")
-		//ReleasetLock(_processingHashKey, uuid)
-		//	return
 	}
-	//time.Sleep(200 * time.Millisecond)
-	//}
 }
 
 func ExecuteRequestHashWithMsgQueue(_processingHashKey, uuid string) {

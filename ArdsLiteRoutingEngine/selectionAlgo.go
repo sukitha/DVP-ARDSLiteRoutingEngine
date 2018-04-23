@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+//IsAttributeAvailable validate all the request attributes are availble withing the resource attaributes
 func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo []ResAttributeData, reqType string) (isAttrAvailable, isThreshold bool) {
 
 	isAttrAvailable = true
@@ -66,8 +67,9 @@ func IsAttributeAvailable(reqAttributeInfo []ReqAttributeData, resAttributeInfo 
 	}*/
 }
 
-func GetConcurrencyInfo(_company, _tenant int, _resId, _category string) (ciObj ConcurrencyInfo, err error) {
-	key := fmt.Sprintf("ConcurrencyInfo:%d:%d:%s:%s", _company, _tenant, _resId, _category)
+//GetConcurrencyInfo read resource concurrency information from redis
+func GetConcurrencyInfo(_company, _tenant int, _resID, _category string) (ciObj ConcurrencyInfo, err error) {
+	key := fmt.Sprintf("ConcurrencyInfo:%d:%d:%s:%s", _company, _tenant, _resID, _category)
 	//log.Println(key)
 	var strCiObj string
 	strCiObj, err = RedisGet_v1(key)
@@ -78,6 +80,8 @@ func GetConcurrencyInfo(_company, _tenant int, _resId, _category string) (ciObj 
 	return
 }
 
+//SelectResources return the selected resorce or resources accourding to the
+//selected selection algorithm
 func SelectResources(_company, _tenant int, _requests []Request, _selectionAlgo string) []SelectionResult {
 	var selectionResult []SelectionResult
 

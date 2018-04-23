@@ -8,15 +8,8 @@ import (
 	"strings"
 )
 
+//BasicSelection select resources based on their skills
 func BasicSelection(_company, _tenent int, _requests []Request) (result []SelectionResult) {
-	//requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
-	//log.Println(requestKey)
-	//
-	//strReqObj := RedisGet(requestKey)
-	//log.Println(strReqObj)
-	//
-	//var reqObj RequestSelection
-	//json.Unmarshal([]byte(strReqObj), &reqObj)
 
 	var selectedResources = make([]SelectionResult, len(_requests))
 
@@ -43,7 +36,6 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 
 			sort.Sort(ByStringValue(attInfo))
 			for _, att := range attInfo {
-				//log.Println("attCode", att)
 				tagArray = AppendIfMissingString(tagArray, fmt.Sprintf(":attribute_%s", att))
 			}
 
@@ -56,7 +48,6 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 			for _, match := range val {
 				strResKey := RedisGet(match)
 				strResObj := RedisGet(strResKey)
-				//log.Println(strResObj)
 
 				var resObj Resource
 				json.Unmarshal([]byte(strResObj), &resObj)
@@ -70,8 +61,6 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 					} else {
 						resourceConcInfo = append(resourceConcInfo, concInfo)
 					}
-					//matchingResources = AppendIfMissing(matchingResources, strResKey)
-					//log.Println(strResKey)
 				}
 			}
 
@@ -80,7 +69,6 @@ func BasicSelection(_company, _tenent int, _requests []Request) (result []Select
 			for _, res := range resourceConcInfo {
 				resKey := fmt.Sprintf("Resource:%d:%d:%s", res.Company, res.Tenant, res.ResourceId)
 				matchingResources = AppendIfMissingString(matchingResources, resKey)
-				//log.Println(resKey)
 			}
 
 		}

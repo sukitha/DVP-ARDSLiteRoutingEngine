@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+//CalculateWeight return the calculated weight value of the resource
 func CalculateWeight(reqAttributeInfo []ReqAttributeData, resAttributeInfo []ResAttributeData) float64 {
 	var calculatedWeight float64
 	calculatedWeight = 0.00
@@ -32,6 +33,7 @@ func CalculateWeight(reqAttributeInfo []ReqAttributeData, resAttributeInfo []Res
 	return calculatedWeight
 }
 
+//WeightBaseSelection select resource based on their calculated weights
 func WeightBaseSelection(_company, _tenent int, _requests []Request) (result []SelectionResult) {
 	//requestKey := fmt.Sprintf("Request:%d:%d:%s", _company, _tenent, _sessionId)
 	//log.Println(requestKey)

@@ -5,11 +5,22 @@ import (
 	"time"
 )
 
+//timeSliceReq sort by request arive time
 type timeSliceReq []Request
+
+//ByStringValue sort by string
 type ByStringValue []string
+
+//timeSlice sort by resource last connected time
 type timeSlice []ConcurrencyInfo
+
+//ByNumericValue sort by resource weight
 type ByNumericValue []WeightBaseResourceInfo
+
+//ByReqPriority sort by request priority
 type ByReqPriority []Request
+
+//ByWaitingTime sort by resource weight and last connected time
 type ByWaitingTime []WeightBaseResourceInfo
 
 func (p timeSliceReq) Len() int {

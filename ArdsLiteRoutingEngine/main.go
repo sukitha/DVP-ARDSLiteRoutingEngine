@@ -36,19 +36,25 @@ func main() {
 					for _, h := range availablePHashes {
 						u1, _ := uuid.NewV4()
 						if AcquireProcessingHashLock(h, u1.String()) == true {
-							go ExecuteRequestHash(h, u1.String())
+							//go ExecuteRequestHash(h, u1.String())
+							ExecuteRequestHash(h, u1.String())
+						} else {
+							time.Sleep(1 * time.Second)
 						}
 					}
 				} else {
 					log.Println("No Processing Hash Found...")
+					time.Sleep(1 * time.Second)
 				}
+			} else {
+				time.Sleep(1 * time.Second)
 			}
-			time.Sleep(1 * time.Second)
 		}
 	}
 
 }
 
+//InitiateService start listening to the self host service port
 func InitiateService() {
 	listeningPort := fmt.Sprintf(":%s", port)
 	gorest.RegisterService(new(ArdsLiteRS))
