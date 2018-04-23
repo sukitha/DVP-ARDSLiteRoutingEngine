@@ -182,8 +182,8 @@ func ContinueArdsProcess(_request Request) bool {
 		req, _ := json.Marshal(_request)
 		authToken := fmt.Sprintf("Bearer %s", accessToken)
 		internalAuthToken := fmt.Sprintf("%d:%d", _request.Tenant, _request.Company)
-		ardsUrl := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/continueprocess", CreateHost(_request.LbIp, _request.LbPort))
-		if Post(ardsUrl, string(req[:]), authToken, internalAuthToken) {
+		ardsURL := fmt.Sprintf("http://%s/DVP/API/1.0.0.0/ARDS/continueprocess", CreateHost(_request.LbIp, _request.LbPort))
+		if Post(ardsURL, string(req[:]), authToken, internalAuthToken) {
 			log.Println("Continue Ards Process Success")
 			return true
 		} else {
@@ -278,6 +278,7 @@ func ExecuteRequestHash(_processingHashKey, uuid string) {
 								log.Println("handlingResource: ", handlingResource)
 								pickedResources = append(pickedResources, handlingResource...)
 								log.Println("Continue ARDS Process Success")
+								log.Println("***Break the process***")
 								break
 							}
 						} else {
