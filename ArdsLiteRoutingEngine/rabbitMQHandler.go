@@ -14,27 +14,27 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func amqpDial() (*amqp.Connection, error) {
+func amqpDial(rmqIP string) (*amqp.Connection, error) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("Recovered in amqpDial", r)
 		}
 	}()
 
-	url := fmt.Sprintf("amqp://%s:%s@%s:%s/", rabbitMQUser, rabbitMQPassword, rabbitMQIp, rabbitMQPort)
+	url := fmt.Sprintf("amqp://%s:%s@%s:%s/", rabbitMQUser, rabbitMQPassword, rmqIP, rabbitMQPort)
 	conn, err := amqp.Dial(url)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	return conn, err
 }
 
-func Worker() {
+func Worker(rmqIP string) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("Recovered in RabbitMQ Worker", r)
 		}
 	}()
 
-	conn, err := amqpDial()
+	conn, err := amqpDial(rmqIP)
 	defer conn.Close()
 	if err != nil {
 		return
