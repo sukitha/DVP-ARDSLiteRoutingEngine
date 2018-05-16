@@ -6,11 +6,13 @@ import (
 	"log"
 
 	"github.com/DuoSoftware/gorest"
+	uuid "github.com/satori/go.uuid"
 )
 
 type ArdsLiteRS struct {
 	gorest.RestService `root:"/resourceselection/" consumes:"application/json" produces:"application/json"`
 	getResource        gorest.EndPoint `method:"GET" path:"/getresource/{Company:int}/{Tenant:int}/{ResourceCount:int}/{SessionId:string}/{ServerType:string}/{RequestType:string}/{SelectionAlgo:string}/{HandlingAlgo:string}/{OtherInfo:string}" output:"string"`
+	executeHash        gorest.EndPoint `method:"POST" path:"/executeHash/" postdata:"HashData"`
 }
 
 func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {
@@ -46,6 +48,24 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 	}
 	return "Session Invalied"
 
+}
+
+//ExecuteHash by amql adapter
+func (ardsLiteRs ArdsLiteRS) ExecuteHash(hashData HashData) {
+	log.Println("Start New amql adapter")
+	log.Printf("Received a message: %s", hashData)
+
+	hashKey := hashData.HashKey
+	u1, _ := uuid.NewV4()
+	if AcquireProcessingHashLock(hashKey, u1.String()) == true {
+		go ExecuteRequestHashWithMsgQueue(hashKey, u1.String())
+	}
+	//dot_count := bytes.Count(d.Body, []byte("."))
+	//t := time.Duration(dot_count)
+	//time.Sleep(t * time.Second)
+	log.Printf("Done")
+	log.Println("End msgs")
+	return
 }
 
 /*func SelectResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ServerType, RequestType, SelectionAlgo, HandlingAlgo, OtherInfo string) string {

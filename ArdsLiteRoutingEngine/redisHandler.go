@@ -29,7 +29,7 @@ var rabbitMQIp string
 var rabbitMQPort string
 var rabbitMQUser string
 var rabbitMQPassword string
-var useMsgQueue bool
+var useMsgQueue string
 var routingEngineId string
 var redisMode string
 var redisClusterName string
@@ -37,6 +37,7 @@ var sentinelHosts string
 var sentinelPort string
 var ardsServiceHost string
 var ardsServicePort string
+var useAmqpAdapter string
 
 var sentinelPool *sentinel.Client
 var redisPool *pool.Pool
@@ -103,6 +104,7 @@ func LoadDefaultConfig() {
 	sentinelPort = defconfiguration.SentinelPort
 	ardsServiceHost = defconfiguration.ArdsServiceHost
 	ardsServicePort = defconfiguration.ArdsServicePort
+	useAmqpAdapter = defconfiguration.UseAmqpAdapter
 }
 
 func InitiateRedis() {
@@ -126,7 +128,6 @@ func InitiateRedis() {
 	} else {
 		var converr1 error
 		var converr2 error
-		var converr3 error
 		defConfig := GetDefaultConfig()
 		redisIp = os.Getenv(envconfiguration.RedisIp)
 		redisPort = os.Getenv(envconfiguration.RedisPort)
@@ -138,7 +139,7 @@ func InitiateRedis() {
 		rabbitMQUser = os.Getenv(envconfiguration.RabbitMQUser)
 		rabbitMQPassword = os.Getenv(envconfiguration.RabbitMQPassword)
 		port = os.Getenv(envconfiguration.Port)
-		useMsgQueue, converr3 = strconv.ParseBool(os.Getenv(envconfiguration.UseMsgQueue))
+		useMsgQueue = os.Getenv(envconfiguration.UseMsgQueue)
 		accessToken = os.Getenv(envconfiguration.AccessToken)
 		routingEngineId = os.Getenv(envconfiguration.RoutingEngineId)
 		redisMode = os.Getenv(envconfiguration.RedisMode)
@@ -147,6 +148,7 @@ func InitiateRedis() {
 		sentinelPort = os.Getenv(envconfiguration.SentinelPort)
 		ardsServiceHost = os.Getenv(envconfiguration.ArdsServiceHost)
 		ardsServicePort = os.Getenv(envconfiguration.ArdsServicePort)
+		useAmqpAdapter = os.Getenv(envconfiguration.UseAmqpAdapter)
 
 		if redisIp == "" {
 			redisIp = defConfig.RedisIp
@@ -178,7 +180,7 @@ func InitiateRedis() {
 		if rabbitMQPassword == "" {
 			rabbitMQPassword = defConfig.RabbitMQPassword
 		}
-		if converr3 != nil {
+		if useMsgQueue == "" {
 			useMsgQueue = defConfig.UseMsgQueue
 		}
 		if accessToken == "" {
@@ -205,6 +207,9 @@ func InitiateRedis() {
 		if ardsServicePort == "" {
 			ardsServicePort = defConfig.ArdsServicePort
 		}
+		if useAmqpAdapter == "" {
+			useAmqpAdapter = defConfig.UseAmqpAdapter
+		}
 
 		redisIp = fmt.Sprintf("%s:%s", redisIp, redisPort)
 	}
@@ -216,6 +221,8 @@ func InitiateRedis() {
 	log.Println("LocationDb:", locationDb)
 	log.Println("SentinelHosts:", sentinelHosts)
 	log.Println("SentinelPort:", sentinelPort)
+	log.Println("useMsgQueue:", useMsgQueue)
+	log.Println("useAmqpAdapter:", useAmqpAdapter)
 
 	var err error
 

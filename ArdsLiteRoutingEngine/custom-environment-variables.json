@@ -17,5 +17,6 @@
 	"SentinelHosts": "SYS_REDIS_SENTINEL_HOSTS",
 	"SentinelPort": "SYS_REDIS_SENTINEL_PORT",
 	"ArdsServiceHost":"SYS_ARDSLITESERVICE_HOST",
-	"ArdsServicePort":"SYS_ARDSLITESERVICE_PORT"
+	"ArdsServicePort":"SYS_ARDSLITESERVICE_PORT",
+	"UseAmqpAdapter": "HOST_USE_AMQP_ADAPTER"
 }

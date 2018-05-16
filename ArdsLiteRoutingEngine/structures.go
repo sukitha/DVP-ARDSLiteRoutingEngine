@@ -14,7 +14,7 @@ type Configuration struct {
 	RabbitMQUser     string
 	RabbitMQPassword string
 	AccessToken      string
-	UseMsgQueue      bool
+	UseMsgQueue      string
 	RoutingEngineId  string
 	RedisMode        string
 	RedisClusterName string
@@ -22,6 +22,7 @@ type Configuration struct {
 	SentinelPort     string
 	ArdsServiceHost  string
 	ArdsServicePort  string
+	UseAmqpAdapter   string
 }
 
 type EnvConfiguration struct {
@@ -44,6 +45,7 @@ type EnvConfiguration struct {
 	SentinelPort     string
 	ArdsServiceHost  string
 	ArdsServicePort  string
+	UseAmqpAdapter   string
 }
 
 //Request
@@ -187,4 +189,8 @@ type SelectedResource struct {
 type SelectionResult struct {
 	Request   string
 	Resources SelectedResource
+}
+
+type HashData struct {
+	HashKey string
 }

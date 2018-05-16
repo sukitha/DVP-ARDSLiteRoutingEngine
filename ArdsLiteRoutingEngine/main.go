@@ -19,29 +19,35 @@ func main() {
 	InitiateRedis()
 	go InitiateService()
 
-	if useMsgQueue {
-		//-------------------Amqp Based Routing---------------------------------------
-		rmqIps := strings.Split(rabbitMQIp, ",")
-		currentRmqNodeIndex := 0
-		rmqNodeTryCount := 0
+	if useMsgQueue == "true" {
+		if useAmqpAdapter == "false" {
+			//-------------------Amqp Based Routing---------------------------------------
+			rmqIps := strings.Split(rabbitMQIp, ",")
+			currentRmqNodeIndex := 0
+			rmqNodeTryCount := 0
 
-		for {
-			if len(rmqIps) > 1 {
-				if rmqNodeTryCount > 30 {
-					fmt.Println("Start to change RMQ node")
-					if currentRmqNodeIndex == (len(rmqIps) - 1) {
-						currentRmqNodeIndex = 0
-					} else {
-						currentRmqNodeIndex++
+			for {
+				if len(rmqIps) > 1 {
+					if rmqNodeTryCount > 30 {
+						fmt.Println("Start to change RMQ node")
+						if currentRmqNodeIndex == (len(rmqIps) - 1) {
+							currentRmqNodeIndex = 0
+						} else {
+							currentRmqNodeIndex++
+						}
+						rmqNodeTryCount = 0
 					}
-					rmqNodeTryCount = 0
 				}
+				rmqNodeTryCount++
+				fmt.Println("Start Connecting to RMQ: ", rmqIps[currentRmqNodeIndex], " :: TryCount: ", rmqNodeTryCount)
+				Worker(rmqIps[currentRmqNodeIndex])
+				fmt.Println("End Worker()")
+				time.Sleep(2 * time.Second)
 			}
-			rmqNodeTryCount++
-			fmt.Println("Start Connecting to RMQ: ", rmqIps[currentRmqNodeIndex], " :: TryCount: ", rmqNodeTryCount)
-			Worker(rmqIps[currentRmqNodeIndex])
-			fmt.Println("End Worker()")
-			time.Sleep(2 * time.Second)
+		} else {
+			for {
+				time.Sleep(1 * time.Second)
+			}
 		}
 	} else {
 		//-------------------RedisDb Based Routing---------------------------------------
