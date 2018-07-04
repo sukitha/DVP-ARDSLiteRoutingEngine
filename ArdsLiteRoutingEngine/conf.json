@@ -3,7 +3,7 @@
 	"RedisPort": "6389",
 	"RedisDb": 6,
 	"LocationDb": 0,
-	"RedisPassword":"DuoS123",
+	"RedisPassword":"",
 	"RabbitMQIp": "",
 	"RabbitMQPort": "5672",
 	"RabbitMQUser": "",
