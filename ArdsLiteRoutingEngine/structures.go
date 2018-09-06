@@ -14,6 +14,15 @@ type Configuration struct {
 	RabbitMQUser     string
 	RabbitMQPassword string
 	AccessToken      string
+	UseMsgQueue      string
+	RoutingEngineId  string
+	RedisMode        string
+	RedisClusterName string
+	SentinelHosts    string
+	SentinelPort     string
+	ArdsServiceHost  string
+	ArdsServicePort  string
+	UseAmqpAdapter   string
 }
 
 type EnvConfiguration struct {
@@ -28,6 +37,15 @@ type EnvConfiguration struct {
 	RabbitMQUser     string
 	RabbitMQPassword string
 	AccessToken      string
+	UseMsgQueue      string
+	RoutingEngineId  string
+	RedisMode        string
+	RedisClusterName string
+	SentinelHosts    string
+	SentinelPort     string
+	ArdsServiceHost  string
+	ArdsServicePort  string
+	UseAmqpAdapter   string
 }
 
 //Request
@@ -57,6 +75,7 @@ type Request struct {
 	ArriveTime       string
 	Priority         string
 	QueueId          string
+	QueueName        string
 	ReqHandlingAlgo  string
 	ReqSelectionAlgo string
 	ServingAlgo      string
@@ -85,6 +104,13 @@ type ReqMetaData struct {
 	MaxReservedTime  int
 	MaxRejectCount   int
 	MaxAfterWorkTime int
+	MaxFreezeTime    int
+}
+
+type SetNextData struct {
+	QueueId          string
+	ProcessingHashId string
+	CurrentSession   string
 }
 
 //Resource
@@ -125,23 +151,26 @@ type CSlotInfo struct {
 	LastReservedTime   string
 	MaxReservedTime    int
 	MaxAfterWorkTime   int
+	MaxFreezeTime      int
 	TempMaxRejectCount int
 	OtherInfo          string
 }
 
 type ConcurrencyInfo struct {
-	Company             int
-	Tenant              int
-	RejectCount         int
-	ResourceId          string
-	LastConnectedTime   string
-	LastRejectedSession string
-	RefInfo             string
+	Company               int
+	Tenant                int
+	RejectCount           int
+	ResourceId            string
+	LastConnectedTime     string
+	LastRejectedSession   string
+	RefInfo               string
+	IsRejectCountExceeded bool
 }
 
 type WeightBaseResourceInfo struct {
-	ResourceId string
-	Weight     float64
+	ResourceId        string
+	Weight            float64
+	LastConnectedTime string
 }
 
 type MultiResCount struct {
@@ -152,7 +181,16 @@ type updateCsReult struct {
 	IsSuccess bool
 }
 
-type SelectionResult struct {
+type SelectedResource struct {
 	Priority  []string
 	Threshold []string
+}
+
+type SelectionResult struct {
+	Request   string
+	Resources SelectedResource
+}
+
+type HashData struct {
+	HashKey string
 }

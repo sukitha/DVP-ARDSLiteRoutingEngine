@@ -2,37 +2,39 @@ package main
 
 import (
 	"fmt"
-	"github.com/streadway/amqp"
 	"log"
+
+	"github.com/satori/go.uuid"
+	"github.com/streadway/amqp"
 )
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		fmt.Println("%s: %s", msg, err)
+		log.Println("%s: %s", msg, err)
 	}
 }
 
-func amqpDial() (*amqp.Connection, error) {
+func amqpDial(rmqIP string) (*amqp.Connection, error) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in amqpDial", r)
+			log.Println("Recovered in amqpDial", r)
 		}
 	}()
 
-	url := fmt.Sprintf("amqp://%s:%s@%s:%s/", rabbitMQUser, rabbitMQPassword, rabbitMQIp, rabbitMQPort)
+	url := fmt.Sprintf("amqp://%s:%s@%s:%s/", rabbitMQUser, rabbitMQPassword, rmqIP, rabbitMQPort)
 	conn, err := amqp.Dial(url)
 	failOnError(err, "Failed to connect to RabbitMQ")
 	return conn, err
 }
 
-func Worker() {
+func Worker(rmqIP string) {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in RabbitMQ Worker", r)
+			log.Println("Recovered in RabbitMQ Worker", r)
 		}
 	}()
 
-	conn, err := amqpDial()
+	conn, err := amqpDial(rmqIP)
 	defer conn.Close()
 	if err != nil {
 		return
@@ -78,28 +80,29 @@ func Worker() {
 			forever <- true
 		}()
 		//go func() {
-		//	fmt.Println("Start New")
+		//	log.Println("Start New")
 		//	for *cont {
-		//		fmt.Println("cont..")
+		//		log.Println("cont..")
 		//		time.Sleep(2 * time.Second)
 		//	}
 		//}()
 
 		go func() {
-			fmt.Println("Start New msgs")
+			log.Println("Start New msgs")
 			for d := range msgs {
 				log.Printf("Received a message: %s", d.Body)
 				d.Ack(false)
 				hashKey := string(d.Body)
-				if AcquireProcessingHashLock(hashKey, "test") == true {
-					go ExecuteRequestHash(hashKey, "test")
+				u1, _ := uuid.NewV4()
+				if AcquireProcessingHashLock(hashKey, u1.String()) == true {
+					go ExecuteRequestHashWithMsgQueue(hashKey, u1.String())
 				}
 				//dot_count := bytes.Count(d.Body, []byte("."))
 				//t := time.Duration(dot_count)
 				//time.Sleep(t * time.Second)
 				log.Printf("Done")
 			}
-			fmt.Println("End msgs")
+			log.Println("End msgs")
 		}()
 
 		log.Printf(" Routing Engine Waiting for requests. To exit press CTRL+C")
