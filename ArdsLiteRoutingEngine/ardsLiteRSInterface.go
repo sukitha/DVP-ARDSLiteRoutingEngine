@@ -43,7 +43,7 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 
 		selectedResources := SelectResources(Company, Tenant, tempRequestArray, SelectionAlgo)
 		resourceForRequest, _ := GetSelectedResourceForRequest(selectedResources, reqObj.SessionId, pickedResources)
-		result, _ := HandlingResources(Company, Tenant, ResourceCount, reqObj.LbIp, reqObj.LbPort, SessionId, ServerType, RequestType, HandlingAlgo, otherInfo, resourceForRequest)
+		result, _ := HandlingResources(Company, Tenant,reqObj.BusinessUnit, ResourceCount, reqObj.LbIp, reqObj.LbPort, SessionId, ServerType, RequestType, HandlingAlgo, otherInfo, resourceForRequest)
 		return result
 	}
 	return "Session Invalied"

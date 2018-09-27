@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-func MultipleHandling(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, selectedResources SelectedResource, nuOfResRequested, reqCompany, reqTenant int) (handlingResult string, handlingResource []string) {
-	return SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, selectedResources, nuOfResRequested, reqCompany, reqTenant)
+func MultipleHandling(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, selectedResources SelectedResource, nuOfResRequested, reqCompany, reqTenant int, reqBusinessUnit string) (handlingResult string, handlingResource []string) {
+	return SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId, selectedResources, nuOfResRequested, reqCompany, reqTenant, reqBusinessUnit)
 }
 
-func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, selectedResources SelectedResource, nuOfResRequested, reqCompany, reqTenant int) (handlingResult string, handlingResource []string) {
+func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestType, sessionId string, selectedResources SelectedResource, nuOfResRequested, reqCompany, reqTenant int, reqBusinessUnit string) (handlingResult string, handlingResource []string) {
 	selectedResList := make([]string, 0)
 	selectedResKeyList := make([]string, 0)
 	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
@@ -73,6 +73,7 @@ func SelectMultipleHandlingResource(ardsLbIp, ardsLbPort, ServerType, RequestTyp
 							slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
 							slotObj.MaxFreezeTime = metaData.MaxFreezeTime
 							slotObj.TempMaxRejectCount = metaData.MaxRejectCount
+							slotObj.BusinessUnit = reqBusinessUnit
 
 							if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
 								log.Println("Return resource Data:", conInfo.RefInfo)

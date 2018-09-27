@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-func SingleResourceAlgo(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
-	handlingResult, handlingResource = SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, selectedResources, reqCompany, reqTenant)
+func SingleResourceAlgo(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int, reqBusinessUnit string) (handlingResult, handlingResource string) {
+	handlingResult, handlingResource = SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, selectedResources, reqCompany, reqTenant, reqBusinessUnit)
 	return
 
 }
@@ -124,7 +124,7 @@ func GetResourceState(_company, _tenant int, _resId string) (state string, mode 
 	return
 }
 
-func HandlingResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ServerType, RequestType, HandlingAlgo, OtherInfo string, selectedResources SelectedResource) (handlingResult string, handlingResource []string) {
+func HandlingResources(Company, Tenant int, BusinessUnit string, ResourceCount int, ArdsLbIp, ArdsLbPort, SessionId, ServerType, RequestType, HandlingAlgo, OtherInfo string, selectedResources SelectedResource) (handlingResult string, handlingResource []string) {
 
 	handlingResult = ""
 	handlingResource = make([]string, 0)
@@ -132,13 +132,13 @@ func HandlingResources(Company, Tenant, ResourceCount int, ArdsLbIp, ArdsLbPort,
 	switch HandlingAlgo {
 	case "SINGLE":
 		var singleHandlingResource string
-		handlingResult, singleHandlingResource = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectedResources, Company, Tenant)
+		handlingResult, singleHandlingResource = SingleResourceAlgo(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectedResources, Company, Tenant, BusinessUnit)
 		handlingResource = append(handlingResource, singleHandlingResource)
 	case "MULTIPLE":
 		//log.Println("ReqOtherInfo:", OtherInfo)
 		resCount := ResourceCount
 		log.Println("GetRequestedResCount:", resCount)
-		handlingResult, handlingResource = MultipleHandling(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectedResources, resCount, Company, Tenant)
+		handlingResult, handlingResource = MultipleHandling(ArdsLbIp, ArdsLbPort, ServerType, RequestType, SessionId, selectedResources, resCount, Company, Tenant, BusinessUnit)
 	default:
 		handlingResult = ""
 		handlingResource = make([]string, 0)

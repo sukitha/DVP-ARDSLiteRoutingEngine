@@ -209,7 +209,7 @@ func SetRequestState(_company, _tenant int, _sessionId, _newState string) string
 func ContinueProcessing(_request Request, _selectedResources SelectedResource) (continueProcessingResult bool, handlingResource []string) {
 	log.Println("ReqOtherInfo:", _request.OtherInfo)
 	var result string
-	result, handlingResource = HandlingResources(_request.Company, _request.Tenant, _request.ResourceCount, _request.LbIp, _request.LbPort, _request.SessionId, _request.ServerType, _request.RequestType, _request.HandlingAlgo, _request.OtherInfo, _selectedResources)
+	result, handlingResource = HandlingResources(_request.Company, _request.Tenant, _request.BusinessUnit, _request.ResourceCount, _request.LbIp, _request.LbPort, _request.SessionId, _request.ServerType, _request.RequestType, _request.HandlingAlgo, _request.OtherInfo, _selectedResources)
 	_request.HandlingResource = result
 	continueProcessingResult = ContinueArdsProcess(_request)
 	return

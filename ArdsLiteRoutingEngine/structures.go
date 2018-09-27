@@ -68,6 +68,7 @@ type ReqAttributeData struct {
 type Request struct {
 	Company          int
 	Tenant           int
+	BusinessUnit     string
 	ServerType       string
 	RequestType      string
 	SessionId        string
@@ -141,6 +142,7 @@ type ResourceStatus struct {
 type CSlotInfo struct {
 	Company            int
 	Tenant             int
+	BusinessUnit       string
 	HandlingType       string
 	State              string
 	HandlingRequest    string

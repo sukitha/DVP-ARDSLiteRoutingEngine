@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
-	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, selectedResources, reqCompany, reqTenant)
+func SingleHandling(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int, reqBusinessUnit string) (handlingResult, handlingResource string) {
+	return SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId, selectedResources, reqCompany, reqTenant, reqBusinessUnit)
 }
 
-func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int) (handlingResult, handlingResource string) {
+func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessionId string, selectedResources SelectedResource, reqCompany, reqTenant int, reqBusinessUnit string) (handlingResult, handlingResource string) {
 	resourceIds := append(selectedResources.Priority, selectedResources.Threshold...)
 	log.Println("///////////////////////////////////////selectedResources/////////////////////////////////////////////////")
 	log.Println("Priority:: ", selectedResources.Priority)
@@ -79,6 +79,7 @@ func SelectHandlingResource(ardsLbIp, ardsLbPort, serverType, requestType, sessi
 							slotObj.MaxAfterWorkTime = metaData.MaxAfterWorkTime
 							slotObj.MaxFreezeTime = metaData.MaxFreezeTime
 							slotObj.TempMaxRejectCount = metaData.MaxRejectCount
+							slotObj.BusinessUnit = reqBusinessUnit
 
 							if ReserveSlot(ardsLbIp, ardsLbPort, slotObj) == true {
 								log.Println("Return resource Data:", resObj.OtherInfo)
