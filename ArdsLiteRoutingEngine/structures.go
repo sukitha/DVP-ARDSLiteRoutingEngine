@@ -129,6 +129,7 @@ type Resource struct {
 	Type                  string
 	Category              string
 	ResourceId            string
+	BusinessUnit		  string
 	ResourceAttributeInfo []ResAttributeData
 	OtherInfo             string
 }
