@@ -43,7 +43,7 @@ func (ardsLiteRs ArdsLiteRS) GetResource(Company, Tenant, ResourceCount int, Ses
 
 		selectedResources := SelectResources(Company, Tenant, tempRequestArray, SelectionAlgo)
 		resourceForRequest, _ := GetSelectedResourceForRequest(selectedResources, reqObj.SessionId, pickedResources)
-		result, _ := HandlingResources(Company, Tenant,reqObj.BusinessUnit, ResourceCount, reqObj.LbIp, reqObj.LbPort, SessionId, ServerType, RequestType, HandlingAlgo, otherInfo, resourceForRequest)
+		result, _ := HandlingResources(Company, Tenant, reqObj.BusinessUnit, ResourceCount, reqObj.LbIp, reqObj.LbPort, SessionId, ServerType, RequestType, HandlingAlgo, otherInfo, resourceForRequest)
 		return result
 	}
 	return "Session Invalied"
@@ -56,7 +56,7 @@ func (ardsLiteRs ArdsLiteRS) ExecuteHash(hashData HashData) {
 	log.Printf("Received a message: %s", hashData)
 
 	hashKey := hashData.HashKey
-	u1, _ := uuid.NewV4()
+	u1 := uuid.NewV4()
 	if AcquireProcessingHashLock(hashKey, u1.String()) == true {
 		go ExecuteRequestHashWithMsgQueue(hashKey, u1.String())
 	}

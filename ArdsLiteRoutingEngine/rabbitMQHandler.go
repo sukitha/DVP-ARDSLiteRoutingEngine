@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"github.com/streadway/amqp"
 )
 
@@ -93,7 +93,7 @@ func Worker(rmqIP string) {
 				log.Printf("Received a message: %s", d.Body)
 				d.Ack(false)
 				hashKey := string(d.Body)
-				u1, _ := uuid.NewV4()
+				u1 := uuid.NewV4()
 				if AcquireProcessingHashLock(hashKey, u1.String()) == true {
 					go ExecuteRequestHashWithMsgQueue(hashKey, u1.String())
 				}
