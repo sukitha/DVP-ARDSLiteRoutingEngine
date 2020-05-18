@@ -1,7 +1,7 @@
 # Dockerfile References: https://docs.docker.com/engine/reference/builder/
 
 # Start from the latest golang base image
-FROM golang:latest
+FROM golang:latest as build-env
 
 # Add Maintainer Info
 LABEL maintainer="Duosoftware <admin@duosoftware.com>"
