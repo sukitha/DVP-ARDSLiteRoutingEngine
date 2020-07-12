@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"net"
 	"log"
+	"net"
 )
 
 func AppendIfMissingReq(dataList []Request, i Request) []Request {
@@ -24,7 +24,6 @@ func AppendIfMissingString(dataList []string, i string) []string {
 	return append(dataList, i)
 }
 
-
 func CheckExistingString(dataList []string, i string) bool {
 	for _, ele := range dataList {
 		if ele == i {
@@ -36,7 +35,7 @@ func CheckExistingString(dataList []string, i string) bool {
 
 func CreateHost(_ip, _port string) string {
 	testIp := net.ParseIP(_ip)
-	if testIp.To4() == nil {
+	if testIp.To4() == nil && useDynamicPort == "false" {
 		return _ip
 	} else {
 		return fmt.Sprintf("%s:%s", _ip, _port)

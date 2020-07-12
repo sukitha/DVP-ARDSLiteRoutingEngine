@@ -23,6 +23,7 @@ type Configuration struct {
 	ArdsServiceHost  string
 	ArdsServicePort  string
 	UseAmqpAdapter   string
+	UseDynamicPort   string
 }
 
 type EnvConfiguration struct {
@@ -46,6 +47,7 @@ type EnvConfiguration struct {
 	ArdsServiceHost  string
 	ArdsServicePort  string
 	UseAmqpAdapter   string
+	UseDynamicPort   string
 }
 
 //Request
@@ -129,7 +131,7 @@ type Resource struct {
 	Type                  string
 	Category              string
 	ResourceId            string
-	BusinessUnit		  string
+	BusinessUnit          string
 	ResourceAttributeInfo []ResAttributeData
 	OtherInfo             string
 }

@@ -38,6 +38,7 @@ var sentinelPort string
 var ardsServiceHost string
 var ardsServicePort string
 var useAmqpAdapter string
+var useDynamicPort string
 
 var sentinelPool *sentinel.Client
 var redisPool *pool.Pool
@@ -105,6 +106,7 @@ func LoadDefaultConfig() {
 	ardsServiceHost = defconfiguration.ArdsServiceHost
 	ardsServicePort = defconfiguration.ArdsServicePort
 	useAmqpAdapter = defconfiguration.UseAmqpAdapter
+	useDynamicPort = defconfiguration.UseDynamicPort
 }
 
 func InitiateRedis() {
@@ -149,6 +151,7 @@ func InitiateRedis() {
 		ardsServiceHost = os.Getenv(envconfiguration.ArdsServiceHost)
 		ardsServicePort = os.Getenv(envconfiguration.ArdsServicePort)
 		useAmqpAdapter = os.Getenv(envconfiguration.UseAmqpAdapter)
+		useDynamicPort = os.Getenv(envconfiguration.UseDynamicPort)
 
 		if redisIp == "" {
 			redisIp = defConfig.RedisIp
@@ -209,6 +212,9 @@ func InitiateRedis() {
 		}
 		if useAmqpAdapter == "" {
 			useAmqpAdapter = defConfig.UseAmqpAdapter
+		}
+		if useDynamicPort == "" {
+			useDynamicPort = defConfig.UseDynamicPort
 		}
 
 		redisIp = fmt.Sprintf("%s:%s", redisIp, redisPort)
