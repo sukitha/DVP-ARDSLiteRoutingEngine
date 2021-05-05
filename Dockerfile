@@ -19,7 +19,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN go build -o main ./ArdsLiteRoutingEngine/
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o main ./ArdsLiteRoutingEngine/
 
 # Create Runtime image
 FROM alpine
