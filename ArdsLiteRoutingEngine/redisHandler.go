@@ -478,13 +478,9 @@ func RedisCheckKeyExist(key string) bool {
 
 func RedisHashGetAll(hkey string) map[string]string {
 	var setVar map[string]string;
-
 	cmd := radix.Cmd(&setVar, "HGETALL", hkey)
-
-	 Cmd(cmd);
-
+	Cmd(cmd);
 	return setVar
-
 }
 
 func RedisHashGetValue(hkey, queueId string) string {
@@ -512,9 +508,7 @@ func RedisRemoveHashField(hkey, field string) bool {
 	
 	var setVar int;
 	cmd := radix.Cmd(&setVar, "HDEL", hkey, field)
-
-	 Cmd(cmd);
-	
+	Cmd(cmd);
     if setVar == 1 {
 		log.Println("Remove Key: ", true)
 		return true
@@ -530,11 +524,8 @@ func RedisRemoveHashField(hkey, field string) bool {
 func RedisListLpop(lname string) string {
 	var setVar string;
 	cmd := radix.Cmd(&setVar, "LPOP", lname)
-
-	 Cmd(cmd);
-
+	Cmd(cmd);
 	return setVar
-
 }
 
 
@@ -545,9 +536,7 @@ func RedisGeoRadius(tenant, company int, locationObj ReqLocationData) [][]string
 	locationInfoKey := fmt.Sprintf("location:%d:%d", tenant, company)
 	log.Println("locationInfoKey: ", locationInfoKey)
 	cmd := radix.Cmd(&setVar, "georadius", "positions", fmt.Sprintf("%.6f",locationObj.Longitude) , fmt.Sprintf("%.6f",locationObj.Latitude), strconv.Itoa(locationObj.Radius)  , locationObj.Metric, "WITHDIST", "ASC")
-
-	 Cmd(cmd);
-
+	Cmd(cmd);
 	return setVar
 
 }
@@ -555,14 +544,9 @@ func RedisGeoRadius(tenant, company int, locationObj ReqLocationData) [][]string
 func RoutingEngineDistribution(pubChannelName string) string {
 
 
-	// mymap := RedisHashGetAll("TEST_SET")
-	// fmt.Println(mymap)
-
-
 	var activeRoutingKey string;
 	cmd := radix.Cmd(&activeRoutingKey, "GET", "ActiveRoutingEngine")
 	Cmd(cmd);
-
 
 	if activeRoutingKey == "" {
 		u1 := uuid.NewV4()
@@ -578,12 +562,9 @@ func RoutingEngineDistribution(pubChannelName string) string {
 			log.Println("Aquire ActiveRoutingEngineLock failed")
 			return activeRoutingKey
 		}
-
 	} else {
 
 		if activeRoutingKey == pubChannelName {
-
-
 			var expire int;
 	        cmd := radix.Cmd(&expire, "EXPIRE", "ActiveRoutingEngine", "60")
 	        Cmd(cmd);
@@ -594,11 +575,8 @@ func RoutingEngineDistribution(pubChannelName string) string {
 				log.Println("Extend Active Routing Engine Expire Time Failed")
 			}
 		}
-
 		return activeRoutingKey
-
 	}
-
 }
 
 func AppendIfMissing(windowList []string, i string) []string {
