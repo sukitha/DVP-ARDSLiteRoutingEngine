@@ -37,10 +37,10 @@ func LocationBaseSelection(_company, _tenent int, _requests []Request) (result [
 				locationResult := RedisGeoRadius(_tenent, _company, locationObj)
 				log.Println("locations:: ", locationResult)
 
-				subReplys, _ := locationResult.Array()
-				for _, lor := range subReplys {
+				
+				for _, lor := range  locationResult{
 
-					resourceLocInfo, _ := lor.List()
+					resourceLocInfo := lor
 
 					if len(resourceLocInfo) > 1 {
 						issMapKey := fmt.Sprintf("ResourceIssMap:%d:%d:%s", _company, _tenent, resourceLocInfo[0])
