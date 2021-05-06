@@ -266,7 +266,7 @@ func InitiateRedis() {
 				if(len(ipPortArray) > 1){
 					sentinelIp = fmt.Sprintf("%s:%s", ipPortArray[0], ipPortArray[1])
 				}else{
-					sentinelIp = fmt.Sprintf("%s:%s", redisPassword,ip, sentinelPort)
+					sentinelIp = fmt.Sprintf("%s:%s", ip, sentinelPort)
 				}
 				ips = append(ips, sentinelIp)
 				
