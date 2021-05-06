@@ -398,8 +398,6 @@ func RedisSearchKeys(pattern string) []string {
     }
 
 	return matchingKeys
-
-
 }
 
 func RedisSetNx(key, value string, timeout int) bool {
@@ -501,7 +499,6 @@ func RedisHashSetField(hkey, field, value string) bool {
 	} else {
 		return false
 	}
-
 }
 
 func RedisRemoveHashField(hkey, field string) bool {
