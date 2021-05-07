@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 
 	// "github.com/mediocregopher/radix.v2/pool"
 	// "github.com/mediocregopher/radix.v2/redis"
@@ -279,9 +280,11 @@ func InitiateRedis() {
 
 			if err != nil {
 				log.Println("InitiateSentinel ::", err)
+				os.Exit(0)
 			}
 		} else {
 			log.Println("Not enough sentinel servers")
+			os.Exit(0)
 		}
 
 
