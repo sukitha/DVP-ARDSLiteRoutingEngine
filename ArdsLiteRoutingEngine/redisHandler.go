@@ -45,6 +45,8 @@ var useDynamicPort string
 var redisSentinel *radix.Sentinel
 var redisPool *radix.Pool;
 var redisScanClient radix.Client;
+var redisScanSentinel *radix.Sentinel
+var mu sync.Mutex
 
 
 func errHndlr(err error) {
@@ -273,6 +275,7 @@ func InitiateRedis() {
 			}
 
 			redisSentinel, err = radix.NewSentinel(redisClusterName, ips , radix.SentinelPoolFunc(customConnFunc))
+			redisScanSentinel, err = radix.NewSentinel(redisClusterName, ips , radix.SentinelPoolFunc(customConnFunc))
 
 			if err != nil {
 				log.Println("InitiateSentinel ::", err)
@@ -360,6 +363,15 @@ func RedisGet_v1(key string) (strObj string, err error) {
 
 func RedisSearchKeys(pattern string) []string {
 
+	mu.Lock();
+
+	defer func() {
+		mu.Unlock()
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in ScanAndGetKeys", r)
+		}
+	}()
+
 	
 	scanOpts := radix.ScanOpts{
 		Command: "SCAN",
@@ -374,8 +386,8 @@ func RedisSearchKeys(pattern string) []string {
 	var client  radix.Client;
 
 	if redisMode == "sentinel" {
-		addr, _ := redisSentinel.Addrs()
-		client , _ = redisSentinel.Client(addr) 
+		addr, _ := redisScanSentinel.Addrs()
+		client , _ = redisScanSentinel.Client(addr) 
 	}else{
 		client = redisScanClient;
 	}
