@@ -296,6 +296,18 @@ func InitiateRedis() {
 
 	rdb = redis.NewUniversalClient(&connectionOptions)
 
+
+	// res, _ := rdb.Pipelined(context.TODO(), func(pipe redis.Pipeliner) error {
+	// 	pipe.Set(context.TODO(),"aaa", "aaa", 0)
+	// 	pipe.Get(context.TODO(), "aaa")
+	// 	pipe.Get(context.TODO(), "bbb")
+	// 	pipe.HSet(context.TODO(), "TESTx", "test", "Test1")
+	// 	pipe.HGetAll(context.TODO(), "TESTx")
+	// 	return nil
+	// })
+
+	// fmt.Println(res)
+
 	
 }
 
