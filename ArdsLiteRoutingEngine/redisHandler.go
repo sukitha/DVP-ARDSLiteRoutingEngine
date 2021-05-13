@@ -308,6 +308,8 @@ func InitiateRedis() {
 
 	// fmt.Println(res)
 
+	// RedisRemoveRLock("aaaa",  "bbb")
+
 	
 }
 
@@ -406,13 +408,16 @@ n, err = IncrByXX.Run(ctx, rdb, []string{"xx_counter"}, 2).Result()
 
 func RedisRemoveRLock(key, value string) bool {
 
+	luaScript := 
+	redis.NewScript(`if redis.call('get',KEYS[1]) == ARGV[1] then 
+		return redis.call('del',KEYS[1]) 
+	else 
+		return 0 
+	end`)
 
-	luaScript := "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end"
-	//cmd := radix.Cmd(&setVar, "EVAL", luaScript, strconv.Itoa(1), key, value)
-	result, _ := rdb.Do(context.TODO(),"EVAL", luaScript, strconv.Itoa(1), key, value).Int()
-
+	result, _ := luaScript.Run(context.TODO(), rdb, []string{key}, value).Bool()
 	
-    if result == 1 {
+    if result{
 		log.Println("GetRLock: ", true)
 		return true
 	} else {
@@ -421,6 +426,27 @@ func RedisRemoveRLock(key, value string) bool {
 	}
 
 }
+
+
+
+
+// func RedisRemoveRLock(key, value string) bool {
+
+
+// 	luaScript := "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end"
+// 	//cmd := radix.Cmd(&setVar, "EVAL", luaScript, strconv.Itoa(1), key, value)
+// 	result, _ := rdb.Do(context.TODO(),"EVAL", luaScript, strconv.Itoa(1), key, value).Int()
+
+	
+//     if result == 1 {
+// 		log.Println("GetRLock: ", true)
+// 		return true
+// 	} else {
+// 		log.Println("GetRLock: ", false)
+// 		return false
+// 	}
+
+// }
 
 
 
