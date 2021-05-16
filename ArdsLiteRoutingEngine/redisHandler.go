@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 	uuid "github.com/satori/go.uuid"
@@ -372,15 +373,16 @@ func RedisSearchKeys(pattern string) []string {
 func RedisSetNx(key, value string, timeout int) bool {
 
 	//cmd := radix.Cmd(&setVar, "SET", key, value, "nx", "ex", strconv.Itoa(timeout))
-	 result, _ := rdb.Do(context.TODO(),"SET", key, value, "nx", "ex", timeout).Text()
+	 result, _ := rdb.SetNX(context.TODO(), key, value, time.Duration(timeout)*time.Second).Result()
+	 return result
 	
-    if result == "OK" {
-		log.Println("GetRLock: ", true)
-		return true
-	} else {
-		log.Println("GetRLock: ", false)
-		return false
-	}
+    // if result == "OK" {
+	// 	log.Println("GetRLock: ", true)
+	// 	return true
+	// } else {
+	// 	log.Println("GetRLock: ", false)
+	// 	return false
+	// }
 }
 
 
@@ -563,8 +565,8 @@ func RoutingEngineDistribution(pubChannelName string) string {
 
 	if activeRoutingKey == "" {
 		u1 := uuid.NewV4()
-		if RedisSetNx("ActiveRoutingEngineLock", u1.String(), 30) == true {
-			if RedisSetNx("ActiveRoutingEngine", pubChannelName, 60) == true {
+		if RedisSetNx("ActiveRoutingEngineLock", u1.String(), 30) {
+			if RedisSetNx("ActiveRoutingEngine", pubChannelName, 60){
 				RedisRemoveRLock("ActiveRoutingEngineLock", u1.String())
 				return pubChannelName
 			} else {
@@ -580,7 +582,7 @@ func RoutingEngineDistribution(pubChannelName string) string {
 		if activeRoutingKey == pubChannelName {
 			
 	        //cmd := radix.Cmd(&expire, "EXPIRE", "ActiveRoutingEngine", "60")
-	        expire, _ := rdb.Expire(context.TODO(), "ActiveRoutingEngine", 60).Result()
+	        expire, _ := rdb.Expire(context.TODO(), "ActiveRoutingEngine", time.Duration(60)*time.Second).Result()
 
 			if expire {
 				//log.Println("Extend Active Routing Engine Expire Time Success")

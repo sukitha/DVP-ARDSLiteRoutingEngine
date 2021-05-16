@@ -217,7 +217,7 @@ func ContinueProcessing(_request Request, _selectedResources SelectedResource) (
 
 func AcquireProcessingHashLock(hashId, uuid string) bool {
 	lockKey := fmt.Sprintf("ProcessingHashLock:%s", hashId)
-	if RedisSetNx(lockKey, uuid, 60) == true {
+	if RedisSetNx(lockKey, uuid, 60){
 		log.Println("lockKey: ", lockKey)
 		//if RedisSetEx(lockKey, "LOCKED", 60) {
 		return true
